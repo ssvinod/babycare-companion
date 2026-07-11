@@ -1,0 +1,14 @@
+{
+  "name": "babycare-companion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Family-owned planning tools for appointments, reminders, and childhood records.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "check": "node --check src/core/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

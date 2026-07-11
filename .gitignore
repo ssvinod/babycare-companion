@@ -1,0 +1,16 @@
+# Dependencies and tooling
+node_modules/
+.DS_Store
+coverage/
+dist/
+
+# Family data and local configuration
+src/config/profile.local.json
+src/config/*.private.json
+backups/**
+logs/**
+*.ics
+*.pdf
+
+# Keep empty local-only directories out of Git while retaining their purpose
+!backups/.gitkeep

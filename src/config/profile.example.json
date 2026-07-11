@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "child": {
+    "displayName": "Viha",
+    "dateOfBirth": "2026-06-22"
+  },
+  "careTeam": {
+    "pediatricianName": "",
+    "clinicName": "",
+    "phone": ""
+  },
+  "preferences": {
+    "timeZone": "Asia/Kolkata",
+    "calendarName": "BabyCare Companion",
+    "reminderListName": "BabyCare Companion"
+  }
+}
