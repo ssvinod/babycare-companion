@@ -1,0 +1,5 @@
+const VERSION = "0.1.0";
+
+export function getVersion() {
+  return VERSION;
+}

@@ -41,3 +41,44 @@ release/     Release artefacts
 
 The configured remote is `https://github.com/ssvinod/babycare-companion.git`.
 Authenticate GitHub on this Mac (GitHub Desktop or `gh auth login`) before pushing the initial commit.
+---
+
+# Documentation
+
+The project documentation is organized into dedicated sections to make the repository easy to navigate and maintain.
+
+```
+docs/
+├── adr/                  # Architecture Decision Records
+├── api/                  # API Specifications
+├── architecture/         # System Architecture
+├── developer-guide/      # Developer Documentation
+├── diagrams/             # UML, Flowcharts, ER Diagrams
+├── images/               # Documentation Images
+├── release-notes/        # Version Release Notes
+├── sprint/               # Sprint Logs
+└── user-guide/           # User Documentation
+```
+
+## Existing Documentation
+
+- Project Charter
+- Product Vision
+- Software Requirements Specification (SRS)
+- Software Architecture Document
+- Developer Guide
+- User Guide
+- Test Strategy
+- Project Roadmap
+
+## Development Process
+
+Each sprint records:
+
+- Objectives
+- Features Implemented
+- Bugs Fixed
+- Architectural Decisions
+- Next Sprint Plan
+
+Major architectural decisions are documented separately as **Architecture Decision Records (ADRs)**.
