@@ -199,3 +199,72 @@ The project now has a dedicated platform layer that separates reusable business 
 - End-to-end application workflow
 - Apple Calendar adapter
 - Apple Reminders adapter
+
+# Sprint 1.8
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the Apple Calendar platform adapter.
+
+### Completed
+
+- Apple Calendar adapter
+- Apple Calendar adapter test script
+- Calendar event transformation
+- Reused stable event UID generation
+
+### Outcome
+
+The application can now transform vaccination schedules into Apple Calendar-compatible event objects while keeping the business logic platform-independent. Stable event identifiers ensure future synchronization support.
+
+### Next Sprint
+
+- Shared Application Context
+- Apple Reminders adapter
+
+# Sprint 1.9
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce a shared Application Context for reusable services.
+
+### Completed
+
+- Application Context service
+- Application Context test script
+
+### Outcome
+
+Core services can now share a single application context containing the child profile, vaccination schedule, and development milestones. This simplifies service interactions and prepares the platform for additional adapters and future UI layers.
+
+### Next Sprint
+
+- Apple Reminders adapter
+- Dashboard service
+
+# Sprint 1.10
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the Apple Reminders platform adapter.
+
+### Completed
+
+- Apple Reminders adapter
+- Apple Reminders adapter test script
+- Reminder object transformation
+- Reused stable event identifiers
+- Reused reminder scheduling engine
+
+### Outcome
+
+The application can now transform vaccination schedules into Apple Reminders-compatible objects while keeping business logic independent of platform APIs. This completes the core Apple platform abstraction for calendars and reminders.
+
+### Next Sprint
+
+- Unified Dashboard Service
+- Timeline aggregation
+- Daily agenda generation

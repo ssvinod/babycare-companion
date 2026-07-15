@@ -78,8 +78,9 @@ Implemented:
 
 Implemented:
 
-- Scriptable Adapter
-- Apple Calendar Adapter
+- Scriptable adapter
+- Apple Calendar adapter
+- Apple Reminders adapter
 - Shared Application Context
 
 ## Utilities
@@ -125,9 +126,6 @@ Created:
 
 # Known Limitations
 
-The following modules are planned for future milestones:
-
-- Apple Reminders Integration
 - Backup & Restore
 - Growth Tracking
 - Appointment Management
