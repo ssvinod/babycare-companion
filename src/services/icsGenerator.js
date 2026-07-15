@@ -4,6 +4,7 @@
  * Converts vaccination schedules into RFC5545 compliant
  * calendar events.
  */
+import { createCalendarUID } from "./eventIdService.js";
 
 function formatDate(date) {
     return date
@@ -33,7 +34,7 @@ export function generateICS(child, vaccinations) {
 
     for (const visit of vaccinations) {
         calendar += "BEGIN:VEVENT\r\n";
-        calendar += `UID:${child.name}-${visit.id}@babycarecompanion\r\n`;
+        calendar += `UID:${createCalendarUID(child, visit)}\r\n`;
         calendar += `DTSTAMP:${now}\r\n`;
         calendar += `DTSTART;VALUE=DATE:${formatDateOnly(visit.dueDate)}\r\n`;
         const title =
