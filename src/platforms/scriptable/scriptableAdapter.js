@@ -1,25 +1,41 @@
 /**
  * Scriptable Adapter
  *
- * Converts core models into Scriptable-friendly objects.
+ * Converts the application timeline into
+ * Scriptable-friendly objects.
  */
 
 export function createScriptableSchedule(child, visits) {
 
-    return visits.map(visit => ({
+    return {
 
-        id: visit.id,
+        child: {
 
-        title: `${visit.visit} Vaccination`,
+            name: child.name,
+            birthDate: child.birthDate,
+            gender: child.gender,
+            bloodGroup: child.bloodGroup
 
-        dueDate: visit.dueDate,
+        },
 
-        vaccines: visit.vaccines,
+        schedule: visits.map(visit => ({
 
-        reminders: visit.reminders,
+            id: visit.id,
 
-        childName: child.name
+            title:
+                visit.title ??
+                `${visit.visit} Vaccination`,
 
-    }));
+            dueDate: visit.dueDate,
+
+            reminders: visit.reminders,
+
+            vaccines: visit.vaccines,
+
+            milestones: visit.milestones
+
+        }))
+
+    };
 
 }

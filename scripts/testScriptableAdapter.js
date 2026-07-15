@@ -7,4 +7,4 @@ const visits = generateVaccinationPlan(child);
 
 const schedule = createScriptableSchedule(child, visits);
 
-console.log(schedule[0]);
+console.log(JSON.stringify(schedule, null, 4));

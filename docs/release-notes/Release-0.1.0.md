@@ -50,7 +50,12 @@ Implemented:
 Implemented:
 
 - RFC5545 (.ics) calendar generation
-- Calendar export script
+- Vaccination calendar export
+- Development milestone calendar export
+- Stable calendar UID generation
+- Apple Calendar adapter
+- Shared application context
+- Timeline aggregation service
 
 ## Reminder Engine
 
@@ -59,6 +64,23 @@ Implemented:
 - Automatic reminders (7 days before)
 - Automatic reminders (3 days before)
 - Reminder on due date
+- Stable reminder/event identifiers
+
+## Development Milestones
+
+Implemented:
+
+- Development milestone schedule
+- Milestone generation engine
+- Milestone calendar export
+
+## Platform Adapters
+
+Implemented:
+
+- Scriptable Adapter
+- Apple Calendar Adapter
+- Shared Application Context
 
 ## Utilities
 
@@ -70,8 +92,15 @@ Implemented:
 
 - Development launcher
 - Logger test script
-- Calendar export test
-- Reminder test
+- Vaccination test scripts
+- Reminder test script
+- Calendar export tests
+- Milestone test scripts
+- Apple Calendar adapter test
+- Scriptable adapter test
+- Event ID test
+- Timeline test
+- Application Context test
 
 ## Documentation
 
@@ -98,8 +127,6 @@ Created:
 
 The following modules are planned for future milestones:
 
-- Scriptable Adapter
-- Apple Calendar Integration
 - Apple Reminders Integration
 - Backup & Restore
 - Growth Tracking
@@ -115,12 +142,13 @@ v0.2.0-alpha
 
 Planned Features:
 
-- Development milestone engine
-- Growth tracking
-- Appointment management
+- Apple Reminders adapter
+- Growth tracker
+- Appointment manager
+- Dashboard
 - Scriptable widgets
-- Apple Calendar synchronization
-- Apple Reminders synchronization
+- Calendar synchronization
+- Multi-child support
 
 ---
 
