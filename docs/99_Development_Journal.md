@@ -128,3 +128,74 @@ Development milestones can now be generated and exported as RFC5545-compliant ca
 - Growth tracker
 - Appointment manager
 - Scriptable adapter
+
+---
+
+# Sprint 1.5
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce stable event identifiers for calendar and reminder exports.
+
+### Completed
+
+- Event ID Service
+- Stable calendar UID generation
+- Event ID test script
+- ICS generator refactored to use shared UID generation
+
+### Outcome
+
+All exported events now have deterministic, reusable identifiers, providing a solid foundation for synchronization and duplicate handling.
+
+### Next Sprint
+
+- Duplicate detection service
+
+---
+
+# Sprint 1.6
+**Date:** 15-Jul-2026
+
+## Objective
+
+Detect duplicate calendar events before export.
+
+### Completed
+
+- Duplicate Detection Service
+- Duplicate detection test script
+
+### Outcome
+
+The core can now identify duplicate event identifiers, enabling safer exports and future synchronization with calendar providers.
+
+### Next Sprint
+
+- Scriptable adapter
+
+---
+
+# Sprint 1.7
+**Date:** 15-Jul-2026
+
+## Objective
+
+Create the initial platform adapter for Scriptable.
+
+### Completed
+
+- Scriptable adapter foundation
+- Platform abstraction layer
+- Scriptable adapter test
+
+### Outcome
+
+The project now has a dedicated platform layer that separates reusable business logic from Scriptable-specific data transformation.
+
+### Next Sprint
+
+- End-to-end application workflow
+- Apple Calendar adapter
+- Apple Reminders adapter
