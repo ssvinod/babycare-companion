@@ -67,22 +67,64 @@ Prototype validated successfully and identified the need for a calendar-aware sc
 - Improve schedule data model.
 
 ---
-
-# Sprint 1.3 (In Progress)
+# Sprint 1.3
+**Date:** 15-Jul-2026
 
 ## Objective
 
 Refactor the vaccination engine into a production-ready calendar engine.
 
-### Planned
+### Completed
 
 - Calendar-aware date calculations
 - Date Utility module
 - Vaccine visit model
 - Reminder generation
-- Vaccine grouping
-- Calendar export readiness
+- ICS Generator
+- Calendar Exporter
+- Export calendar script
+- Reminder test script
+- RFC5545 compliant calendar generation
+- Release Notes v0.1.0-alpha updated
 
-Status
+### Outcome
 
-In Progress
+Successfully migrated from fixed day calculations to calendar-aware scheduling. Vaccination schedules now correctly handle leap years and month/year offsets. The project can generate portable `.ics` calendar files for import into calendar applications.
+
+### Next Sprint
+
+- Development Milestone Engine
+- Growth Tracker
+- Appointment Manager
+
+---
+
+# Sprint 1.4
+**Date:** 15-Jul-2026
+
+## Objective
+
+Extend the platform-independent core with child profile persistence and development milestone support.
+
+### Completed
+
+- Milestone schedule
+- Milestone service
+- Milestone calendar exporter
+- Milestone ICS generation
+- Milestone test script
+- Profile Service
+- JSON profile persistence (`data/profile.json`)
+- Refactored scripts to use shared profile
+- Generic ICS generator supporting vaccinations and milestones
+
+### Outcome
+
+Development milestones can now be generated and exported as RFC5545-compliant calendar files. The application uses a shared child profile across all scripts, making future integrations (Scriptable, Apple Calendar, Apple Reminders, backups, and sync) simpler and more maintainable.
+
+### Next Sprint
+
+- Duplicate event detection
+- Growth tracker
+- Appointment manager
+- Scriptable adapter

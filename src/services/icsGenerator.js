@@ -31,23 +31,25 @@ export function generateICS(child, vaccinations) {
     calendar += "PRODID:-//BabyCare Companion//EN\r\n";
     calendar += "CALSCALE:GREGORIAN\r\n";
 
-   for (const visit of vaccinations) {
-
-    calendar += "BEGIN:VEVENT\r\n";
-
-    calendar += `UID:${child.name}-${visit.id}@babycarecompanion\r\n`;
-
-    calendar += `DTSTAMP:${now}\r\n`;
-
-    calendar += `DTSTART;VALUE=DATE:${formatDateOnly(visit.dueDate)}\r\n`;
-
-    calendar += `SUMMARY:${visit.visit} Vaccination\r\n`;
-
-    calendar += `DESCRIPTION:Vaccines: ${visit.vaccines.join(", ")}\r\n`;
-
-    calendar += "END:VEVENT\r\n";
-   } 
-
+    for (const visit of vaccinations) {
+        calendar += "BEGIN:VEVENT\r\n";
+        calendar += `UID:${child.name}-${visit.id}@babycarecompanion\r\n`;
+        calendar += `DTSTAMP:${now}\r\n`;
+        calendar += `DTSTART;VALUE=DATE:${formatDateOnly(visit.dueDate)}\r\n`;
+        const title =
+            visit.title ??
+            `${visit.visit} Vaccination`;
+        const descriptionLabel =
+            visit.descriptionLabel ??
+            "Vaccines";
+        const items =
+            visit.vaccines ??
+            visit.milestones ??
+            [];
+        calendar += `SUMMARY:${title}\r\n`;
+        calendar += `DESCRIPTION:${descriptionLabel}: ${items.join(", ")}\r\n`;
+        calendar += "END:VEVENT\r\n";
+    }
     calendar += "END:VCALENDAR\r\n";
 
     return calendar;

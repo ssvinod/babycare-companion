@@ -1,21 +1,23 @@
 import { logger } from "../src/core/logger.js";
-import { Child } from "../src/models/child.js";
+//import { Child } from "../src/models/child.js";
+import { loadProfile } from "../src/services/profileService.js";
 import { generateVaccinationPlan } from "../src/services/vaccinationService.js";
 import { formatDate } from "../src/utils/dateUtils.js";
 
-const viha = new Child({
+//const viha = new Child({
+//
+//    name: "Viha",
+//
+//    birthDate: "2026-06-22",
+//
+//    gender: "Female"
+//
+//});
+const child = loadProfile();
 
-    name: "Viha",
+logger.info(`Child : ${child.name}`);
 
-    birthDate: "2026-06-22",
-
-    gender: "Female"
-
-});
-
-logger.info(`Child : ${viha.name}`);
-
-const plan = generateVaccinationPlan(viha);
+const plan = generateVaccinationPlan(child);
 
 for (const visit of plan) {
 
