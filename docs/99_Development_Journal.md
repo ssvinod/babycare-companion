@@ -291,3 +291,28 @@ The core now provides a unified chronological feed of vaccinations and developme
 
 - Export Manager
 - Platform orchestration
+
+# Sprint 2.0
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the Apple Reminders platform adapter.
+
+### Completed
+
+- Apple Reminders adapter
+- Apple Reminder transformation
+- Apple Reminder adapter test script
+- Reused Reminder Service
+- Reused stable Event IDs
+
+### Outcome
+
+Reminder schedules can now be transformed into Apple Reminders-compatible objects. The platform now supports both Apple Calendar and Apple Reminders through reusable adapters.
+
+### Next Sprint
+
+- Upcoming Events service
+- Timeline filtering
+- Notification prioritization

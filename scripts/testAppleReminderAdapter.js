@@ -3,12 +3,9 @@ import { generateVaccinationPlan } from "../src/services/vaccinationService.js";
 import { toAppleReminders } from "../src/platforms/apple/appleReminderAdapter.js";
 
 const child = loadProfile();
+
 const vaccinations = generateVaccinationPlan(child);
 
-console.log(
-    JSON.stringify(
-        toAppleReminders(child, vaccinations),
-        null,
-        4
-    )
-);
+const reminders = toAppleReminders(child, vaccinations);
+
+console.log(JSON.stringify(reminders, null, 4));

@@ -2,18 +2,28 @@ import { createCalendarUID } from "../../services/eventIdService.js";
 
 export function toAppleReminders(child, vaccinations) {
 
-    return vaccinations.map(visit => ({
+    const reminders = [];
 
-        id: createCalendarUID(child, visit),
+    for (const visit of vaccinations) {
 
-        title: visit.title ?? `${visit.visit} Vaccination`,
+        for (const reminderDate of visit.reminders) {
 
-        dueDate: visit.dueDate,
+            reminders.push({
 
-        notes: (visit.vaccines ?? []).join(", "),
+                uid: createCalendarUID(child, visit),
 
-        reminders: visit.reminders
+                title: visit.title ?? `${visit.visit} Vaccination`,
 
-    }));
+                dueDate: reminderDate,
+
+                notes: visit.vaccines.join(", ")
+
+            });
+
+        }
+
+    }
+
+    return reminders;
 
 }
