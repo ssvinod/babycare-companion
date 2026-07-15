@@ -122,7 +122,12 @@ Created:
 - ADR documents
 - Sprint documentation
 
----
+## Dashboard
+
+Implemented:
+
+- Dashboard aggregation service
+- Unified chronological timeline
 
 # Known Limitations
 
