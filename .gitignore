@@ -3,6 +3,7 @@ node_modules/
 .DS_Store
 coverage/
 dist/
+output/
 
 # Family data and local configuration
 src/config/profile.local.json
