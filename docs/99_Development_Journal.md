@@ -369,21 +369,19 @@ The platform now exposes a single normalized timeline containing vaccinations an
 
 ## Objective
 
-Introduce user-managed medical appointments.
+Introduce a recommended Health Visit engine.
 
 ### Completed
 
-- Appointment model
-- Appointment service
-- JSON appointment storage
-- Appointment test script
+- Health Visit schedule
+- Health Visit service
+- Health Visit test script
 
 ### Outcome
 
-The application now supports user-defined appointments, providing the foundation for pediatric visits, follow-up consultations, laboratory tests, and other healthcare events.
+The platform now supports pediatric health visit recommendations independent of vaccinations and development milestones. This provides the foundation for future appointment booking and clinical follow-up tracking.
 
 ### Next Sprint
 
-- Integrate appointments into the Timeline Service
-- Dashboard enhancements
-- Apple Reminders adapter
+- Integrate Health Visits into Timeline Service
+- User Appointment engine
