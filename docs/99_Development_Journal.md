@@ -363,3 +363,27 @@ The platform now exposes a single normalized timeline containing vaccinations an
 - Dashboard refactoring to use Timeline Aggregator
 - Timeline statistics
 - Widget provider
+
+# Sprint 2.3
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce user-managed medical appointments.
+
+### Completed
+
+- Appointment model
+- Appointment service
+- JSON appointment storage
+- Appointment test script
+
+### Outcome
+
+The application now supports user-defined appointments, providing the foundation for pediatric visits, follow-up consultations, laboratory tests, and other healthcare events.
+
+### Next Sprint
+
+- Integrate appointments into the Timeline Service
+- Dashboard enhancements
+- Apple Reminders adapter

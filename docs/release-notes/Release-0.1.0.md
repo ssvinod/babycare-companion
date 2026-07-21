@@ -26,6 +26,7 @@ The primary goal of this milestone is to build the reusable platform-independent
 - Version manager
 - Configuration manager
 - Platform-independent architecture
+- Appointment Service
 
 ## Data Models
 
@@ -35,6 +36,7 @@ Implemented:
 - Vaccine
 - Reminder (initial)
 - Milestone (initial)
+- Appointment
 
 ## Vaccination Engine
 
