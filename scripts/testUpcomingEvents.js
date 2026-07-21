@@ -1,13 +1,10 @@
-import { loadProfile } from "../src/services/profileService.js";
-import { generateTimeline } from "../src/services/timelineService.js";
+import { createApplicationContext } from "../src/services/applicationContext.js";
 import { getUpcomingEvents } from "../src/services/upcomingEventsService.js";
 
-const child = loadProfile();
-
-const timeline = generateTimeline(child);
+const context = createApplicationContext();
 
 const upcoming = getUpcomingEvents(
-    timeline,
+    context,
     new Date("2026-08-01")
 );
 

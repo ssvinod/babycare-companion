@@ -130,6 +130,7 @@ Implemented:
 - Unified chronological timeline
 - Unified Dashboard Service
 - Upcoming Events Service
+- Shared Timeline Aggregator
 
 # Known Limitations
 

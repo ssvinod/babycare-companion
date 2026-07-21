@@ -340,3 +340,26 @@ The platform can now identify the next upcoming vaccinations and development mil
 - Timeline filtering
 - Dashboard statistics
 - Widget data provider
+
+# Sprint 2.2
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce a shared Timeline Aggregator service.
+
+### Completed
+
+- Timeline Aggregator service
+- Timeline Aggregator test script
+- Refactored Upcoming Events service to consume the shared timeline
+
+### Outcome
+
+The platform now exposes a single normalized timeline containing vaccinations and development milestones. This shared timeline becomes the canonical data source for dashboards, widgets, reminders, calendar adapters, and future mobile applications.
+
+### Next Sprint
+
+- Dashboard refactoring to use Timeline Aggregator
+- Timeline statistics
+- Widget provider
