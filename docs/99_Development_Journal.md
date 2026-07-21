@@ -429,3 +429,24 @@ Parents can now associate real appointments with recommended health visits. This
 
 - Appointment Manager
 - Visit completion workflow
+
+# Sprint 2.6
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce a unified Event model for the platform.
+
+### Completed
+
+- Event model
+- Timeline refactored to use Event objects
+- Common event structure for vaccinations, milestones and health visits
+
+### Outcome
+
+All timeline-based services now share a consistent Event object, simplifying dashboards, reminders, widgets, calendar synchronization, and future mobile UI development.
+
+### Next Sprint
+
+- Appointment integration into unified timeline

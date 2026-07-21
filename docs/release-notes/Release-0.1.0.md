@@ -29,6 +29,7 @@ The primary goal of this milestone is to build the reusable platform-independent
 - Health Visit Service
 - Unified Timeline Service
 - Appointment Service
+- Unified Timeline Engine
 
 ## Data Models
 
@@ -40,6 +41,7 @@ Implemented:
 - Milestone (initial)
 - Recommended Health Visit Schedule
 - Appointment
+- Event
 
 ## Vaccination Engine
 
