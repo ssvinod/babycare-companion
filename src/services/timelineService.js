@@ -2,6 +2,7 @@ import { generateVaccinationPlan } from "./vaccinationService.js";
 import { generateMilestonePlan } from "./milestoneService.js";
 import { generateHealthVisitPlan } from "./healthVisitService.js";
 import { Event } from "../models/event.js";
+import { loadAppointments } from "./appointmentService.js";
 
 export function generateTimeline(child) {
 
@@ -35,10 +36,24 @@ export function generateTimeline(child) {
         })
     );
 
+    const appointments = loadAppointments().map(
+        appointment => new Event({
+            id: appointment.id,
+            type: "appointment",
+            title: appointment.title,
+            dueDate: appointment.date,
+            details: [
+                appointment.doctor,
+                appointment.hospital
+            ]
+        })
+    );
+
     return [
         ...vaccinations,
         ...milestones,
-        ...visits
+        ...visits,
+        ...appointments
     ].sort(
         (a, b) => a.dueDate - b.dueDate
     );

@@ -450,3 +450,25 @@ All timeline-based services now share a consistent Event object, simplifying das
 ### Next Sprint
 
 - Appointment integration into unified timeline
+
+# Sprint 2.7
+**Date:** 15-Jul-2026
+
+## Objective
+
+Integrate appointments into the unified timeline.
+
+### Completed
+
+- Appointment timeline integration
+- Chronological event sorting
+- Unified timeline service
+
+### Outcome
+
+Vaccinations, milestones, health visits, and appointments are now merged into a single chronological timeline, providing one consistent source of data for dashboards, calendars, reminders, widgets, and future mobile interfaces.
+
+### Next Sprint
+
+- Timeline filtering
+- Upcoming events dashboard
