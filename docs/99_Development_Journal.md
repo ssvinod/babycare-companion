@@ -316,3 +316,27 @@ Reminder schedules can now be transformed into Apple Reminders-compatible object
 - Upcoming Events service
 - Timeline filtering
 - Notification prioritization
+
+# Sprint 2.1
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the Upcoming Events service.
+
+### Completed
+
+- Upcoming Events Service
+- Upcoming Events test script
+- Chronological event filtering
+- Configurable result limit
+
+### Outcome
+
+The platform can now identify the next upcoming vaccinations and development milestones from the unified timeline. This service will power dashboards, widgets, and notifications.
+
+### Next Sprint
+
+- Timeline filtering
+- Dashboard statistics
+- Widget data provider

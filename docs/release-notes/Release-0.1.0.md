@@ -128,6 +128,8 @@ Implemented:
 
 - Dashboard aggregation service
 - Unified chronological timeline
+- Unified Dashboard Service
+- Upcoming Events Service
 
 # Known Limitations
 
