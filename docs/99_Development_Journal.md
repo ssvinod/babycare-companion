@@ -472,3 +472,25 @@ Vaccinations, milestones, health visits, and appointments are now merged into a 
 
 - Timeline filtering
 - Upcoming events dashboard
+
+# Sprint 2.8
+**Date:** 15-Jul-2026
+
+## Objective
+
+Automatically generate appointments from health visits.
+
+### Completed
+
+- Appointment Generator
+- Automatic appointment creation
+- Timeline integration
+
+### Outcome
+
+Appointments are now derived directly from the health visit schedule, eliminating duplicate maintenance and ensuring every recommended health visit has a corresponding appointment ready for customization.
+
+### Next Sprint
+
+- Appointment persistence
+- Appointment editing

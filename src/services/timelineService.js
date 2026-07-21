@@ -2,7 +2,7 @@ import { generateVaccinationPlan } from "./vaccinationService.js";
 import { generateMilestonePlan } from "./milestoneService.js";
 import { generateHealthVisitPlan } from "./healthVisitService.js";
 import { Event } from "../models/event.js";
-import { loadAppointments } from "./appointmentService.js";
+import { generateAppointments } from "./appointmentGenerator.js";
 
 export function generateTimeline(child) {
 
@@ -36,7 +36,7 @@ export function generateTimeline(child) {
         })
     );
 
-    const appointments = loadAppointments().map(
+    const appointments = generateAppointments(generateHealthVisitPlan(child)).map(
         appointment => new Event({
             id: appointment.id,
             type: "appointment",

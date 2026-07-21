@@ -31,6 +31,7 @@ The primary goal of this milestone is to build the reusable platform-independent
 - Appointment Service
 - Unified Timeline Engine
 - Unified Timeline Service
+- Appointment Generator
 
 ## Data Models
 
