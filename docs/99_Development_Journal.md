@@ -518,3 +518,114 @@ The application can now generate filtered timelines for vaccinations, milestones
 - Timeline search engine
 - Timeline statistics
 - Dashboard widgets
+
+# Sprint 3.0
+**Date:** 15-Jul-2026
+
+## Objective
+
+Lay the foundation for WHO growth analysis.
+
+### Completed
+
+- WHO growth standards configuration (initial dataset)
+- WHO Growth Service
+- Age-at-measurement support (`getAgeOnDate()`)
+
+### Outcome
+
+The application is now capable of evaluating a growth measurement using the child's age on the measurement date instead of the current date, providing the correct foundation for WHO percentile calculations.
+
+### Next Sprint
+
+- Growth analysis service
+- WHO dataset expansion
+
+# Sprint 3.1
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the initial WHO growth percentile engine.
+
+### Completed
+
+- WHO weight reference configuration (initial dataset)
+- Weight percentile calculation service
+- WHO growth test script
+
+### Outcome
+
+The project can now calculate a child's weight percentile against the initial WHO reference dataset, establishing the foundation for comprehensive growth analysis.
+
+### Next Sprint
+
+- Growth analysis service
+- Growth history integration
+- Expand WHO reference datasets
+
+# Sprint 3.2
+**Date:** 15-Jul-2026
+
+## Objective
+
+Analyze recorded growth measurements using WHO percentile references.
+
+### Completed
+
+- Growth Analysis Service
+- Growth Analysis test script
+- Weight percentile integration with growth history
+
+### Outcome
+
+Growth records are now enriched with WHO weight percentile classifications, providing meaningful analysis instead of raw measurements.
+
+### Next Sprint
+
+- Growth trend analysis
+- Growth alerts
+
+# Sprint 3.3
+**Date:** 15-Jul-2026
+
+## Objective
+
+Introduce automatic growth trend detection and health alerts.
+
+### Completed
+
+- Growth Trend Service
+- Growth Alert Service
+- Growth trend test
+- Growth alert test
+
+### Outcome
+
+The application can automatically identify healthy weight gain, weight loss, minimal growth, and generate alerts based on growth analysis.
+
+### Next Sprint
+
+- Growth summary generation
+
+# Sprint 3.4
+**Date:** 15-Jul-2026
+
+## Objective
+
+Generate a consolidated growth summary.
+
+### Completed
+
+- Growth Summary Service
+- Growth summary test
+
+### Outcome
+
+Growth measurements, WHO percentile analysis, trends, and alerts are consolidated into a single summary object ready for dashboards, reports, and mobile applications.
+
+### Next Sprint
+
+- Official WHO reference datasets
+- Growth charts
+- Dashboard enhancements

@@ -83,6 +83,19 @@ Implemented:
 - Milestone generation engine
 - Milestone calendar export
 
+## Growth Tracking
+
+Implemented:
+
+- Growth Record model
+- Growth History persistence
+- WHO Growth Service (initial)
+- Weight percentile engine
+- Growth Analysis Service
+- Growth Trend Service
+- Growth Alert Service
+- Growth Summary Service
+
 ## Platform Adapters
 
 Implemented:
@@ -111,6 +124,10 @@ Implemented:
 - Event ID test
 - Timeline test
 - Application Context test
+- Growth Analysis test
+- Growth Trend test
+- Growth Alert test
+- Growth Summary test
 
 ## Documentation
 
@@ -143,10 +160,15 @@ Implemented:
 
 # Known Limitations
 
+The following modules are planned for future milestones:
+
+- Complete WHO growth datasets
+- Growth charts
+- Dashboard UI
+- Scriptable widgets
+- Apple Calendar synchronization
+- Apple Reminders synchronization
 - Backup & Restore
-- Growth Tracking
-- Appointment Management
-- Dashboard
 - Multi-child support
 
 ---
@@ -157,13 +179,13 @@ v0.2.0-alpha
 
 Planned Features:
 
-- Apple Reminders adapter
-- Growth tracker
-- Appointment manager
-- Dashboard
-- Scriptable widgets
-- Calendar synchronization
-- Multi-child support
+- Complete WHO growth datasets
+- Growth charts
+- Dashboard improvements
+- Appointment intelligence
+- Reminder intelligence
+- Doctor visit reports
+- Mobile-ready APIs
 
 ---
 

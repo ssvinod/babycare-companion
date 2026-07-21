@@ -1,0 +1,18 @@
+[
+    {
+        "childId": "viha",
+        "date": "2026-06-22",
+        "weight": 3.1,
+        "length": 49.5,
+        "headCircumference": 34.2,
+        "notes": "Birth"
+    },
+    {
+        "childId": "viha",
+        "date": "2026-08-03",
+        "weight": 4.4,
+        "length": 54.8,
+        "headCircumference": 37.0,
+        "notes": "6 Week Checkup"
+    }
+]
