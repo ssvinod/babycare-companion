@@ -18,7 +18,7 @@ The primary goal of this milestone is to build the reusable platform-independent
 
 # Features
 
-## Core Framework
+## Core Framework / Services
 
 - Project structure created
 - Node.js development environment configured
@@ -27,6 +27,7 @@ The primary goal of this milestone is to build the reusable platform-independent
 - Configuration manager
 - Platform-independent architecture
 - Health Visit Service
+- Unified Timeline Service
 
 ## Data Models
 

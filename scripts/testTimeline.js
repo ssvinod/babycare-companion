@@ -5,4 +5,10 @@ const child = loadProfile();
 
 const timeline = generateTimeline(child);
 
-console.log(JSON.stringify(timeline, null, 4));
+console.log(
+    JSON.stringify(
+        timeline,
+        null,
+        4
+    )
+);

@@ -385,3 +385,24 @@ The platform now supports pediatric health visit recommendations independent of 
 
 - Integrate Health Visits into Timeline Service
 - User Appointment engine
+
+# Sprint 2.4
+**Date:** 15-Jul-2026
+
+## Objective
+
+Integrate Health Visits into the unified timeline.
+
+### Completed
+
+- Timeline Service updated
+- Health Visit integration
+- Unified chronological event stream
+
+### Outcome
+
+The timeline now combines vaccinations, development milestones, and health visits into a single chronological sequence, providing a unified data source for dashboards, widgets, reminders, and future mobile interfaces.
+
+### Next Sprint
+
+- Appointment Engine
