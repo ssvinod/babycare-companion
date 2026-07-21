@@ -4,13 +4,17 @@ export class Appointment {
 
         id,
 
+        visitId,
+
         title,
 
         date,
 
         doctor = "",
 
-        location = "",
+        hospital = "",
+
+        status = "scheduled",
 
         notes = ""
 
@@ -18,13 +22,17 @@ export class Appointment {
 
         this.id = id;
 
+        this.visitId = visitId;
+
         this.title = title;
 
         this.date = new Date(date);
 
         this.doctor = doctor;
 
-        this.location = location;
+        this.hospital = hospital;
+
+        this.status = status;
 
         this.notes = notes;
 

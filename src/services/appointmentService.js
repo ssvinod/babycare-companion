@@ -7,8 +7,11 @@ export function loadAppointments() {
     const data = JSON.parse(
 
         fs.readFileSync(
+
             "./data/appointments.json",
+
             "utf8"
+
         )
 
     );

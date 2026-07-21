@@ -406,3 +406,26 @@ The timeline now combines vaccinations, development milestones, and health visit
 ### Next Sprint
 
 - Appointment Engine
+
+# Sprint 2.5
+**Date:** 15-Jul-2026
+
+## Objective
+
+Implement the Appointment Engine.
+
+### Completed
+
+- Appointment model
+- Appointment persistence
+- Appointment service
+- Appointment test script
+
+### Outcome
+
+Parents can now associate real appointments with recommended health visits. This lays the foundation for visit completion, doctor history, and reminder synchronization.
+
+### Next Sprint
+
+- Appointment Manager
+- Visit completion workflow

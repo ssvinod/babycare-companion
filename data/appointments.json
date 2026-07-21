@@ -1,10 +1,12 @@
 [
     {
-        "id": "first-checkup",
+        "id": "appt-001",
+        "visitId": "3days",
         "title": "First Pediatric Checkup",
         "date": "2026-07-05",
         "doctor": "Dr. Vindhya",
-        "location": "ABC Children's Clinic",
+        "hospital": "ABC Children's Clinic",
+        "status": "completed",
         "notes": "Weight and feeding review"
     }
 ]
