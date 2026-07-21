@@ -494,3 +494,27 @@ Appointments are now derived directly from the health visit schedule, eliminatin
 
 - Appointment persistence
 - Appointment editing
+
+# Sprint 2.9
+**Date:** 16-Jul-2026
+
+## Objective
+
+Implement reusable timeline filtering.
+
+### Completed
+
+- Timeline Filter Service
+- Timeline Filter test script
+- Filtering by event type
+- Filtering by event status
+
+### Outcome
+
+The application can now generate filtered timelines for vaccinations, milestones, health visits, and future dashboard widgets using a shared service.
+
+### Next Sprint
+
+- Timeline search engine
+- Timeline statistics
+- Dashboard widgets
