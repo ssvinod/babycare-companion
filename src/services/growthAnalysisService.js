@@ -1,4 +1,4 @@
-import { getWeightResult } from "./whoGrowthService.js";
+import { getWeightResult, getLengthResult, getHeadCircumferenceResult } from "./whoGrowthService.js";
 import { getWeightStatus } from "./growthStatusService.js";
 
 export function analyzeGrowth(child, history) {
@@ -8,15 +8,21 @@ export function analyzeGrowth(child, history) {
                 child,
                 record
             );
+        const lengthResult =
+            getLengthResult(
+                child,
+                record
+            );
+        const headResult =
+            getHeadCircumferenceResult(
+                child,
+                record
+            );
 
         return {
             childId: record.childId,
             date: record.date,
             weight: record.weight,
-            length: record.length,
-            headCircumference:
-                record.headCircumference,
-            notes: record.notes,
             weightZScore:
                 weightResult?.zScore ?? null,
             weightPercentile:
@@ -25,10 +31,34 @@ export function analyzeGrowth(child, history) {
                 weightResult?.category ?? null,
             weightStatus:
                 weightResult
-                    ? getWeightStatus(
-                        weightResult.category
-                    )
-                    : null
-        };
+                    ? getWeightStatus(weightResult.category)
+                    : null,
+            length:
+                record.length,
+            lengthZScore:
+                lengthResult?.zScore ?? null,
+            lengthPercentile:
+                lengthResult?.percentile ?? null,
+            lengthCategory:
+                lengthResult?.category ?? null,
+            lengthStatus:
+                lengthResult
+                    ? getWeightStatus(lengthResult.category)
+                    : null,
+            headCircumference:
+                record.headCircumference,
+            headCircumferenceZScore:
+                headResult?.zScore ?? null,
+            headCircumferencePercentile:
+                headResult?.percentile ?? null,
+            headCircumferenceCategory:
+                headResult?.category ?? null,
+            headCircumferenceStatus:
+                headResult
+                    ? getWeightStatus(headResult.category)
+                    : null,
+            notes:
+                record.notes
+        }
     });
 }

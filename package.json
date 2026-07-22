@@ -31,5 +31,8 @@
   },
   "dependencies": {
     "xlsx": "^0.18.5"
+  },
+  "allowScripts": {
+    "canvas@3.2.3": true
   }
 }
