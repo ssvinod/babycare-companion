@@ -1,34 +1,110 @@
-import { WHO_WEIGHT_GIRLS } from "../config/whoWeightGirls0to24.js";
+import { WHO_DATASETS } from "../config/whoDatasets.js";
+import { WhoDatasetEngine } from "../engines/WhoDatasetEngine.js";
+import {
+    calculateZScore,
+    calculatePercentile
+} from "../engines/whoLmsEngine.js";
 
-export function getWeightPercentile(child, growthRecord) {
+const cache = {};
 
-    if (child.gender !== "Female")
+function dataset(indicator, gender) {
+
+    const key = `${indicator}-${gender}`;
+
+    if (!cache[key]) {
+
+        cache[key] = new WhoDatasetEngine(
+            WHO_DATASETS[indicator][gender]
+        );
+
+    }
+
+    return cache[key];
+
+}
+
+export function calculateGrowth(
+    indicator,
+    child,
+    growthRecord,
+    measurement
+) {
+
+    const engine =
+        dataset(
+            indicator,
+            child.gender
+        );
+
+    const row =
+        engine.findByDay(
+            child.getAgeOnDate(
+                growthRecord.date
+            )
+        );
+
+    if (!row)
         return null;
 
-    const ageDays = child.getAgeOnDate(growthRecord.date);
+    const z =
+        calculateZScore(
+            measurement,
+            row.L,
+            row.M,
+            row.S
+        );
 
-    const match = WHO_WEIGHT_GIRLS.find(
-        item => item.ageDays === ageDays
+    const percentile =
+        Number(
+            calculatePercentile(z)
+                .toFixed(1)
+        );
+
+    return {
+
+        zScore:
+            Number(z.toFixed(2)),
+
+        percentile,
+
+        category:
+            classifyPercentile(
+                percentile
+            )
+
+    };
+
+}
+
+export function getWeightResult(
+    child,
+    growthRecord
+) {
+
+    return calculateGrowth(
+        "weightForAge",
+        child,
+        growthRecord,
+        growthRecord.weight
     );
 
-    if (!match)
-        return null;
+}
 
-    const weight = growthRecord.weight;
+function classifyPercentile(percentile) {
 
-    if (weight <= match.p3)
+    if (percentile < 3)
         return "<3rd";
 
-    if (weight <= match.p15)
+    if (percentile < 15)
         return "3rd-15th";
 
-    if (weight <= match.p50)
+    if (percentile < 50)
         return "15th-50th";
 
-    if (weight <= match.p85)
+    if (percentile < 85)
         return "50th-85th";
 
-    if (weight <= match.p97)
+    if (percentile < 97)
         return "85th-97th";
 
     return ">97th";

@@ -158,6 +158,26 @@ Implemented:
 - Upcoming Events Service
 - Shared Timeline Aggregator
 
+## WHO Growth Engine
+
+Added official WHO LMS growth engine.
+
+Implemented:
+
+- WHO workbook importer
+- WHO dataset loader
+- Generic dataset engine
+- LMS Z-score calculator
+- Percentile calculator
+- Weight-for-age
+- Length-for-age
+- Head circumference-for-age
+
+Removed prototype WHO implementation.
+
+Regression:
+27/27 tests passing.
+
 # Known Limitations
 
 The following modules are planned for future milestones:

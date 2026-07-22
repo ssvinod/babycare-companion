@@ -1,6 +1,6 @@
 import { loadProfile } from "../src/services/profileService.js";
 import { GrowthRecord } from "../src/models/GrowthRecord.js";
-import { getWeightPercentile } from "../src/services/whoGrowthService.js";
+import { calculateGrowth } from "../src/services/whoGrowthService.js";
 
 const child = loadProfile();
 
@@ -12,9 +12,30 @@ const record = new GrowthRecord({
     headCircumference: 34
 });
 
-console.log(
-    getWeightPercentile(
-        child,
-        record
-    )
-);
+console.table({
+
+    Weight:
+        calculateGrowth(
+            "weightForAge",
+            child,
+            record,
+            record.weight
+        ),
+
+    Length:
+        calculateGrowth(
+            "lengthForAge",
+            child,
+            record,
+            record.length
+        ),
+
+    HeadCircumference:
+        calculateGrowth(
+            "headCircumference",
+            child,
+            record,
+            record.headCircumference
+        )
+
+});

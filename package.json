@@ -5,14 +5,14 @@
   "description": "Family-owned planning tools for appointments, reminders, and childhood records.",
   "type": "module",
   "scripts": {
-  "dev": "tsx src/index.ts",
-  "build": "tsc",
-  "test": "vitest run",
-  "test:watch": "vitest",
-  "coverage": "vitest run --coverage",
-  "lint": "eslint .",
-  "format": "prettier --write .",
-  "check": "tsc --noEmit"
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "check": "tsc --noEmit"
   },
   "engines": {
     "node": ">=20"
@@ -28,5 +28,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.64.0",
     "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }
