@@ -76,7 +76,7 @@ export function getHeadCircumferenceResult(
     growthRecord
 ) {
     return calculateGrowth(
-        "headCircumferenceForAge",
+        "headCircumference",
         child,
         growthRecord,
         growthRecord.headCircumference
