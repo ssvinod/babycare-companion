@@ -30,6 +30,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "pdfkit": "^0.19.1",
     "xlsx": "^0.18.5"
   },
   "allowScripts": {

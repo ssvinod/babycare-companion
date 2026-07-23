@@ -1,9 +1,8 @@
 import { createApplicationContext }
 from "../src/services/applicationContext.js";
 
-const context =
-    createApplicationContext();
-
 console.table(
-    context.reminders.slice(0,5)
+    createApplicationContext()
+        .reminders
+        .slice(0,5)
 );

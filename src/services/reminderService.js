@@ -1,29 +1,25 @@
-/**
- * Reminder Service
- *
- * Generates reminder dates for planned events.
- */
-
-import { addOffset } from "../utils/dateUtils.js";
-
-export function generateReminders(dueDate) {
-
-    return [
-        {
-            type: "before",
-            days: 7,
-            date: addOffset(dueDate, { days: -7 })
-        },
-        {
-            type: "before",
-            days: 3,
-            date: addOffset(dueDate, { days: -3 })
-        },
-        {
-            type: "due",
-            days: 0,
-            date: dueDate
-        }
-    ];
-
+export function generateReminders(context) {
+    const reminders = [];
+    context.timeline.forEach(event => {
+        reminders.push({
+            id:
+                event.id ??
+                `${event.type}-${event.title}`,
+            title:
+                event.title,
+            dueDate:
+                event.date,
+            category:
+                event.type,
+            completed:
+                event.status ===
+                "completed"
+        });
+    });
+    reminders.sort(
+        (a, b) =>
+            new Date(a.dueDate) -
+            new Date(b.dueDate)
+    );
+    return reminders;
 }

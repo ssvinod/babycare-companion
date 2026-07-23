@@ -1,29 +1,59 @@
-export function generateGrowthAlerts(analysis, trend) {
+export function generateGrowthAlerts(history) {
     const alerts = [];
-    const latest = analysis.at(-1);
-
-    if (!latest)
+    if (!history?.length)
         return alerts;
-
-    if (latest.weightStatus === "Underweight") {
+    const latest =
+        history.at(-1);
+    if (
+        latest.weightCategory === "<3rd"
+    ) {
         alerts.push({
-            severity: "High",
-            message: "Weight is below the 3rd percentile."
+            severity: "high",
+            message:
+                "Weight below 3rd percentile."
         });
     }
-
-    if (trend.trend === "Weight Loss") {
+    if (
+        latest.lengthCategory === "<3rd"
+    ) {
         alerts.push({
-            severity: "High",
-            message: "Weight loss detected."
+            severity: "high",
+            message:
+                "Length below 3rd percentile."
         });
     }
-
-    if (trend.trend === "Stable") {
+    if (
+        latest.headCircumferenceCategory === "<3rd"
+    ) {
         alerts.push({
-            severity: "Medium",
-            message: "Weight gain is minimal."
+            severity: "high",
+            message:
+                "Head circumference below 3rd percentile."
         });
+    }
+    if (history.length >= 2) {
+        const previous =
+            history.at(-2);
+        if (
+            latest.weightPercentile + 15 <
+            previous.weightPercentile
+        ) {
+            alerts.push({
+                severity: "medium",
+                message:
+                    "Weight percentile dropped significantly."
+            });
+        }
+        if (
+            latest.weight >
+            previous.weight
+        ) {
+            alerts.push({
+                severity: "info",
+                message:
+                    "Weight continues to increase."
+            });
+        }
     }
     return alerts;
 }

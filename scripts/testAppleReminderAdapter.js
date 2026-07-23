@@ -1,11 +1,14 @@
-import { loadProfile } from "../src/services/profileService.js";
-import { generateVaccinationPlan } from "../src/services/vaccinationService.js";
-import { toAppleReminders } from "../src/platforms/apple/appleReminderAdapter.js";
+import { createApplicationContext }
+from "../src/services/applicationContext.js";
 
-const child = loadProfile();
+import { toAppleReminders }
+from "../src/platforms/apple/appleReminderAdapter.js";
 
-const vaccinations = generateVaccinationPlan(child);
+const context =
+    createApplicationContext();
 
-const reminders = toAppleReminders(child, vaccinations);
-
-console.log(JSON.stringify(reminders, null, 4));
+console.table(
+    toAppleReminders(
+        context.reminders
+    ).slice(0,5)
+);

@@ -1,9 +1,12 @@
 import { createApplicationContext }
 from "../src/services/applicationContext.js";
 
+import { generateRecommendations }
+from "../src/services/recommendationService.js";
+
 const context =
     createApplicationContext();
 
 console.table(
-    context.reminders.slice(0,5)
+    generateRecommendations(context)
 );
