@@ -1,5 +1,6 @@
 export function generateDashboard(context) {
     const dashboard = [];
+
     for (const visit of context.vaccinations) {
         dashboard.push({
             type: "vaccination",
@@ -8,6 +9,7 @@ export function generateDashboard(context) {
             details: visit.vaccines
         });
     }
+
     for (const milestone of context.milestones) {
         dashboard.push({
             type: "milestone",
@@ -16,8 +18,10 @@ export function generateDashboard(context) {
             details: milestone.milestones
         });
     }
+
     dashboard.sort(
         (a, b) => a.dueDate - b.dueDate
     );
+
     return dashboard;
 }
