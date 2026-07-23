@@ -1,22 +1,30 @@
+import { buildTimelineStatistics } from "./timelineStatisticsService.js";
+import { isPending } from "./eventStatusService.js";
+
 export function buildDashboardSummary(context) {
-    const timeline = context.timeline ?? [];
-    const completed =
-        timeline.filter(e => e.status === "completed");
-    const overdue =
-        timeline.filter(e => e.status === "overdue");
+    const timeline =
+        context.timeline ?? [];
+    const stats =
+        buildTimelineStatistics(timeline);
     const pending =
-        timeline.filter(e => e.status === "pending");
+        timeline.filter(isPending);
     const nextVaccination =
-        pending.find(e => e.type === "vaccination");
+        pending.find(
+            event => event.type === "vaccination"
+        );
     const nextGrowth =
-        pending.find(e => e.type === "growth");
+        pending.find(
+            event => event.type === "growth"
+        );
     return {
         completedCount:
-            completed.length,
+            stats.completed,
         overdueCount:
-            overdue.length,
+            stats.overdue,
         pendingCount:
-            pending.length,
+            stats.pending,
+        completionPercent:
+            stats.completionPercent,
         nextVaccination,
         nextGrowth,
         alerts:
