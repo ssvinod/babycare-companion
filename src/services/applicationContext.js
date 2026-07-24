@@ -14,6 +14,7 @@ import { buildDailyBrief } from "./dailyBriefService.js";
 import { buildBabyStatus } from "./babyStatusService.js";
 import { buildTimelineExportSummary } from "./timelineExportSummaryService.js";
 import { getProjectInfo } from "./versionService.js";
+import { runDiagnostics } from "./applicationDiagnosticsService.js";
 
 export function createApplicationContext() {
     const child = loadProfile();
@@ -76,6 +77,18 @@ export function createApplicationContext() {
             insights,
             recommendations
         });
+    const diagnostics =
+        runDiagnostics({
+            profile: child,
+            timeline,
+            vaccinations,
+            milestones,
+            growth,
+            dashboard,
+            healthScore,
+            recommendations,
+            notifications
+        });
     const project = getProjectInfo();
     return {
         profile: child,
@@ -94,6 +107,7 @@ export function createApplicationContext() {
         timelineSummary,
         babyStatus,
         notifications,
+        diagnostics,
         project,
         appointments: []
     };
