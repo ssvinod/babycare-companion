@@ -5,7 +5,7 @@ export function aggregateTimeline(context) {
     const completion = buildCompletionMap(context);
     context.vaccinations?.forEach(v => {
         timeline.push({
-            id: v.id,
+            id: `vaccination-${v.id}`,
             type: "vaccination",
             title: `${v.visit} Vaccination`,
             date: v.dueDate,
@@ -14,7 +14,7 @@ export function aggregateTimeline(context) {
     });
     context.milestones?.forEach(m => {
         timeline.push({
-            id: m.id,
+            id: `milestone-${m.id}`,
             type: "milestone",
             title: `${m.age} Milestone`,
             date: m.dueDate,
@@ -23,17 +23,17 @@ export function aggregateTimeline(context) {
     });
     context.growth?.forEach(g => {
         timeline.push({
-            id: g.id,
+            id: `growth-${g.id}`,
             type: "growth",
             title: `Growth Measurement (${g.age})`,
             date: g.dueDate,
-            id: g.id,
-            details: g.measurements
+            details: g.measurements,
+            status: g.status
         });
     });
     context.appointments?.forEach(a => {
         timeline.push({
-            id: a.id,
+            id: `appointment-${a.id}`,
             type: "appointment",
             title: a.title,
             date: a.date,

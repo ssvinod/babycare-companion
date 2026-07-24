@@ -11,57 +11,49 @@ import { generateParentInsights } from "./parentInsightsService.js";
 import { generateRecommendations } from "./recommendationEngine.js";
 import { buildNotificationCenter } from "./notificationCenterService.js";
 import { buildDailyBrief } from "./dailyBriefService.js";
+import { buildBabyStatus } from "./babyStatusService.js";
+import { buildTimelineExportSummary } from "./timelineExportSummaryService.js";
+import { getProjectInfo } from "./versionService.js";
 
 export function createApplicationContext() {
-
     const child = loadProfile();
     const history = loadHistory();
-
     const vaccinations =
         generateVaccinationPlan(child);
-
     const milestones =
         generateMilestonePlan(child);
-
     const growth =
         generateGrowthPlan(child);
-
     const timeline =
         aggregateTimeline({
             vaccinations,
             milestones,
             growth
         });
-
     const reminders =
         generateReminders({
             timeline
         });
-
     const dashboard =
         buildDashboardSummary({
             timeline,
             alerts: []
         });
-
     const healthScore =
         calculateHealthScore({
             dashboard,
             alerts: []
         });
-
     const recommendations =
         generateRecommendations({
             dashboard,
             healthScore
         });
-
     const insights =
         generateParentInsights({
             dashboard,
             healthScore
         });
-
     const dailyBrief =
         buildDailyBrief({
             dashboard,
@@ -69,14 +61,22 @@ export function createApplicationContext() {
             recommendations,
             insights
         });
-
+    const timelineSummary =
+        buildTimelineExportSummary(
+            timeline
+        );
+    const babyStatus =
+        buildBabyStatus({
+            dashboard,
+            healthScore
+        });
     const notifications =
         buildNotificationCenter({
             timeline,
             insights,
             recommendations
         });
-
+    const project = getProjectInfo();
     return {
         profile: child,
         history,
@@ -91,7 +91,10 @@ export function createApplicationContext() {
         recommendations,
         insights,
         dailyBrief,
+        timelineSummary,
+        babyStatus,
         notifications,
+        project,
         appointments: []
     };
 }
