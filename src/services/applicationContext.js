@@ -50,11 +50,18 @@ export function createApplicationContext() {
             dashboard,
             healthScore
         });
-    const insights =
+    const parentInsights =
         generateParentInsights({
-            dashboard,
-            healthScore
+            feedings: history.feedings ?? [],
+            sleep: history.sleep ?? [],
+            medications: history.medications ?? [],
+            vaccinations,
+            growth: history.growth ?? []
         });
+    const insights =
+        parentInsights.messages;
+    const insightSummary =
+        parentInsights.summary;
     const dailyBrief =
         buildDailyBrief({
             dashboard,
@@ -103,6 +110,7 @@ export function createApplicationContext() {
         healthScore,
         recommendations,
         insights,
+        insightSummary,
         dailyBrief,
         timelineSummary,
         babyStatus,

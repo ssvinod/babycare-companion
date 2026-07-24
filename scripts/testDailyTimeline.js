@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { createApplicationContext } from "../src/services/applicationContext.js";
 import { buildDailyTimeline } from "../src/services/dailyTimelineService.js";
 

@@ -1,12 +1,11 @@
 import { IAP_SCHEDULE } from "../config/iapSchedule.js";
 import { addOffset } from "../utils/dateUtils.js";
 import { Event } from "../models/event.js";
-
 export function generateVaccinationPlan(child) {
     return IAP_SCHEDULE.map(visit => {
         const dueDate =
             addOffset(
-                child.birthDate,
+                new Date(child.birthDate),
                 visit.offset
             );
         const event =
@@ -18,8 +17,10 @@ export function generateVaccinationPlan(child) {
                 details: visit.vaccines,
                 status: "pending"
             });
-        event.visit = visit.visit;
-        event.vaccines = visit.vaccines;
+        event.visit =
+            visit.visit;
+        event.vaccines =
+            visit.vaccines;
         return event;
     });
 }

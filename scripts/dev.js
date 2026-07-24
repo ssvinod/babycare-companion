@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { logger } from "../src/core/logger.js";
 //import { Child } from "../src/models/child.js";
 import { loadProfile } from "../src/services/profileService.js";

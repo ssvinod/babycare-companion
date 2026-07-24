@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { loadProfile } from "../src/services/profileService.js";
 import { generateTimeline } from "../src/services/timelineService.js";
 import { filterTimeline } from "../src/services/timelineFilterService.js";

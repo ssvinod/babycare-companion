@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { loadProfile } from "../src/services/profileService.js";
 import { GrowthRecord } from "../src/models/GrowthRecord.js";
 import { calculateGrowth } from "../src/services/whoGrowthService.js";

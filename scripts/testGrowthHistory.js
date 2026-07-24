@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { loadGrowthHistory } from "../src/services/growthHistoryService.js";
 
 console.log(

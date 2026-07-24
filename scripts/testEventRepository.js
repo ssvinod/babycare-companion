@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { createApplicationContext } from "../src/services/applicationContext.js";
 import { EventRepository } from "../src/services/eventRepository.js";
 

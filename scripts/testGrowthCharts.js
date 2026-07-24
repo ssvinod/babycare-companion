@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { generateSvgChart }
 from "../src/services/growthChartService.js";
 generateSvgChart({

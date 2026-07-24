@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import fs from "fs";
 
 import { Child } from "../src/models/child.js";

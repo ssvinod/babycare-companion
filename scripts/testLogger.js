@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { logger } from "../src/core/logger.js";
 
 logger.info("BabyCare Companion started.");

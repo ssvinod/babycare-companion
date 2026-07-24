@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { loadProfile } from "../src/services/profileService.js";
 import { generateHealthVisitPlan } from "../src/services/healthVisitService.js";
 
@@ -12,5 +13,4 @@ console.log(
         null,
         4
     )
-
 );

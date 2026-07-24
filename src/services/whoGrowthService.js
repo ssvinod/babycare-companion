@@ -6,11 +6,21 @@ import {
 } from "../engines/whoLmsEngine.js";
 const cache = {};
 function dataset(indicator, gender) {
-    const key = `${indicator}-${gender}`;
+    const normalizedGender =
+        gender.charAt(0).toUpperCase() +
+        gender.slice(1).toLowerCase();
+    const key =
+        `${indicator}-${normalizedGender}`;
     if (!cache[key]) {
-        cache[key] = new WhoDatasetEngine(
-            WHO_DATASETS[indicator][gender]
-        );
+        const file =
+            WHO_DATASETS[indicator]?.[normalizedGender];
+        if (!file) {
+            throw new Error(
+                `WHO dataset not found for ${indicator}/${normalizedGender}`
+            );
+        }
+        cache[key] =
+            new WhoDatasetEngine(file);
     }
     return cache[key];
 }
@@ -20,9 +30,12 @@ export function calculateGrowth(
     growthRecord,
     measurement
 ) {
+    const gender =
+        child.gender.charAt(0).toUpperCase() +
+        child.gender.slice(1).toLowerCase();
     const engine = dataset(
         indicator,
-        child.gender
+        gender
     );
     const row = engine.findByDay(
         child.getAgeOnDate(

@@ -1,9 +1,10 @@
-import { generateDashboard }
-from "../src/services/dashboardService.js";
-const dashboard =
-generateDashboard({
+import { generateDashboard } from "../src/services/dashboardService.js";
+const dashboard = generateDashboard({
     profile: {
-        name: "Viha"
+        id: "baby",
+        name: "Viha",
+        birthDate: "2026-06-22",
+        gender: "female"
     },
     growthSummary: {
         weight: 4.4,
@@ -12,11 +13,14 @@ generateDashboard({
     },
     vaccinations: [
         {
-            completed: true
+            completed: true,
+            visit: "Birth",
+            dueDate: "2026-06-22"
         },
         {
             completed: false,
-            visit: "10 Weeks"
+            visit: "10 Weeks",
+            dueDate: "2026-08-31"
         }
     ],
     appointments: [],
@@ -28,12 +32,16 @@ generateDashboard({
 console.table({
     Child:
         dashboard.profile.name,
+    BirthDate:
+        dashboard.profile.birthDate,
     Weight:
         dashboard.growth.weight,
     Percentile:
         dashboard.growth.weightPercentile,
     NextVaccine:
         dashboard.vaccinations.next.visit,
+    VaccineDue:
+        dashboard.vaccinations.next.dueDate,
     PendingVaccines:
         dashboard.vaccinations.pending
 });

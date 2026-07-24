@@ -1,3 +1,4 @@
+import { shortDate } from "../src/utils/dateFormatter.js";
 import { findDuplicateEventIds } from "../src/services/duplicateService.js";
 
 const events = [
