@@ -4,9 +4,13 @@ export function runMigrations() {
   db.execSync(`
     CREATE TABLE IF NOT EXISTS profile (
       id INTEGER PRIMARY KEY,
-      name TEXT,
-      dob TEXT,
-      gender TEXT
+      name TEXT NOT NULL,
+      birthDate TEXT NOT NULL,
+      gender TEXT NOT NULL,
+      weight REAL,
+      height REAL,
+      bloodGroup TEXT,
+      photo TEXT
     );
 
     CREATE TABLE IF NOT EXISTS feeding (
