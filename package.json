@@ -31,7 +31,8 @@
   },
   "dependencies": {
     "pdfkit": "^0.19.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zustand": "^5.0.14"
   },
   "allowScripts": {
     "canvas@3.2.3": true

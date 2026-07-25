@@ -1,5 +1,5 @@
-import { Redirect } from "expo-router";
+import AppNavigator from "../src/navigation/AppNavigator";
 
-export default function Index() {
-  return <Redirect href="/dashboard" />;
+export default function App() {
+  return <AppNavigator />;
 }
