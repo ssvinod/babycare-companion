@@ -1,5 +1,4 @@
 import { db } from "./database";
-
 export function runMigrations() {
   db.execSync(`
     CREATE TABLE IF NOT EXISTS profile (
@@ -12,7 +11,6 @@ export function runMigrations() {
       bloodGroup TEXT,
       photo TEXT
     );
-
     CREATE TABLE IF NOT EXISTS feeding (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       time TEXT,
@@ -20,35 +18,34 @@ export function runMigrations() {
       quantity INTEGER,
       notes TEXT
     );
-
     CREATE TABLE IF NOT EXISTS sleep (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       startTime TEXT,
       endTime TEXT,
       durationMinutes INTEGER
     );
-
     CREATE TABLE IF NOT EXISTS medication (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       medicine TEXT,
       dosage TEXT,
       completed INTEGER
     );
-
-    CREATE TABLE IF NOT EXISTS growth (
+    DROP TABLE IF EXISTS growth;
+    CREATE TABLE growth (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT,
-      weight REAL,
-      height REAL,
-      percentile INTEGER,
-      status TEXT
+      date TEXT NOT NULL,
+      weight REAL NOT NULL,
+      height REAL NOT NULL,
+      headCircumference REAL,
+      notes TEXT
     );
-
-    CREATE TABLE IF NOT EXISTS vaccination (
+    DROP TABLE IF EXISTS vaccination;
+    CREATE TABLE vaccination (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       vaccine TEXT,
       dueDate TEXT,
-      completed INTEGER
+      completed INTEGER DEFAULT 0,
+      completedDate TEXT
     );
   `);
 }

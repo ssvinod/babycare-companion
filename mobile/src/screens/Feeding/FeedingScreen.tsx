@@ -17,7 +17,12 @@ export default function FeedingScreen({
     loadFeedings,
     deleteFeeding,
   }=useFeedingStore();
-  const { refresh } = useDashboardStore();
+  const {
+    todayFeedings,
+    todayQuantity,
+    lastFeeding,
+    refresh,
+  } = useDashboardStore();
   const groupedFeedings = feedings.reduce(
     (groups: Record<string, typeof feedings>, feeding) => {
       const key = getDateLabel(feeding.time);
@@ -41,6 +46,23 @@ export default function FeedingScreen({
         title="Feeding"
         icon="🍼"
       />
+      <View style={styles.summaryCard}>
+        <Text style={styles.summaryTitle}>
+          Feeding Summary
+        </Text>
+        <View style={styles.summaryRow}>
+          <Text>Today's Feedings</Text>
+          <Text>{todayFeedings}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text>Total Quantity</Text>
+          <Text>{todayQuantity} ml</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text>Last Feeding</Text>
+          <Text>{lastFeeding ?? "--"}</Text>
+        </View>
+      </View>
 
       {Object.entries(groupedFeedings).map(
         ([date, items]) => (
@@ -74,7 +96,37 @@ export default function FeedingScreen({
   );
 }
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
+
+  summaryCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 20,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+  },
+
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
+
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+
   sectionTitle: {
     fontSize: 15,
     fontWeight: "700",
@@ -82,4 +134,5 @@ const styles = StyleSheet.create ({
     marginBottom: 10,
     marginTop: 10,
   },
+
 });

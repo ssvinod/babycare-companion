@@ -82,3 +82,21 @@ Each sprint records:
 - Next Sprint Plan
 
 Major architectural decisions are documented separately as **Architecture Decision Records (ADRs)**.
+
+## Features
+
+✅ Baby Profile
+
+✅ Feeding Tracker
+
+✅ Sleep Tracker
+
+✅ Growth Tracker
+
+✅ Vaccination Tracker
+
+✅ Dashboard
+
+✅ SQLite Offline Storage
+
+✅ Expo + React Native
