@@ -8,6 +8,7 @@ import {
   Alert,
   Pressable,
   ScrollView,
+  SectionList,
   StyleSheet,
   Text,
   View,
@@ -40,6 +41,12 @@ interface FilterOption {
 interface RangeOption {
   label: string;
   value: TimelineRange;
+}
+interface TimelineSection {
+  key: string;
+  title: string;
+  subtitle: string;
+  data: TimelineItem[];
 }
 const FILTERS: FilterOption[] = [
   {
@@ -225,7 +232,7 @@ function emptyStateMessage(
   filter: TimelineFilter,
   range: TimelineRange
 ): string {
-  const selectedRangeLabel =
+  const rangeLabel =
     RANGES.find(
       option =>
         option.value === range
@@ -233,19 +240,198 @@ function emptyStateMessage(
   if (filter === "all") {
     return (
       `No activity was found for ` +
-      `${selectedRangeLabel.toLowerCase()}.`
+      `${rangeLabel.toLowerCase()}.`
     );
   }
-  const selectedFilterLabel =
+  const filterLabel =
     FILTERS.find(
       option =>
         option.value === filter
     )?.label ?? "timeline";
   return (
-    `No ${selectedFilterLabel.toLowerCase()} ` +
-    `records were found for ` +
-    `${selectedRangeLabel.toLowerCase()}.`
+    `No ${filterLabel.toLowerCase()} records ` +
+    `were found for ` +
+    `${rangeLabel.toLowerCase()}.`
   );
+}
+function localDateKey(
+  timestamp: string
+): string | null {
+  const date =
+    new Date(timestamp);
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return null;
+  }
+  const year =
+    date.getFullYear();
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+  const day =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+  return `${year}-${month}-${day}`;
+}
+function dateFromKey(
+  key: string
+): Date {
+  const [
+    year,
+    month,
+    day,
+  ] = key
+    .split("-")
+    .map(Number);
+  return new Date(
+    year,
+    month - 1,
+    day
+  );
+}
+function dayDifference(
+  date: Date
+): number {
+  const today =
+    startOfToday();
+  const target =
+    new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+  return Math.round(
+    (
+      today.getTime() -
+      target.getTime()
+    ) /
+      86400000
+  );
+}
+function sectionTitle(
+  date: Date
+): string {
+  const difference =
+    dayDifference(date);
+  if (difference === 0) {
+    return "Today";
+  }
+  if (difference === 1) {
+    return "Yesterday";
+  }
+  if (
+    difference > 1 &&
+    difference < 7
+  ) {
+    return date.toLocaleDateString(
+      undefined,
+      {
+        weekday: "long",
+      }
+    );
+  }
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day: "numeric",
+      month: "short",
+      year:
+        date.getFullYear() ===
+        new Date().getFullYear()
+          ? undefined
+          : "numeric",
+    }
+  );
+}
+function sectionSubtitle(
+  date: Date
+): string {
+  return date.toLocaleDateString(
+    undefined,
+    {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    }
+  );
+}
+function groupTimelineItems(
+  items: TimelineItem[]
+): TimelineSection[] {
+  const grouped =
+    new Map<
+      string,
+      TimelineItem[]
+    >();
+  items.forEach(item => {
+    const key =
+      localDateKey(
+        item.timestamp
+      );
+    if (!key) {
+      return;
+    }
+    const current =
+      grouped.get(key) ?? [];
+    current.push(item);
+    grouped.set(
+      key,
+      current
+    );
+  });
+  return Array.from(
+    grouped.entries()
+  )
+    .sort(
+      (
+        [firstKey],
+        [secondKey]
+      ) =>
+        dateFromKey(
+          secondKey
+        ).getTime() -
+        dateFromKey(
+          firstKey
+        ).getTime()
+    )
+    .map(
+      (
+        [key, sectionItems]
+      ): TimelineSection => {
+        const date =
+          dateFromKey(key);
+        return {
+          key,
+          title:
+            sectionTitle(date),
+          subtitle:
+            sectionSubtitle(date),
+          data: sectionItems.sort(
+            (
+              first,
+              second
+            ) =>
+              new Date(
+                second.timestamp
+              ).getTime() -
+              new Date(
+                first.timestamp
+              ).getTime()
+          ),
+        };
+      }
+    );
 }
 export default function TimelineScreen() {
   const [items, setItems] =
@@ -387,266 +573,290 @@ export default function TimelineScreen() {
       selectedFilter,
       selectedRange,
     ]);
+  const sections =
+    useMemo(
+      () =>
+        groupTimelineItems(
+          filteredItems
+        ),
+      [filteredItems]
+    );
   const showClearHistory =
     isClearableFilter(
       selectedFilter
     );
-  return (
-    <ScreenLayout>
-      <ScreenTitle
-        title="Timeline"
-        icon="🕒"
-      />
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={
-          false
-        }
-        contentContainerStyle={
-          styles.filterContainer
-        }
-      >
-        {FILTERS.map(
-          filter => {
-            const selected =
-              selectedFilter ===
-              filter.value;
-            return (
-              <Pressable
-                key={
-                  filter.value
-                }
-                disabled={
-                  loading ||
-                  clearing
-                }
-                onPress={() =>
-                  handleFilterChange(
-                    filter.value
-                  )
-                }
-                style={({
-                  pressed,
-                }) => [
-                  styles.filterChip,
-                  selected &&
-                    styles.selectedFilterChip,
-                  pressed &&
-                    styles.chipPressed,
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.filterText,
-                    selected &&
-                      styles.selectedFilterText,
-                  ]}
-                >
-                  {filter.label}
-                </Text>
-              </Pressable>
-            );
-          }
-        )}
-      </ScrollView>
-      <View
-        style={
-          styles.rangeSection
-        }
-      >
-        <Text
-          style={
-            styles.rangeLabel
-          }
-        >
-          Date range
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={
-            false
-          }
-          contentContainerStyle={
-            styles.rangeContainer
-          }
-        >
-          {RANGES.map(
-            range => {
-              const selected =
-                selectedRange ===
-                range.value;
-              return (
-                <Pressable
-                  key={
-                    range.value
-                  }
-                  disabled={
-                    loading ||
-                    clearing
-                  }
-                  onPress={() =>
-                    setSelectedRange(
-                      range.value
-                    )
-                  }
-                  style={({
-                    pressed,
-                  }) => [
-                    styles.rangeChip,
-                    selected &&
-                      styles.selectedRangeChip,
-                    pressed &&
-                      styles.chipPressed,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.rangeText,
+  const renderHeader =
+    useCallback(
+      () => (
+        <View>
+          <ScreenTitle
+            title="Timeline"
+            icon="🕒"
+          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={
+              false
+            }
+            contentContainerStyle={
+              styles.filterContainer
+            }
+          >
+            {FILTERS.map(
+              filter => {
+                const selected =
+                  selectedFilter ===
+                  filter.value;
+                return (
+                  <Pressable
+                    key={
+                      filter.value
+                    }
+                    disabled={
+                      loading ||
+                      clearing
+                    }
+                    onPress={() =>
+                      handleFilterChange(
+                        filter.value
+                      )
+                    }
+                    style={({
+                      pressed,
+                    }) => [
+                      styles.filterChip,
                       selected &&
-                        styles.selectedRangeText,
+                        styles.selectedFilterChip,
+                      pressed &&
+                        styles.chipPressed,
                     ]}
                   >
-                    {range.label}
-                  </Text>
-                </Pressable>
-              );
-            }
-          )}
-        </ScrollView>
-      </View>
-      {showClearHistory ? (
-        <Pressable
-          disabled={
-            clearing ||
-            loading
-          }
-          onPress={
-            clearSelectedHistory
-          }
-          style={({
-            pressed,
-          }) => [
-            styles.clearHistoryRow,
-            pressed &&
-              styles.clearHistoryRowPressed,
-            (clearing ||
-              loading) &&
-              styles.clearHistoryRowDisabled,
-          ]}
-        >
+                    <Text
+                      style={[
+                        styles.filterText,
+                        selected &&
+                          styles.selectedFilterText,
+                      ]}
+                    >
+                      {filter.label}
+                    </Text>
+                  </Pressable>
+                );
+              }
+            )}
+          </ScrollView>
           <View
             style={
-              styles.clearHistoryLeft
+              styles.rangeSection
             }
           >
             <Text
               style={
-                styles.clearHistoryIcon
+                styles.rangeLabel
               }
             >
-              🗑️
+              Date range
             </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={
+                false
+              }
+              contentContainerStyle={
+                styles.rangeContainer
+              }
+            >
+              {RANGES.map(
+                range => {
+                  const selected =
+                    selectedRange ===
+                    range.value;
+                  return (
+                    <Pressable
+                      key={
+                        range.value
+                      }
+                      disabled={
+                        loading ||
+                        clearing
+                      }
+                      onPress={() =>
+                        setSelectedRange(
+                          range.value
+                        )
+                      }
+                      style={({
+                        pressed,
+                      }) => [
+                        styles.rangeChip,
+                        selected &&
+                          styles.selectedRangeChip,
+                        pressed &&
+                          styles.chipPressed,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.rangeText,
+                          selected &&
+                            styles.selectedRangeText,
+                        ]}
+                      >
+                        {range.label}
+                      </Text>
+                    </Pressable>
+                  );
+                }
+              )}
+            </ScrollView>
+          </View>
+          {showClearHistory ? (
+            <Pressable
+              disabled={
+                clearing ||
+                loading
+              }
+              onPress={
+                clearSelectedHistory
+              }
+              style={({
+                pressed,
+              }) => [
+                styles.clearHistoryRow,
+                pressed &&
+                  styles.clearHistoryRowPressed,
+                (clearing ||
+                  loading) &&
+                  styles.clearHistoryRowDisabled,
+              ]}
+            >
+              <View
+                style={
+                  styles.clearHistoryLeft
+                }
+              >
+                <Text
+                  style={
+                    styles.clearHistoryIcon
+                  }
+                >
+                  🗑️
+                </Text>
+                <Text
+                  style={
+                    styles.clearHistoryText
+                  }
+                >
+                  Clear{" "}
+                  {historyName(
+                    selectedFilter
+                  )}{" "}
+                  history
+                </Text>
+              </View>
+              {clearing ? (
+                <ActivityIndicator
+                  size="small"
+                  color="#DC2626"
+                />
+              ) : (
+                <Text
+                  style={
+                    styles.clearHistoryChevron
+                  }
+                >
+                  ›
+                </Text>
+              )}
+            </Pressable>
+          ) : null}
+        </View>
+      ),
+      [
+        selectedFilter,
+        selectedRange,
+        loading,
+        clearing,
+        showClearHistory,
+        handleFilterChange,
+        clearSelectedHistory,
+      ]
+    );
+  const renderEmpty =
+    useCallback(() => {
+      if (loading) {
+        return (
+          <View
+            style={
+              styles.stateCard
+            }
+          >
+            <ActivityIndicator
+              size="large"
+              color="#4F46E5"
+            />
             <Text
               style={
-                styles.clearHistoryText
+                styles.stateText
               }
             >
-              Clear{" "}
-              {historyName(
-                selectedFilter
-              )}{" "}
-              history
+              Loading timeline...
             </Text>
           </View>
-          {clearing ? (
-            <ActivityIndicator
-              size="small"
-              color="#DC2626"
-            />
-          ) : (
-            <Text
-              style={
-                styles.clearHistoryChevron
-              }
-            >
-              ›
-            </Text>
-          )}
-        </Pressable>
-      ) : null}
-      {loading ? (
-        <View
-          style={
-            styles.stateCard
-          }
-        >
-          <ActivityIndicator
-            size="large"
-            color="#4F46E5"
-          />
-          <Text
+        );
+      }
+      if (error) {
+        return (
+          <View
             style={
-              styles.stateText
+              styles.stateCard
             }
-          >
-            Loading timeline...
-          </Text>
-        </View>
-      ) : null}
-      {!loading && error ? (
-        <View
-          style={
-            styles.stateCard
-          }
-        >
-          <Text
-            style={
-              styles.stateIcon
-            }
-          >
-            ⚠️
-          </Text>
-          <Text
-            style={
-              styles.stateTitle
-            }
-          >
-            Timeline unavailable
-          </Text>
-          <Text
-            style={
-              styles.stateText
-            }
-          >
-            {error}
-          </Text>
-          <Pressable
-            disabled={clearing}
-            onPress={() =>
-              void loadTimeline()
-            }
-            style={({
-              pressed,
-            }) => [
-              styles.retryButton,
-              pressed &&
-                styles.retryButtonPressed,
-            ]}
           >
             <Text
               style={
-                styles.retryButtonText
+                styles.stateIcon
               }
             >
-              Try Again
+              ⚠️
             </Text>
-          </Pressable>
-        </View>
-      ) : null}
-      {!loading &&
-      !error &&
-      filteredItems.length ===
-        0 ? (
+            <Text
+              style={
+                styles.stateTitle
+              }
+            >
+              Timeline unavailable
+            </Text>
+            <Text
+              style={
+                styles.stateText
+              }
+            >
+              {error}
+            </Text>
+            <Pressable
+              onPress={() =>
+                void loadTimeline()
+              }
+              style={({
+                pressed,
+              }) => [
+                styles.retryButton,
+                pressed &&
+                  styles.retryButtonPressed,
+              ]}
+            >
+              <Text
+                style={
+                  styles.retryButtonText
+                }
+              >
+                Try Again
+              </Text>
+            </Pressable>
+          </View>
+        );
+      }
+      return (
         <View
           style={
             styles.stateCard
@@ -677,22 +887,116 @@ export default function TimelineScreen() {
             )}
           </Text>
         </View>
-      ) : null}
-      {!loading && !error
-        ? filteredItems.map(
-            item => (
-              <TimelineCard
-                key={item.id}
-                item={item}
-              />
-            )
-          )
-        : null}
+      );
+    }, [
+      loading,
+      error,
+      selectedFilter,
+      selectedRange,
+      loadTimeline,
+    ]);
+  return (
+    <ScreenLayout
+      scroll={false}
+      contentStyle={
+        styles.screenContent
+      }
+    >
+      <SectionList
+        style={styles.list}
+        sections={sections}
+        keyExtractor={
+          item => item.id
+        }
+        renderItem={({
+          item,
+        }) => (
+          <TimelineCard
+            item={item}
+          />
+        )}
+        renderSectionHeader={({
+          section,
+        }) => (
+          <View
+            style={
+              styles.sectionHeader
+            }
+          >
+            <View>
+              <Text
+                style={
+                  styles.sectionTitle
+                }
+              >
+                {section.title}
+              </Text>
+              {section.title !==
+              section.subtitle ? (
+                <Text
+                  style={
+                    styles.sectionSubtitle
+                  }
+                >
+                  {section.subtitle}
+                </Text>
+              ) : null}
+            </View>
+            <View
+              style={
+                styles.sectionCountBadge
+              }
+            >
+              <Text
+                style={
+                  styles.sectionCountText
+                }
+              >
+                {section.data.length}
+              </Text>
+            </View>
+          </View>
+        )}
+        ListHeaderComponent={
+          renderHeader
+        }
+        ListEmptyComponent={
+          renderEmpty
+        }
+        stickySectionHeadersEnabled
+        showsVerticalScrollIndicator={
+          false
+        }
+        contentContainerStyle={
+          styles.listContent
+        }
+        SectionSeparatorComponent={() => (
+          <View
+            style={
+              styles.sectionSeparator
+            }
+          />
+        )}
+        initialNumToRender={12}
+        maxToRenderPerBatch={12}
+        windowSize={8}
+      />
     </ScreenLayout>
   );
 }
 const styles =
   StyleSheet.create({
+    screenContent: {
+      paddingBottom: 0,
+    },
+
+    list: {
+      flex: 1,
+    },
+    listContent: {
+      flexGrow: 1,
+      paddingBottom: 140,
+    },
     filterContainer: {
       paddingBottom: 12,
       paddingRight: 8,
@@ -775,9 +1079,9 @@ const styles =
       opacity: 0.5,
     },
     clearHistoryLeft: {
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      flex: 1,
     },
     clearHistoryIcon: {
       marginRight: 8,
@@ -794,6 +1098,48 @@ const styles =
       lineHeight: 24,
       fontWeight: "500",
       color: "#DC2626",
+    },
+    sectionHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent:
+        "space-between",
+      marginHorizontal: -20,
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 9,
+      backgroundColor:
+        "#EEF2F8",
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: "800",
+      color: "#111827",
+    },
+    sectionSubtitle: {
+      marginTop: 2,
+      fontSize: 12,
+      fontWeight: "600",
+      color: "#6B7280",
+    },
+    sectionCountBadge: {
+      minWidth: 28,
+      height: 28,
+      alignItems: "center",
+      justifyContent:
+        "center",
+      borderRadius: 14,
+      backgroundColor:
+        "#E0E7FF",
+      paddingHorizontal: 8,
+    },
+    sectionCountText: {
+      fontSize: 12,
+      fontWeight: "800",
+      color: "#4338CA",
+    },
+    sectionSeparator: {
+      height: 8,
     },
     stateCard: {
       minHeight: 260,
