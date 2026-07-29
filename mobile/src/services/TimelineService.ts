@@ -69,6 +69,10 @@ function medicationDoseTimestamp(
   }
   return `${dose.scheduledDate}T${dose.scheduledTime}:00`;
 }
+export type ClearableTimelineType =
+  | "feeding"
+  | "sleep"
+  | "medication";
 function vaccinationTimestamp(
   dueDate: string,
   completedDate?: string | null
@@ -93,6 +97,37 @@ function validTimestamp(
   );
 }
 export default class TimelineService {
+  static async clearHistory(
+    type: ClearableTimelineType
+  ): Promise<void> {
+    if (type === "feeding") {
+      db.runSync(`
+        DELETE FROM feeding
+      `);
+      
+      return;
+    }  
+    if (type === "sleep") {
+      /*
+       * Preserve an active sleep session.
+       * Only completed sleep history is removed.
+       */
+      db.runSync(`
+        DELETE FROM sleep
+        WHERE endTime IS NOT NULL
+      `);
+      
+      return;
+    }  
+    /*
+     * Remove dose history only.
+     * Medication prescriptions and reminder
+     * schedules remain untouched.
+     */
+    db.runSync(`
+      DELETE FROM medication_dose
+    `);
+  }
   static async getTimeline(): Promise<
     TimelineItem[]
   > {
@@ -107,10 +142,6 @@ export default class TimelineService {
       growthRepository.getAll(),
       vaccinationRepository.getAll(),
     ]);
-    console.log(
-      "Growth Records:",
-      growthRecords
-    );
     const medicationDoses =
       db.getAllSync<MedicationDoseTimelineRow>(
         `
@@ -221,10 +252,6 @@ export default class TimelineService {
           };
         }
       );
-    console.log(
-      "Growth Timeline:",
-      growthItems
-    );
     const medicationItems:
       TimelineItem[] =
       medicationDoses.map(
