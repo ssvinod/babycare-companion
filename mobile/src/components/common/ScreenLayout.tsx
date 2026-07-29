@@ -11,20 +11,33 @@ import {
 
 interface Props {
   children: ReactNode;
+  scroll?: boolean;
 }
 
 export default function ScreenLayout({
   children,
+  scroll = true,
 }: Props) {
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {children}
-      </ScrollView>
+      {scroll ? (
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
+      ) : (
+        <View
+          style={[
+            styles.container,
+            styles.content,
+          ]}
+        >
+          {children}
+        </View>
+      )}
     </SafeAreaView>
   );
 }

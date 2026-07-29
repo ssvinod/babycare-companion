@@ -3,6 +3,6 @@ export interface Growth {
   date: string;
   weight: number;
   height: number;
-  headCircumference: number;
+  headCircumference: number | null;
   notes?: string | null;
 }

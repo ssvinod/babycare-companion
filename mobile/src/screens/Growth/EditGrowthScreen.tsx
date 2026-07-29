@@ -5,29 +5,61 @@ import {
   Text,
   TextInput,
 } from "react-native";
+import type {
+  ParamListBase,
+} from "@react-navigation/native";
+import type {
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import DateInput from "../../components/common/DateInput";
 import ScreenLayout from "../../components/common/ScreenLayout";
 import ScreenTitle from "../../components/common/ScreenTitle";
 import PrimaryButton from "../../components/common/PrimaryButton";
-import DateInput from "../../components/common/DateInput";
 import { useGrowthStore } from "../../store/GrowthStore";
 import { useDashboardStore } from "../../store/DashboardStore";
-export default function AddGrowthScreen({
+import { Growth } from "../../models/Growth";
+type EditGrowthScreenProps =
+  NativeStackScreenProps<
+    ParamListBase,
+    "EditGrowth"
+  >;
+export default function EditGrowthScreen({
   navigation,
-}: any) {
-  const addGrowth = useGrowthStore(
-    (state) => state.addGrowth
+  route,
+}: EditGrowthScreenProps) {
+  const { growth } =
+    route.params as {
+      growth: Growth;
+    };
+  const updateGrowth = useGrowthStore(
+    (state) => state.updateGrowth
   );
-  const refreshDashboard = useDashboardStore(
-    (state) => state.refresh
+  const refreshDashboard =
+    useDashboardStore(
+      (state) => state.refresh
+    );
+  const [checkupDate, setCheckupDate] =
+    useState(
+      growth.date.slice(0, 10)
+    );
+  const [weight, setWeight] = useState(
+    String(growth.weight)
   );
-  const [checkupDate, setCheckupDate] = useState(
-    new Date().toISOString().slice(0, 10)
+  const [height, setHeight] = useState(
+    String(growth.height)
   );
-  const [weight, setWeight] = useState("");
-  const [height, setHeight] = useState("");
-  const [head, setHead] = useState("");
-  const [notes, setNotes] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [head, setHead] = useState(
+    growth.headCircumference
+      ? String(
+          growth.headCircumference
+        )
+      : ""
+  );
+  const [notes, setNotes] = useState(
+    growth.notes ?? ""
+  );
+  const [saving, setSaving] =
+    useState(false);
   async function save() {
     const parsedWeight = Number(weight);
     const parsedHeight = Number(height);
@@ -68,7 +100,8 @@ export default function AddGrowthScreen({
     }
     try {
       setSaving(true);
-      await addGrowth({
+      await updateGrowth({
+        ...growth,
         date: `${checkupDate}T12:00:00`,
         weight: parsedWeight,
         height: parsedHeight,
@@ -77,8 +110,8 @@ export default function AddGrowthScreen({
       });
       await refreshDashboard();
       Alert.alert(
-        "Growth Saved",
-        "Growth record added successfully.",
+        "Growth Updated",
+        "The growth record was updated successfully.",
         [
           {
             text: "OK",
@@ -89,12 +122,12 @@ export default function AddGrowthScreen({
       );
     } catch (error) {
       console.error(
-        "Failed to save growth record:",
+        "Failed to update growth record:",
         error
       );
       Alert.alert(
-        "Unable to save",
-        "Something went wrong while saving the growth record."
+        "Unable to update",
+        "Something went wrong while updating the growth record."
       );
     } finally {
       setSaving(false);
@@ -103,7 +136,7 @@ export default function AddGrowthScreen({
   return (
     <ScreenLayout>
       <ScreenTitle
-        title="Add Growth"
+        title="Edit Growth"
         icon="📈"
       />
       <Text style={styles.label}>
@@ -160,8 +193,8 @@ export default function AddGrowthScreen({
       <PrimaryButton
         title={
           saving
-            ? "Saving..."
-            : "Save Growth"
+            ? "Updating..."
+            : "Update Growth"
         }
         onPress={() => {
           if (!saving) {

@@ -22,20 +22,60 @@ export default class GrowthRepository {
       `,
       [
         growth.date,
-        growth.weight,
-        growth.height,
-        growth.headCircumference,
+        Number(growth.weight),
+        Number(growth.height),
+        growth.headCircumference === null
+          ? null
+          : Number(growth.headCircumference),
         growth.notes ?? "",
       ]
     );
   }
-  async delete(id:number){
+  async update(growth: Growth): Promise<void> {
+    if (growth.id === undefined) {
+      throw new Error(
+        "Growth record ID is required for update."
+      );
+    }
+    db.runSync(
+      `
+      UPDATE growth
+      SET
+        date = ?,
+        weight = ?,
+        height = ?,
+        headCircumference = ?,
+        notes = ?
+      WHERE id = ?
+      `,
+      [
+        growth.date,
+        Number(growth.weight),
+        Number(growth.height),
+        growth.headCircumference === null
+          ? null
+          : Number(growth.headCircumference),
+        growth.notes ?? "",
+        growth.id,
+      ]
+    );
+  }
+  async delete(id: number): Promise<void> {
     db.runSync(
       `
       DELETE FROM growth
-      WHERE id=?
+      WHERE id = ?
       `,
       [id]
     );
+  }
+  async latest(): Promise<Growth | null> {
+    const row = db.getFirstSync<Growth>(`
+      SELECT *
+      FROM growth
+      ORDER BY date DESC
+      LIMIT 1
+    `);
+    return row ?? null;
   }
 }

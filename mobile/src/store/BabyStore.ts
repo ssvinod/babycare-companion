@@ -19,23 +19,6 @@ export const useBabyStore = create<BabyStore>((set) => ({
     const baby = await repo.getBaby();
     console.log("Loaded Baby:", baby);
     if (baby) {
-      const vaccinationRepo = new VaccinationRepository();
-      const count = await vaccinationRepo.count();
-      console.log("Vaccination Count:", count);
-      if (count === 0) {
-        const schedule = generateVaccinationSchedule(
-          baby.birthDate
-        );
-        console.log(
-          "Generating Vaccines:",
-          schedule.length
-        );
-        await vaccinationRepo.insertMany(schedule);
-        useDashboardStore.getState().refresh();
-        console.log(
-          "Vaccination Schedule Created"
-        );
-      }
       // Refresh dashboard AFTER vaccination generation
       useDashboardStore.getState().refresh();
     }
@@ -48,6 +31,36 @@ export const useBabyStore = create<BabyStore>((set) => ({
     console.log("Saving Baby...");
     const repo = new BabyRepository();
     await repo.saveBaby(baby);
+    const GrowthRepository =
+      (await import("../database/GrowthRepository"))
+        .default;
+    const growthRepo =
+      new GrowthRepository();
+    const latest =
+      await growthRepo.latest();
+
+    const weightChanged =
+      Number(latest?.weight ?? -1) !==
+      Number(baby.weight ?? 0);
+
+    const heightChanged =
+      Number(latest?.height ?? -1) !==
+      Number(baby.height ?? 0);
+
+    if (
+      baby.weight != null &&
+      baby.height != null &&
+      (weightChanged || heightChanged)
+    ) {
+      await growthRepo.insert({
+        date: new Date().toISOString(),
+        weight: baby.weight ?? 0,
+        height: baby.height ?? 0,
+        headCircumference:
+          Number(latest?.headCircumference ?? 0),
+        notes: "Profile Updated",
+      });
+    }
     console.log("Baby Saved");
     const vaccinationRepo =
       new VaccinationRepository();

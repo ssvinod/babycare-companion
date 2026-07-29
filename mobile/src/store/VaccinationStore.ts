@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import VaccinationRepository from "../database/VaccinationRepository";
 import { Vaccination } from "../models/Vaccination";
+import { useDashboardStore } from "./DashboardStore";
 interface VaccinationState {
   vaccines: Vaccination[];
   upcoming: number;
@@ -31,11 +32,13 @@ create<VaccinationState>((set, get) => ({
       new VaccinationRepository();
     await repo.markCompleted(id);
     await get().loadVaccinations();
+    useDashboardStore.getState().refresh();
   },
   async markPending(id) {
     const repo =
       new VaccinationRepository();
     await repo.markPending(id);
     await get().loadVaccinations();
+    useDashboardStore.getState().refresh();
   },
 }));

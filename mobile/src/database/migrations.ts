@@ -1,4 +1,23 @@
 import { db } from "./database";
+function getColumns(tableName: string): string[] {
+  const rows = db.getAllSync<{
+    name: string;
+  }>(`PRAGMA table_info(${tableName});`);
+  return rows.map((row) => row.name);
+}
+function addColumnIfMissing(
+  tableName: string,
+  columnName: string,
+  definition: string
+) {
+  const columns = getColumns(tableName);
+  if (!columns.includes(columnName)) {
+    db.execSync(`
+      ALTER TABLE ${tableName}
+      ADD COLUMN ${columnName} ${definition};
+    `);
+  }
+}
 export function runMigrations() {
   db.execSync(`
     CREATE TABLE IF NOT EXISTS profile (
@@ -26,12 +45,17 @@ export function runMigrations() {
     );
     CREATE TABLE IF NOT EXISTS medication (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      medicine TEXT,
+      medicine TEXT NOT NULL,
       dosage TEXT,
-      completed INTEGER
+      unit TEXT,
+      frequency TEXT,
+      reminderTime TEXT,
+      notes TEXT,
+      completed INTEGER DEFAULT 0,
+      completedAt TEXT,
+      createdAt TEXT NOT NULL
     );
-    DROP TABLE IF EXISTS growth;
-    CREATE TABLE growth (
+    CREATE TABLE IF NOT EXISTS growth (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT NOT NULL,
       weight REAL NOT NULL,
@@ -39,8 +63,7 @@ export function runMigrations() {
       headCircumference REAL,
       notes TEXT
     );
-    DROP TABLE IF EXISTS vaccination;
-    CREATE TABLE vaccination (
+    CREATE TABLE IF NOT EXISTS vaccination (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       vaccine TEXT,
       dueDate TEXT,
@@ -48,4 +71,38 @@ export function runMigrations() {
       completedDate TEXT
     );
   `);
+  /*
+   * Existing installations may already have the older medication table.
+   * Add new columns without deleting existing medication records.
+   */
+  addColumnIfMissing(
+    "medication",
+    "unit",
+    "TEXT"
+  );
+  addColumnIfMissing(
+    "medication",
+    "frequency",
+    "TEXT"
+  );
+  addColumnIfMissing(
+    "medication",
+    "reminderTime",
+    "TEXT"
+  );
+  addColumnIfMissing(
+    "medication",
+    "notes",
+    "TEXT"
+  );
+  addColumnIfMissing(
+    "medication",
+    "completedAt",
+    "TEXT"
+  );
+  addColumnIfMissing(
+    "medication",
+    "createdAt",
+    "TEXT"
+  );
 }
