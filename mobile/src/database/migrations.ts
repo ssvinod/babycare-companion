@@ -1,20 +1,28 @@
 import { db } from "./database";
-function getColumns(tableName: string): string[] {
+function getColumns(
+  tableName: string
+): string[] {
   const rows = db.getAllSync<{
     name: string;
-  }>(`PRAGMA table_info(${tableName});`);
-  return rows.map((row) => row.name);
+  }>(
+    `PRAGMA table_info(${tableName});`
+  );
+  return rows.map(
+    (row) => row.name
+  );
 }
 function addColumnIfMissing(
   tableName: string,
   columnName: string,
   definition: string
 ) {
-  const columns = getColumns(tableName);
+  const columns =
+    getColumns(tableName);
   if (!columns.includes(columnName)) {
     db.execSync(`
       ALTER TABLE ${tableName}
-      ADD COLUMN ${columnName} ${definition};
+      ADD COLUMN ${columnName}
+      ${definition};
     `);
   }
 }
@@ -70,11 +78,48 @@ export function runMigrations() {
       completed INTEGER DEFAULT 0,
       completedDate TEXT
     );
+    CREATE TABLE IF NOT EXISTS medication_dose (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      medicationId INTEGER NOT NULL,
+      scheduledDate TEXT NOT NULL,
+      scheduledTime TEXT NOT NULL,
+      takenAt TEXT,
+      status TEXT NOT NULL
+        DEFAULT 'pending'
+        CHECK (
+          status IN (
+            'pending',
+            'taken',
+            'skipped'
+          )
+        ),
+      notes TEXT,
+      createdAt TEXT NOT NULL,
+      UNIQUE (
+        medicationId,
+        scheduledDate,
+        scheduledTime
+      )
+    );
+    CREATE INDEX IF NOT EXISTS
+      idx_medication_dose_date
+    ON medication_dose (
+      scheduledDate,
+      scheduledTime
+    );
+    CREATE INDEX IF NOT EXISTS
+      idx_medication_dose_medication
+    ON medication_dose (
+      medicationId
+    );
+    CREATE TRIGGER IF NOT EXISTS
+      delete_medication_doses
+    AFTER DELETE ON medication
+    BEGIN
+      DELETE FROM medication_dose
+      WHERE medicationId = OLD.id;
+    END;
   `);
-  /*
-   * Existing installations may already have the older medication table.
-   * Add new columns without deleting existing medication records.
-   */
   addColumnIfMissing(
     "medication",
     "unit",
@@ -105,30 +150,26 @@ export function runMigrations() {
     "createdAt",
     "TEXT"
   );
-    addColumnIfMissing(
+  addColumnIfMissing(
     "medication",
     "reminderTimes",
     "TEXT"
   );
-
   addColumnIfMissing(
     "medication",
     "startDate",
     "TEXT"
   );
-
   addColumnIfMissing(
     "medication",
     "endDate",
     "TEXT"
   );
-
   addColumnIfMissing(
     "medication",
     "remindersEnabled",
     "INTEGER DEFAULT 0"
   );
-
   addColumnIfMissing(
     "medication",
     "notificationIds",

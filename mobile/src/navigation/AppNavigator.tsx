@@ -11,6 +11,7 @@ import BottomTabs from "./BottomTabs";
 import SetupProfileScreen from "../screens/Profile/SetupProfileScreen";
 import EditBabyProfileScreen from "../screens/Profile/EditBabyProfileScreen";
 import AddFeedingScreen from "../screens/Feeding/AddFeedingScreen";
+import FeedingScreen from "../screens/Feeding/FeedingScreen";
 import AddGrowthScreen from "../screens/Growth/AddGrowthScreen";
 import AddMedicationScreen from "../screens/Medication/AddMedicationScreen";
 import GrowthScreen from "../screens/Growth/GrowthScreen";
@@ -19,8 +20,8 @@ import VaccinationScreen from "../screens/Vaccination/VaccinationScreen";
 import SleepScreen from "../screens/Sleep/SleepScreen";
 import MedicationScreen from "../screens/Medication/MedicationScreen";
 import ScanScreen from "../screens/Scan/ScanScreen";
-import { useBabyStore } from "../store/BabyStore";
 import EditMedicationScreen from "../screens/Medication/EditMedicationScreen";
+import { useBabyStore } from "../store/BabyStore";
 const Stack =
   createNativeStackNavigator();
 export default function AppNavigator() {
@@ -40,17 +41,14 @@ export default function AppNavigator() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          animation:
-            "slide_from_right",
+          animation: "slide_from_right",
           gestureEnabled: true,
         }}
       >
         {!baby ? (
           <Stack.Screen
             name="Setup"
-            component={
-              SetupProfileScreen
-            }
+            component={SetupProfileScreen}
           />
         ) : (
           <>
@@ -63,27 +61,23 @@ export default function AppNavigator() {
             />
             <Stack.Screen
               name="EditBabyProfile"
-              component={
-                EditBabyProfileScreen
-              }
+              component={EditBabyProfileScreen}
+            />
+            <Stack.Screen
+              name="FeedingRecords"
+              component={FeedingScreen}
             />
             <Stack.Screen
               name="AddFeeding"
-              component={
-                AddFeedingScreen
-              }
+              component={AddFeedingScreen}
             />
             <Stack.Screen
               name="AddGrowth"
-              component={
-                AddGrowthScreen
-              }
+              component={AddGrowthScreen}
             />
             <Stack.Screen
               name="EditGrowth"
-              component={
-                EditGrowthScreen
-              }
+              component={EditGrowthScreen}
             />
             <Stack.Screen
               name="GrowthHistory"
@@ -95,27 +89,19 @@ export default function AppNavigator() {
             />
             <Stack.Screen
               name="VaccinationDetails"
-              component={
-                VaccinationScreen
-              }
+              component={VaccinationScreen}
             />
             <Stack.Screen
               name="Medication"
-              component={
-                MedicationScreen
-              }
+              component={MedicationScreen}
             />
             <Stack.Screen
               name="AddMedication"
-              component={
-                AddMedicationScreen
-              }
+              component={AddMedicationScreen}
             />
             <Stack.Screen
               name="EditMedication"
-              component={
-                EditMedicationScreen
-              }
+              component={EditMedicationScreen}
             />
             <Stack.Screen
               name="Scan"

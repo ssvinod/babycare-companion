@@ -1,5 +1,7 @@
 import React, {
   useCallback,
+  useMemo,
+  useState,
 } from "react";
 import {
   Alert,
@@ -16,7 +18,11 @@ import ScreenLayout from "../../components/common/ScreenLayout";
 import ScreenTitle from "../../components/common/ScreenTitle";
 import PrimaryButton from "../../components/common/PrimaryButton";
 import { Medication } from "../../models/Medication";
+import { MedicationDose } from "../../models/MedicationDose";
 import { useMedicationStore } from "../../store/MedicationStore";
+import MedicationDoseService, {
+  TodayMedicationDose,
+} from "../../services/MedicationDoseService";
 export default function MedicationScreen() {
   const navigation =
     useNavigation<any>();
@@ -24,15 +30,119 @@ export default function MedicationScreen() {
     medications,
     loading,
     loadMedications,
-    markCompleted,
-    markPending,
     deleteMedication,
   } = useMedicationStore();
+  const [
+    todayDoses,
+    setTodayDoses,
+  ] = useState<TodayMedicationDose[]>(
+    []
+  );
+  const [
+    loadingDoses,
+    setLoadingDoses,
+  ] = useState(false);
+  const [
+    updatingDoseId,
+    setUpdatingDoseId,
+  ] = useState<number | null>(
+    null
+  );
+  const loadScreen = useCallback(
+    async () => {
+      setLoadingDoses(true);
+      try {
+        await loadMedications();
+        const doses =
+          await MedicationDoseService
+            .getTodayDoses();
+        setTodayDoses(doses);
+      } catch (error) {
+        console.error(
+          "Failed to load medication doses:",
+          error
+        );
+        Alert.alert(
+          "Unable to load medication",
+          "Please try again."
+        );
+      } finally {
+        setLoadingDoses(false);
+      }
+    },
+    [loadMedications]
+  );
   useFocusEffect(
     useCallback(() => {
-      loadMedications();
-    }, [loadMedications])
+      loadScreen();
+    }, [loadScreen])
   );
+  const dosesByMedication =
+    useMemo(() => {
+      const grouped =
+        new Map<
+          number,
+          MedicationDose[]
+        >();
+      todayDoses.forEach(
+        ({ dose }) => {
+          const current =
+            grouped.get(
+              dose.medicationId
+            ) ?? [];
+          current.push(dose);
+          grouped.set(
+            dose.medicationId,
+            current
+          );
+        }
+      );
+      return grouped;
+    }, [todayDoses]);
+  async function reloadDoses() {
+    const doses =
+      await MedicationDoseService
+        .getTodayDoses();
+    setTodayDoses(doses);
+  }
+  async function updateDose(
+    dose: MedicationDose,
+    action:
+      | "taken"
+      | "skipped"
+      | "pending"
+  ) {
+    if (!dose.id) {
+      return;
+    }
+    setUpdatingDoseId(dose.id);
+    try {
+      if (action === "taken") {
+        await MedicationDoseService
+          .markTaken(dose.id);
+      } else if (
+        action === "skipped"
+      ) {
+        await MedicationDoseService
+          .markSkipped(dose.id);
+      } else {
+        await MedicationDoseService
+          .markPending(dose.id);
+      }
+      await reloadDoses();
+    } catch (error) {
+      console.error(
+        "Failed to update dose:",
+        error
+      );
+      Alert.alert(
+        "Unable to update dose",
+        "Please try again."
+      );
+    } finally {
+      setUpdatingDoseId(null);
+    }
+  }
   function confirmDelete(
     medication: Medication
   ) {
@@ -41,7 +151,7 @@ export default function MedicationScreen() {
     }
     Alert.alert(
       "Delete medication?",
-      `${medication.medicine} will be permanently removed.`,
+      `${medication.medicine} and its dose history will be permanently removed.`,
       [
         {
           text: "Cancel",
@@ -50,10 +160,12 @@ export default function MedicationScreen() {
         {
           text: "Delete",
           style: "destructive",
-          onPress: () =>
-            deleteMedication(
+          onPress: async () => {
+            await deleteMedication(
               medication.id!
-            ),
+            );
+            await reloadDoses();
+          },
         },
       ]
     );
@@ -73,31 +185,51 @@ export default function MedicationScreen() {
       "Dose not specified"
     );
   }
-  function reminderText(
-    medication: Medication
-  ): string | null {
+  function formatTime(
+    time: string
+  ) {
+    const [
+      hoursText,
+      minutesText,
+    ] = time.split(":");
+    const hours =
+      Number(hoursText);
+    const minutes =
+      Number(minutesText);
     if (
-      medication.reminderTimes
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes)
     ) {
-      try {
-        const parsed = JSON.parse(
-          medication.reminderTimes
-        );
-        if (
-          Array.isArray(parsed) &&
-          parsed.length > 0
-        ) {
-          return parsed.join(", ");
-        }
-      } catch {
-        // Fall back to reminderTime.
-      }
+      return time;
     }
-    return (
-      medication.reminderTime ??
-      null
+    const date = new Date();
+    date.setHours(
+      hours,
+      minutes,
+      0,
+      0
+    );
+    return date.toLocaleTimeString(
+      "en-IN",
+      {
+        hour: "numeric",
+        minute: "2-digit",
+      }
     );
   }
+  function completedDoseCount(
+    doses: MedicationDose[]
+  ) {
+    return doses.filter(
+      (dose) =>
+        dose.status === "taken"
+    ).length;
+  }
+  const activeMedications =
+    medications.filter(
+      (medication) =>
+        medication.completed !== 1
+    );
   return (
     <ScreenLayout>
       <ScreenTitle
@@ -112,43 +244,52 @@ export default function MedicationScreen() {
           )
         }
       />
-      {loading &&
-        medications.length === 0 ? (
-        <Text style={styles.empty}>
-          Loading medications...
+      {loading ||
+      loadingDoses ? (
+        <Text style={styles.loading}>
+          Loading today's medication...
         </Text>
       ) : null}
       {!loading &&
-        medications.length === 0 ? (
+      !loadingDoses &&
+      activeMedications.length ===
+        0 ? (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyIcon}>
             💊
           </Text>
           <Text style={styles.emptyTitle}>
-            No medication added
+            No active medication
           </Text>
           <Text style={styles.emptyText}>
-            Add medicines, doses and reminder times here.
+            Add a medicine and its
+            reminder times to begin
+            tracking each dose.
           </Text>
         </View>
       ) : null}
-      {medications.map(
+      {activeMedications.map(
         (medication) => {
-          const completed =
-            medication.completed === 1;
-          const reminders =
-            reminderText(
-              medication
-            );
+          if (!medication.id) {
+            return null;
+          }
+          const doses =
+            dosesByMedication.get(
+              medication.id
+            ) ?? [];
+          const takenCount =
+            completedDoseCount(doses);
+          const allTaken =
+            doses.length > 0 &&
+            takenCount ===
+              doses.length;
           return (
             <View
-              key={String(
-                medication.id
-              )}
+              key={medication.id}
               style={[
                 styles.card,
-                completed &&
-                styles.completedCard,
+                allTaken &&
+                  styles.completedCard,
               ]}
             >
               <View
@@ -158,16 +299,16 @@ export default function MedicationScreen() {
                   style={styles.titleArea}
                 >
                   <Text
-                    style={[
-                      styles.medicineName,
-                      completed &&
-                      styles.completedName,
-                    ]}
+                    style={
+                      styles.medicineName
+                    }
                   >
-                    {medication.medicine}
+                    {
+                      medication.medicine
+                    }
                   </Text>
                   <Text
-                    style={styles.dose}
+                    style={styles.doseText}
                   >
                     {doseText(
                       medication
@@ -176,23 +317,23 @@ export default function MedicationScreen() {
                 </View>
                 <View
                   style={[
-                    styles.statusBadge,
-                    completed
-                      ? styles.givenBadge
-                      : styles.pendingBadge,
+                    styles.progressBadge,
+                    allTaken
+                      ? styles.completeBadge
+                      : styles.incompleteBadge,
                   ]}
                 >
                   <Text
                     style={[
-                      styles.statusText,
-                      completed
-                        ? styles.givenText
-                        : styles.pendingText,
+                      styles.progressText,
+                      allTaken
+                        ? styles.completeText
+                        : styles.incompleteText,
                     ]}
                   >
-                    {completed
-                      ? "Given"
-                      : "Pending"}
+                    {doses.length > 0
+                      ? `${takenCount}/${doses.length}`
+                      : "No times"}
                   </Text>
                 </View>
               </View>
@@ -201,16 +342,195 @@ export default function MedicationScreen() {
                   style={styles.detail}
                 >
                   🔁{" "}
-                  {medication.frequency}
+                  {
+                    medication.frequency
+                  }
                 </Text>
               ) : null}
-              {reminders ? (
-                <Text
-                  style={styles.detail}
+              <Text
+                style={
+                  styles.todayHeading
+                }
+              >
+                Today's doses
+              </Text>
+              {doses.length === 0 ? (
+                <View
+                  style={
+                    styles.noDoseCard
+                  }
                 >
-                  ⏰ {reminders}
-                </Text>
-              ) : null}
+                  <Text
+                    style={
+                      styles.noDoseText
+                    }
+                  >
+                    No reminder times
+                    configured.
+                  </Text>
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate(
+                        "EditMedication",
+                        {
+                          medication,
+                        }
+                      )
+                    }
+                  >
+                    <Text
+                      style={
+                        styles.addTimesText
+                      }
+                    >
+                      Add reminder times
+                    </Text>
+                  </Pressable>
+                </View>
+              ) : (
+                doses.map((dose) => {
+                  const updating =
+                    updatingDoseId ===
+                    dose.id;
+                  return (
+                    <View
+                      key={dose.id}
+                      style={
+                        styles.doseRow
+                      }
+                    >
+                      <View
+                        style={
+                          styles.doseInfo
+                        }
+                      >
+                        <Text
+                          style={
+                            styles.doseTime
+                          }
+                        >
+                          {formatTime(
+                            dose.scheduledTime
+                          )}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.doseStatus,
+                            dose.status ===
+                              "taken" &&
+                              styles.takenStatus,
+                            dose.status ===
+                              "skipped" &&
+                              styles.skippedStatus,
+                          ]}
+                        >
+                          {dose.status ===
+                          "taken"
+                            ? "Given"
+                            : dose.status ===
+                              "skipped"
+                            ? "Skipped"
+                            : "Pending"}
+                        </Text>
+                        {dose.takenAt ? (
+                          <Text
+                            style={
+                              styles.takenAt
+                            }
+                          >
+                            Given at{" "}
+                            {new Date(
+                              dose.takenAt
+                            ).toLocaleTimeString(
+                              "en-IN",
+                              {
+                                hour:
+                                  "numeric",
+                                minute:
+                                  "2-digit",
+                              }
+                            )}
+                          </Text>
+                        ) : null}
+                      </View>
+                      {dose.status ===
+                      "pending" ? (
+                        <View
+                          style={
+                            styles.doseActions
+                          }
+                        >
+                          <Pressable
+                            disabled={
+                              updating
+                            }
+                            style={
+                              styles.givenButton
+                            }
+                            onPress={() =>
+                              updateDose(
+                                dose,
+                                "taken"
+                              )
+                            }
+                          >
+                            <Text
+                              style={
+                                styles.givenButtonText
+                              }
+                            >
+                              Given
+                            </Text>
+                          </Pressable>
+                          <Pressable
+                            disabled={
+                              updating
+                            }
+                            style={
+                              styles.skipButton
+                            }
+                            onPress={() =>
+                              updateDose(
+                                dose,
+                                "skipped"
+                              )
+                            }
+                          >
+                            <Text
+                              style={
+                                styles.skipButtonText
+                              }
+                            >
+                              Skip
+                            </Text>
+                          </Pressable>
+                        </View>
+                      ) : (
+                        <Pressable
+                          disabled={updating}
+                          style={
+                            styles.undoButton
+                          }
+                          onPress={() =>
+                            updateDose(
+                              dose,
+                              "pending"
+                            )
+                          }
+                        >
+                          <Text
+                            style={
+                              styles.undoButtonText
+                            }
+                          >
+                            Undo
+                          </Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  );
+                })
+              )}
               {medication.notes ? (
                 <Text
                   style={styles.notes}
@@ -218,63 +538,15 @@ export default function MedicationScreen() {
                   {medication.notes}
                 </Text>
               ) : null}
-              {completed &&
-                medication.completedAt ? (
-                <Text
-                  style={
-                    styles.completedAt
-                  }
-                >
-                  Given on{" "}
-                  {new Date(
-                    medication.completedAt
-                  ).toLocaleString(
-                    "en-IN"
-                  )}
-                </Text>
-              ) : null}
               <View
-                style={styles.actions}
+                style={
+                  styles.bottomActions
+                }
               >
                 <Pressable
-                  style={[
-                    styles.actionButton,
-                    completed
-                      ? styles.pendingButton
-                      : styles.givenButton,
-                  ]}
-                  onPress={() => {
-                    if (
-                      !medication.id
-                    ) {
-                      return;
-                    }
-                    if (completed) {
-                      markPending(
-                        medication.id
-                      );
-                    } else {
-                      markCompleted(
-                        medication.id
-                      );
-                    }
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.actionText,
-                      completed
-                        ? styles.pendingButtonText
-                        : styles.givenButtonText,
-                    ]}
-                  >
-                    {completed
-                      ? "Mark Pending"
-                      : "Mark Given"}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={styles.editButton}
+                  style={
+                    styles.editButton
+                  }
                   onPress={() =>
                     navigation.navigate(
                       "EditMedication",
@@ -285,12 +557,13 @@ export default function MedicationScreen() {
                   }
                 >
                   <Text
-                    style={styles.editText}
+                    style={
+                      styles.editText
+                    }
                   >
                     Edit
                   </Text>
                 </Pressable>
-
                 <Pressable
                   style={
                     styles.deleteButton
@@ -317,165 +590,233 @@ export default function MedicationScreen() {
     </ScreenLayout>
   );
 }
-const styles =
-  StyleSheet.create({
-    card: {
-      padding: 18,
-      marginBottom: 14,
-      borderRadius: 18,
-      backgroundColor: "#FFFFFF",
-      borderWidth: 1,
-      borderColor: "#E5E7EB",
-    },
-    completedCard: {
-      backgroundColor: "#F0FDF4",
-      borderColor: "#BBF7D0",
-    },
-    cardHeader: {
-      flexDirection: "row",
-      justifyContent:
-        "space-between",
-      alignItems: "flex-start",
-      gap: 12,
-    },
-    titleArea: {
-      flex: 1,
-    },
-    medicineName: {
-      color: "#111827",
-      fontSize: 19,
-      fontWeight: "800",
-    },
-    completedName: {
-      color: "#166534",
-    },
-    dose: {
-      marginTop: 5,
-      color: "#4B5563",
-      fontSize: 15,
-      fontWeight: "600",
-    },
-    statusBadge: {
-      paddingHorizontal: 11,
-      paddingVertical: 6,
-      borderRadius: 20,
-    },
-    pendingBadge: {
-      backgroundColor: "#FEF3C7",
-    },
-    givenBadge: {
-      backgroundColor: "#DCFCE7",
-    },
-    statusText: {
-      fontSize: 12,
-      fontWeight: "800",
-    },
-    pendingText: {
-      color: "#92400E",
-    },
-    givenText: {
-      color: "#166534",
-    },
-    detail: {
-      marginTop: 12,
-      color: "#374151",
-      fontSize: 15,
-    },
-    notes: {
-      marginTop: 12,
-      padding: 12,
-      borderRadius: 12,
-      backgroundColor: "#F3F4F6",
-      color: "#4B5563",
-      fontSize: 14,
-      lineHeight: 20,
-    },
-    completedAt: {
-      marginTop: 10,
-      color: "#15803D",
-      fontSize: 13,
-      fontWeight: "600",
-    },
-    actions: {
-      flexDirection: "row",
-      marginTop: 16,
-      gap: 10,
-    },
-    actionButton: {
-      flex: 1,
-      minHeight: 45,
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 13,
-    },
-    givenButton: {
-      backgroundColor: "#4F6EF7",
-    },
-    pendingButton: {
-      backgroundColor: "#FEF3C7",
-    },
-    actionText: {
-      fontSize: 14,
-      fontWeight: "800",
-    },
-    givenButtonText: {
-      color: "#FFFFFF",
-    },
-    pendingButtonText: {
-      color: "#92400E",
-    },
-    editButton: {
-      minWidth: 76,
-      minHeight: 45,
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 13,
-      backgroundColor: "#DBEAFE",
-    },
-    editText: {
-      color: "#1D4ED8",
-      fontSize: 14,
-      fontWeight: "800",
-    },
-    deleteButton: {
-      minWidth: 86,
-      minHeight: 45,
-      alignItems: "center",
-      justifyContent: "center",
-      borderRadius: 13,
-      backgroundColor: "#FEE2E2",
-    },
-    deleteText: {
-      color: "#B91C1C",
-      fontSize: 14,
-      fontWeight: "800",
-    },
-    emptyCard: {
-      padding: 28,
-      borderRadius: 20,
-      backgroundColor: "#FFFFFF",
-      alignItems: "center",
-    },
-    emptyIcon: {
-      fontSize: 44,
-      marginBottom: 10,
-    },
-    emptyTitle: {
-      color: "#111827",
-      fontSize: 19,
-      fontWeight: "800",
-    },
-    emptyText: {
-      marginTop: 7,
-      color: "#6B7280",
-      fontSize: 14,
-      lineHeight: 20,
-      textAlign: "center",
-    },
-    empty: {
-      marginTop: 30,
-      color: "#6B7280",
-      fontSize: 16,
-      textAlign: "center",
-    },
-  });
+const styles = StyleSheet.create({
+  loading: {
+    marginTop: 24,
+    color: "#6B7280",
+    fontSize: 15,
+    textAlign: "center",
+  },
+  card: {
+    marginTop: 14,
+    padding: 18,
+    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  completedCard: {
+    backgroundColor: "#F0FDF4",
+    borderColor: "#BBF7D0",
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent:
+      "space-between",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  titleArea: {
+    flex: 1,
+  },
+  medicineName: {
+    color: "#111827",
+    fontSize: 19,
+    fontWeight: "800",
+  },
+  doseText: {
+    marginTop: 5,
+    color: "#4B5563",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  progressBadge: {
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  incompleteBadge: {
+    backgroundColor: "#FEF3C7",
+  },
+  completeBadge: {
+    backgroundColor: "#DCFCE7",
+  },
+  progressText: {
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  incompleteText: {
+    color: "#92400E",
+  },
+  completeText: {
+    color: "#166534",
+  },
+  detail: {
+    marginTop: 12,
+    color: "#374151",
+    fontSize: 15,
+  },
+  todayHeading: {
+    marginTop: 18,
+    marginBottom: 8,
+    color: "#111827",
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  doseRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent:
+      "space-between",
+    gap: 12,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+  },
+  doseInfo: {
+    flex: 1,
+  },
+  doseTime: {
+    color: "#111827",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  doseStatus: {
+    marginTop: 3,
+    color: "#92400E",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  takenStatus: {
+    color: "#15803D",
+  },
+  skippedStatus: {
+    color: "#B91C1C",
+  },
+  takenAt: {
+    marginTop: 3,
+    color: "#6B7280",
+    fontSize: 12,
+  },
+  doseActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  givenButton: {
+    minWidth: 68,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 11,
+    backgroundColor: "#4F6EF7",
+  },
+  givenButtonText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  skipButton: {
+    minWidth: 56,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 11,
+    backgroundColor: "#FEE2E2",
+  },
+  skipButtonText: {
+    color: "#B91C1C",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  undoButton: {
+    minWidth: 62,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 11,
+    backgroundColor: "#E5E7EB",
+  },
+  undoButtonText: {
+    color: "#374151",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  noDoseCard: {
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: "#FFF7ED",
+  },
+  noDoseText: {
+    color: "#9A3412",
+    fontSize: 14,
+  },
+  addTimesText: {
+    marginTop: 7,
+    color: "#1D4ED8",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  notes: {
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: "#F3F4F6",
+    color: "#4B5563",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  bottomActions: {
+    flexDirection: "row",
+    marginTop: 16,
+    gap: 10,
+  },
+  editButton: {
+    flex: 1,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    backgroundColor: "#DBEAFE",
+  },
+  editText: {
+    color: "#1D4ED8",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  deleteButton: {
+    flex: 1,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    backgroundColor: "#FEE2E2",
+  },
+  deleteText: {
+    color: "#B91C1C",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  emptyCard: {
+    marginTop: 18,
+    padding: 28,
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+  },
+  emptyIcon: {
+    marginBottom: 10,
+    fontSize: 44,
+  },
+  emptyTitle: {
+    color: "#111827",
+    fontSize: 19,
+    fontWeight: "800",
+  },
+  emptyText: {
+    marginTop: 7,
+    color: "#6B7280",
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+  },
+});

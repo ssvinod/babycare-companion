@@ -1,11 +1,18 @@
 import { db } from "./database";
+import MedicationDoseService from "../services/MedicationDoseService";
+export type DashboardMedicationStatus =
+  | "pending"
+  | "taken"
+  | "skipped";
 export interface DashboardMedication {
   id: number;
+  medicationId: number;
   medicine: string;
   dosage: string;
   unit: string;
   time: string;
-  completed: number;
+  status: DashboardMedicationStatus;
+  takenAt: string | null;
 }
 export interface DashboardSummary {
   todayFeedings: number;
@@ -30,63 +37,71 @@ function localDateString(): string {
   ).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-function medicationTimes(
-  reminderTimes: string | null,
-  reminderTime: string | null
-): string[] {
-  if (reminderTimes) {
-    try {
-      const parsed = JSON.parse(
-        reminderTimes
-      );
-      if (Array.isArray(parsed)) {
-        return parsed.filter(
-          (value): value is string =>
-            typeof value === "string"
-        );
-      }
-    } catch {
-      // Use legacy reminderTime.
-    }
-  }
-  return reminderTime
-    ? [reminderTime]
-    : [];
+interface FeedingSummaryRow {
+  count: number;
+  quantity: number;
+}
+interface LatestFeedingRow {
+  time: string | null;
+}
+interface LatestGrowthRow {
+  weight: number | null;
+}
+interface VaccineRow {
+  vaccine: string | null;
+  dueDate: string | null;
+}
+interface LatestSleepRow {
+  endTime: string | null;
 }
 export default class DashboardRepository {
-  getSummary(): DashboardSummary {
+  async getSummary(): Promise<
+    DashboardSummary
+  > {
     const today =
       localDateString();
+    /*
+     * Ensure today's medication-dose rows
+     * exist before loading the dashboard.
+     */
+    await MedicationDoseService.ensureDosesForDate(
+      today
+    );
     const feedings =
-      db.getFirstSync<any>(
+      db.getFirstSync<FeedingSummaryRow>(
         `
         SELECT
-          COUNT(*) count,
+          COUNT(*) AS count,
           COALESCE(
             SUM(quantity),
             0
-          ) quantity
+          ) AS quantity
         FROM feeding
         WHERE date(time) = ?
         `,
         [today]
       );
     const latest =
-      db.getFirstSync<any>(`
+      db.getFirstSync<LatestFeedingRow>(
+        `
         SELECT time
         FROM feeding
         ORDER BY time DESC
         LIMIT 1
-      `);
+        `
+      );
     const growth =
-      db.getFirstSync<any>(`
+      db.getFirstSync<LatestGrowthRow>(
+        `
         SELECT weight
         FROM growth
         ORDER BY date DESC
         LIMIT 1
-      `);
+        `
+      );
     const vaccine =
-      db.getFirstSync<any>(`
+      db.getFirstSync<VaccineRow>(
+        `
         SELECT
           vaccine,
           dueDate
@@ -94,14 +109,18 @@ export default class DashboardRepository {
         WHERE completed = 0
         ORDER BY dueDate ASC
         LIMIT 1
-      `);
+        `
+      );
     const latestSleep =
-      db.getFirstSync<any>(`
+      db.getFirstSync<LatestSleepRow>(
+        `
         SELECT endTime
         FROM sleep
+        WHERE endTime IS NOT NULL
         ORDER BY endTime DESC
         LIMIT 1
-      `);
+        `
+      );
     let predictedNap:
       | string
       | null = null;
@@ -109,87 +128,68 @@ export default class DashboardRepository {
       const nap = new Date(
         latestSleep.endTime
       );
-      nap.setHours(
-        nap.getHours() + 2
-      );
-      predictedNap =
-        nap.toISOString();
-    }
-    const medicationRows =
-      db.getAllSync<{
-        id: number;
-        medicine: string;
-        dosage: string | null;
-        unit: string | null;
-        reminderTime:
-          | string
-          | null;
-        reminderTimes:
-          | string
-          | null;
-        startDate:
-          | string
-          | null;
-        endDate:
-          | string
-          | null;
-        completed: number;
-      }>(`
-        SELECT
-          id,
-          medicine,
-          dosage,
-          unit,
-          reminderTime,
-          reminderTimes,
-          startDate,
-          endDate,
-          COALESCE(
-            completed,
-            0
-          ) AS completed
-        FROM medication
-        WHERE
-          COALESCE(
-            remindersEnabled,
-            0
-          ) = 1
-          AND (
-            startDate IS NULL
-            OR startDate = ''
-            OR startDate <= '${today}'
-          )
-          AND (
-            endDate IS NULL
-            OR endDate = ''
-            OR endDate >= '${today}'
-          )
-        ORDER BY medicine ASC
-      `);
-    const todayMedications =
-      medicationRows
-        .flatMap((row) =>
-          medicationTimes(
-            row.reminderTimes,
-            row.reminderTime
-          ).map((time) => ({
-            id: row.id,
-            medicine:
-              row.medicine,
-            dosage:
-              row.dosage ?? "",
-            unit:
-              row.unit ?? "",
-            time,
-            completed:
-              row.completed,
-          }))
+      if (
+        !Number.isNaN(
+          nap.getTime()
         )
-        .sort((first, second) =>
-          first.time.localeCompare(
-            second.time
-          )
+      ) {
+        nap.setHours(
+          nap.getHours() + 2
         );
+        predictedNap =
+          nap.toISOString();
+      }
+    }
+    /*
+     * Read today's individual doses.
+     *
+     * medication.completed is intentionally
+     * not used here. Each dose has its own
+     * status in medication_dose.
+     */
+    const todayMedications =
+      db.getAllSync<DashboardMedication>(
+        `
+        SELECT
+          dose.id AS id,
+          dose.medicationId
+            AS medicationId,
+          medication.medicine
+            AS medicine,
+          COALESCE(
+            medication.dosage,
+            ''
+          ) AS dosage,
+          COALESCE(
+            medication.unit,
+            ''
+          ) AS unit,
+          dose.scheduledTime
+            AS time,
+          CASE
+            WHEN dose.status =
+              'taken'
+              THEN 'taken'
+            WHEN dose.status =
+              'skipped'
+              THEN 'skipped'
+            ELSE 'pending'
+          END AS status,
+          dose.takenAt
+            AS takenAt
+        FROM medication_dose
+          AS dose
+        INNER JOIN medication
+          ON medication.id =
+             dose.medicationId
+        WHERE
+          dose.scheduledDate = ?
+        ORDER BY
+          dose.scheduledTime ASC,
+          dose.id ASC
+        `,
+        [today]
+      );
     return {
       todayFeedings:
         feedings?.count ?? 0,

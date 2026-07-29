@@ -13,7 +13,9 @@ interface DashboardState {
   nextSleepTime: string | null;
   todayMedications:
     DashboardMedication[];
-  refresh: () => void;
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
 }
 export const useDashboardStore =
   create<DashboardState>(
@@ -27,12 +29,36 @@ export const useDashboardStore =
       nextSleep: null,
       nextSleepTime: null,
       todayMedications: [],
-      refresh: () => {
-        const repository =
-          new DashboardRepository();
-        const summary =
-          repository.getSummary();
-        set(summary);
+      loading: false,
+      error: null,
+      refresh: async () => {
+        set({
+          loading: true,
+          error: null,
+        });
+        try {
+          const repository =
+            new DashboardRepository();
+          const summary =
+            await repository.getSummary();
+          set({
+            ...summary,
+            loading: false,
+            error: null,
+          });
+        } catch (error) {
+          console.error(
+            "Failed to refresh dashboard:",
+            error
+          );
+          set({
+            loading: false,
+            error:
+              error instanceof Error
+                ? error.message
+                : "Unable to load dashboard",
+          });
+        }
       },
     })
   );

@@ -42,34 +42,11 @@ export default function SettingsScreen({
         }
       />
       <ProfileRow
-        icon="📈"
-        title="Growth History"
-        subtitle="View weight, height and head-circumference records"
-        onPress={() =>
-          navigation.navigate(
-            "GrowthHistory"
-          )
-        }
-      />
-      <ProfileRow
-        icon="💉"
-        title="Vaccination History"
-        subtitle="View upcoming and completed vaccinations"
-        onPress={() =>
-          navigation.navigate(
-            "VaccinationDetails"
-          )
-        }
-      />
-      <ProfileRow
-        icon="💊"
-        title="Medication"
-        subtitle="Track medicines and dosage information"
-        onPress={() =>
-          navigation.navigate(
-            "Medication"
-          )
-        }
+        icon="🔔"
+        title="Reminder Settings"
+        subtitle="Manage medication and vaccination reminders"
+        disabled
+        showArrow={false}
       />
       <ProfileRow
         icon="💾"
@@ -79,16 +56,30 @@ export default function SettingsScreen({
         showArrow={false}
       />
       <ProfileRow
-        icon="📄"
-        title="Export Health Report"
+        icon="📤"
+        title="Export Data"
         subtitle="Coming soon"
+        disabled
+        showArrow={false}
+      />
+      <ProfileRow
+        icon="🔒"
+        title="Privacy"
+        subtitle="Learn how your baby's data is stored"
+        disabled
+        showArrow={false}
+      />
+      <ProfileRow
+        icon="❓"
+        title="Help"
+        subtitle="Guidance and frequently asked questions"
         disabled
         showArrow={false}
       />
       <ProfileRow
         icon="ℹ️"
         title="About BabyCare Companion"
-        subtitle="App information and version details"
+        subtitle="Version 1.0.0"
         disabled
         showArrow={false}
       />

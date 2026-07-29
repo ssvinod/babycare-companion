@@ -35,13 +35,31 @@ function displayTime(
     }
   );
 }
+function statusLabel(
+  status:
+    | "pending"
+    | "taken"
+    | "skipped"
+): string {
+  if (status === "taken") {
+    return "Given";
+  }
+  if (status === "skipped") {
+    return "Skipped";
+  }
+  return "Pending";
+}
 export default function TimelineWidget() {
   const navigation =
     useNavigation<any>();
   const todayMedications =
     useDashboardStore(
-      (state) =>
+      state =>
         state.todayMedications
+    );
+  const loading =
+    useDashboardStore(
+      state => state.loading
     );
   return (
     <View style={styles.card}>
@@ -61,14 +79,20 @@ export default function TimelineWidget() {
           </Text>
         </Pressable>
       </View>
-      {todayMedications.length ===
-      0 ? (
+      {loading &&
+      todayMedications.length === 0 ? (
         <Text style={styles.empty}>
-          No medication reminders scheduled for today.
+          Loading today's medications...
+        </Text>
+      ) : todayMedications.length ===
+        0 ? (
+        <Text style={styles.empty}>
+          No medication reminders
+          scheduled for today.
         </Text>
       ) : (
         todayMedications.map(
-          (item, index) => {
+          item => {
             const dose = [
               item.dosage,
               item.unit,
@@ -77,7 +101,7 @@ export default function TimelineWidget() {
               .join(" ");
             return (
               <View
-                key={`${item.id}-${item.time}-${index}`}
+                key={item.id}
                 style={styles.row}
               >
                 <Text
@@ -96,17 +120,13 @@ export default function TimelineWidget() {
                   style={styles.details}
                 >
                   <Text
-                    style={
-                      styles.title
-                    }
+                    style={styles.title}
                   >
                     {item.medicine}
                   </Text>
                   {dose ? (
                     <Text
-                      style={
-                        styles.dose
-                      }
+                      style={styles.dose}
                     >
                       {dose}
                     </Text>
@@ -115,25 +135,30 @@ export default function TimelineWidget() {
                 <View
                   style={[
                     styles.status,
-                    item.completed ===
-                    1
+                    item.status ===
+                    "taken"
                       ? styles.givenStatus
-                      : styles.pendingStatus,
+                      : item.status ===
+                          "skipped"
+                        ? styles.skippedStatus
+                        : styles.pendingStatus,
                   ]}
                 >
                   <Text
                     style={[
                       styles.statusText,
-                      item.completed ===
-                      1
+                      item.status ===
+                      "taken"
                         ? styles.givenText
-                        : styles.pendingText,
+                        : item.status ===
+                            "skipped"
+                          ? styles.skippedText
+                          : styles.pendingText,
                     ]}
                   >
-                    {item.completed ===
-                    1
-                      ? "Given"
-                      : "Pending"}
+                    {statusLabel(
+                      item.status
+                    )}
                   </Text>
                 </View>
               </View>
@@ -207,6 +232,9 @@ const styles = StyleSheet.create({
   givenStatus: {
     backgroundColor: "#DCFCE7",
   },
+  skippedStatus: {
+    backgroundColor: "#F3F4F6",
+  },
   statusText: {
     fontSize: 11,
     fontWeight: "800",
@@ -216,6 +244,9 @@ const styles = StyleSheet.create({
   },
   givenText: {
     color: "#166534",
+  },
+  skippedText: {
+    color: "#4B5563",
   },
   empty: {
     color: "#6B7280",
