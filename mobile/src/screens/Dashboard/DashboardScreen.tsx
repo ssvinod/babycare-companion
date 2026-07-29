@@ -1,4 +1,10 @@
-import React, { useEffect } from "react";
+import React, {
+  useCallback,
+  useEffect,
+} from "react";
+import {
+  useFocusEffect,
+} from "@react-navigation/native";
 import ScreenLayout from "../../components/common/ScreenLayout";
 import HeroCard from "../../components/hero/HeroCard";
 import QuickActionGrid from "../../components/widgets/QuickActionGrid";
@@ -41,6 +47,11 @@ export default function DashboardScreen() {
     nextSleepTime,
     refresh,
   } = useDashboardStore();
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
   useEffect(() => {
     async function load() {
       await loadBaby();

@@ -1,5 +1,7 @@
 import { create } from "zustand";
-import DashboardRepository from "../database/DashboardRepository";
+import DashboardRepository, {
+  DashboardMedication,
+} from "../database/DashboardRepository";
 interface DashboardState {
   todayFeedings: number;
   todayQuantity: number;
@@ -9,30 +11,28 @@ interface DashboardState {
   nextVaccineDate: string | null;
   nextSleep: string | null;
   nextSleepTime: string | null;
+  todayMedications:
+    DashboardMedication[];
   refresh: () => void;
 }
-export const useDashboardStore = create<DashboardState>((set) => ({
-  todayFeedings: 0,
-  todayQuantity: 0,
-  lastFeeding: null,
-  latestWeight: null,
-  nextVaccine: null,
-  nextVaccineDate: null,
-  nextSleep: null,
-  nextSleepTime: null,
-  refresh: () => {
-    const repo = new DashboardRepository();
-    const summary = repo.getSummary();
-    console.log("Dashboard Summary:", summary);
-    set({
-      todayFeedings: summary.todayFeedings,
-      todayQuantity: summary.todayQuantity,
-      lastFeeding: summary.lastFeeding,
-      latestWeight: summary.latestWeight,
-      nextVaccine: summary.nextVaccine,
-      nextVaccineDate: summary.nextVaccineDate,
-      nextSleep: summary.nextSleep,
-      nextSleepTime: summary.nextSleepTime,
-    });
-  },
-}));
+export const useDashboardStore =
+  create<DashboardState>(
+    (set) => ({
+      todayFeedings: 0,
+      todayQuantity: 0,
+      lastFeeding: null,
+      latestWeight: null,
+      nextVaccine: null,
+      nextVaccineDate: null,
+      nextSleep: null,
+      nextSleepTime: null,
+      todayMedications: [],
+      refresh: () => {
+        const repository =
+          new DashboardRepository();
+        const summary =
+          repository.getSummary();
+        set(summary);
+      },
+    })
+  );

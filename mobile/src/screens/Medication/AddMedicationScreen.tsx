@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -17,6 +18,7 @@ import {
 } from "react-native-safe-area-context";
 import ScreenTitle from "../../components/common/ScreenTitle";
 import PrimaryButton from "../../components/common/PrimaryButton";
+import DateInput from "../../components/common/DateInput";
 import { useMedicationStore } from "../../store/MedicationStore";
 const UNITS = [
   "ml",
@@ -29,79 +31,113 @@ const FREQUENCIES = [
   "Once",
   "Daily",
   "Twice Daily",
+  "Three Times Daily",
   "Weekly",
   "As Needed",
 ];
+function formatTime(
+  value: string
+): string {
+  const digits = value
+    .replace(/\D/g, "")
+    .slice(0, 4);
+  if (digits.length <= 2) {
+    return digits;
+  }
+  return `${digits.slice(
+    0,
+    2
+  )}:${digits.slice(2)}`;
+}
+function validTime(
+  value: string
+): boolean {
+  const match =
+    /^(\d{2}):(\d{2})$/.exec(
+      value
+    );
+  if (!match) {
+    return false;
+  }
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  return (
+    hour >= 0 &&
+    hour <= 23 &&
+    minute >= 0 &&
+    minute <= 59
+  );
+}
+function requiredTimeCount(
+  frequency: string
+): number {
+  if (
+    frequency === "Twice Daily"
+  ) {
+    return 2;
+  }
+  if (
+    frequency ===
+    "Three Times Daily"
+  ) {
+    return 3;
+  }
+  if (
+    frequency === "As Needed"
+  ) {
+    return 0;
+  }
+  return 1;
+}
 export default function AddMedicationScreen({
   navigation,
 }: any) {
-  const {
-    addMedication,
-  } = useMedicationStore();
+  const addMedication =
+    useMedicationStore(
+      (state) =>
+        state.addMedication
+    );
+  const today = new Date()
+    .toISOString()
+    .slice(0, 10);
+  const [medicine, setMedicine] =
+    useState("");
+  const [dosage, setDosage] =
+    useState("");
+  const [unit, setUnit] =
+    useState("ml");
+  const [frequency, setFrequency] =
+    useState("Daily");
+  const [startDate, setStartDate] =
+    useState(today);
+  const [endDate, setEndDate] =
+    useState("");
+  const [reminderTimes, setReminderTimes] =
+    useState([
+      "08:00",
+      "20:00",
+      "14:00",
+    ]);
   const [
-    medicine,
-    setMedicine,
-  ] = useState("");
-  const [
-    dosage,
-    setDosage,
-  ] = useState("");
-  const [
-    unit,
-    setUnit,
-  ] = useState("ml");
-  const [
-    frequency,
-    setFrequency,
-  ] = useState("Daily");
-  const [
-    reminderTime,
-    setReminderTime,
-  ] = useState("");
-  const [
-    notes,
-    setNotes,
-  ] = useState("");
-  const [
-    saving,
-    setSaving,
-  ] = useState(false);
-  function formatTime(
+    remindersEnabled,
+    setRemindersEnabled,
+  ] = useState(true);
+  const [notes, setNotes] =
+    useState("");
+  const [saving, setSaving] =
+    useState(false);
+  function updateReminderTime(
+    index: number,
     value: string
   ) {
-    const digits = value
-      .replace(/\D/g, "")
-      .slice(0, 4);
-    if (digits.length <= 2) {
-      return digits;
-    }
-    return `${digits.slice(
-      0,
-      2
-    )}:${digits.slice(2)}`;
-  }
-  function validTime(
-    value: string
-  ) {
-    if (!value) {
-      return true;
-    }
-    const match =
-      /^(\d{2}):(\d{2})$/.exec(
-        value
-      );
-    if (!match) {
-      return false;
-    }
-    const hour =
-      Number(match[1]);
-    const minute =
-      Number(match[2]);
-    return (
-      hour >= 0 &&
-      hour <= 23 &&
-      minute >= 0 &&
-      minute <= 59
+    setReminderTimes(
+      (current) =>
+        current.map(
+          (item, itemIndex) =>
+            itemIndex === index
+              ? formatTime(value)
+              : item
+        )
     );
   }
   async function save() {
@@ -114,10 +150,34 @@ export default function AddMedicationScreen({
       );
       return;
     }
-    if (!validTime(reminderTime)) {
+    if (
+      endDate &&
+      endDate < startDate
+    ) {
+      Alert.alert(
+        "Invalid end date",
+        "The end date cannot be before the start date."
+      );
+      return;
+    }
+    const timeCount =
+      requiredTimeCount(
+        frequency
+      );
+    const selectedTimes =
+      reminderTimes.slice(
+        0,
+        timeCount
+      );
+    if (
+      remindersEnabled &&
+      selectedTimes.some(
+        (time) => !validTime(time)
+      )
+    ) {
       Alert.alert(
         "Invalid reminder time",
-        "Use 24-hour HH:MM format. Example: 08:30 or 20:00."
+        "Enter each reminder using 24-hour HH:MM format."
       );
       return;
     }
@@ -129,14 +189,41 @@ export default function AddMedicationScreen({
         dosage: dosage.trim(),
         unit,
         frequency,
-        reminderTime,
+        reminderTime:
+          selectedTimes[0] ?? "",
+        reminderTimes:
+          JSON.stringify(
+            selectedTimes
+          ),
+        startDate,
+        endDate,
+        remindersEnabled:
+          remindersEnabled &&
+          frequency !== "As Needed"
+            ? 1
+            : 0,
+        notificationIds: "[]",
         notes: notes.trim(),
         completed: 0,
         completedAt: null,
         createdAt:
           new Date().toISOString(),
       });
-      navigation.goBack();
+      Alert.alert(
+        "Medication saved",
+        remindersEnabled &&
+          frequency !==
+            "As Needed"
+          ? "The medication and reminders were created."
+          : "The medication was saved.",
+        [
+          {
+            text: "OK",
+            onPress: () =>
+              navigation.goBack(),
+          },
+        ]
+      );
     } catch (error) {
       console.error(
         "Unable to save medication:",
@@ -150,6 +237,8 @@ export default function AddMedicationScreen({
       setSaving(false);
     }
   }
+  const timeCount =
+    requiredTimeCount(frequency);
   return (
     <SafeAreaView
       style={styles.safe}
@@ -167,10 +256,10 @@ export default function AddMedicationScreen({
           contentContainerStyle={
             styles.content
           }
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={
             false
           }
-          keyboardShouldPersistTaps="handled"
         >
           <ScreenTitle
             title="Add Medication"
@@ -202,32 +291,47 @@ export default function AddMedicationScreen({
             Unit
           </Text>
           <View style={styles.chipGrid}>
-            {UNITS.map(
-              (item) => (
-                <Pressable
-                  key={item}
-                  onPress={() =>
-                    setUnit(item)
-                  }
+            {UNITS.map((item) => (
+              <Pressable
+                key={item}
+                onPress={() =>
+                  setUnit(item)
+                }
+                style={[
+                  styles.chip,
+                  unit === item &&
+                    styles.selectedChip,
+                ]}
+              >
+                <Text
                   style={[
-                    styles.chip,
+                    styles.chipText,
                     unit === item &&
-                      styles.selectedChip,
+                      styles.selectedChipText,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      unit === item &&
-                        styles.selectedChipText,
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                </Pressable>
-              )
-            )}
+                  {item}
+                </Text>
+              </Pressable>
+            ))}
           </View>
+          <Text style={styles.label}>
+            Start Date
+          </Text>
+          <DateInput
+            value={startDate}
+            onChange={setStartDate}
+          />
+          <Text style={styles.label}>
+            End Date
+          </Text>
+          <DateInput
+            value={endDate}
+            onChange={setEndDate}
+          />
+          <Text style={styles.helper}>
+            Leave the end date blank for an ongoing medication.
+          </Text>
           <Text style={styles.label}>
             Frequency
           </Text>
@@ -258,25 +362,86 @@ export default function AddMedicationScreen({
               )
             )}
           </View>
-          <Text style={styles.label}>
-            Reminder Time
-          </Text>
-          <TextInput
-            style={styles.input}
-            value={reminderTime}
-            onChangeText={(value) =>
-              setReminderTime(
-                formatTime(value)
-              )
-            }
-            placeholder="HH:MM — example 08:30"
-            placeholderTextColor="#9CA3AF"
-            keyboardType="number-pad"
-            maxLength={5}
-          />
-          <Text style={styles.helper}>
-            Use 24-hour format. Leave blank when no reminder is needed.
-          </Text>
+          {timeCount > 0 ? (
+            <>
+              <View
+                style={
+                  styles.switchRow
+                }
+              >
+                <View style={styles.flex}>
+                  <Text
+                    style={
+                      styles.switchTitle
+                    }
+                  >
+                    Medication reminders
+                  </Text>
+                  <Text
+                    style={styles.helper}
+                  >
+                    Notify me when each dose is due.
+                  </Text>
+                </View>
+                <Switch
+                  value={
+                    remindersEnabled
+                  }
+                  onValueChange={
+                    setRemindersEnabled
+                  }
+                />
+              </View>
+              {remindersEnabled
+                ? reminderTimes
+                    .slice(
+                      0,
+                      timeCount
+                    )
+                    .map(
+                      (
+                        time,
+                        index
+                      ) => (
+                        <View
+                          key={index}
+                        >
+                          <Text
+                            style={
+                              styles.label
+                            }
+                          >
+                            {timeCount ===
+                            1
+                              ? "Reminder Time"
+                              : `Reminder Time ${
+                                  index + 1
+                                }`}
+                          </Text>
+                          <TextInput
+                            style={
+                              styles.input
+                            }
+                            value={time}
+                            onChangeText={(
+                              value
+                            ) =>
+                              updateReminderTime(
+                                index,
+                                value
+                              )
+                            }
+                            placeholder="HH:MM"
+                            placeholderTextColor="#9CA3AF"
+                            keyboardType="number-pad"
+                            maxLength={5}
+                          />
+                        </View>
+                      )
+                    )
+                : null}
+            </>
+          ) : null}
           <Text style={styles.label}>
             Notes
           </Text>
@@ -287,7 +452,7 @@ export default function AddMedicationScreen({
             ]}
             value={notes}
             onChangeText={setNotes}
-            placeholder="Instructions or additional information"
+            placeholder="Example: Give after feeding"
             placeholderTextColor="#9CA3AF"
             multiline
             textAlignVertical="top"
@@ -298,79 +463,96 @@ export default function AddMedicationScreen({
                 ? "Saving..."
                 : "Save Medication"
             }
-            onPress={save}
+            onPress={() => {
+              if (!saving) {
+                void save();
+              }
+            }}
           />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-const styles =
-  StyleSheet.create({
-    safe: {
-      flex: 1,
-      backgroundColor:
-        "#EEF2F8",
-    },
-    flex: {
-      flex: 1,
-    },
-    container: {
-      flex: 1,
-      backgroundColor:
-        "#EEF2F8",
-    },
-    content: {
-      paddingHorizontal: 20,
-      paddingTop: 12,
-      paddingBottom: 80,
-    },
-    label: {
-      marginTop: 18,
-      marginBottom: 8,
-      fontSize: 16,
-      fontWeight: "700",
-      color: "#1F2937",
-    },
-    input: {
-      minHeight: 54,
-      paddingHorizontal: 16,
-      backgroundColor: "#FFFFFF",
-      borderRadius: 16,
-      borderWidth: 1,
-      borderColor: "#E5E7EB",
-      color: "#111827",
-      fontSize: 16,
-    },
-    notesInput: {
-      minHeight: 110,
-      paddingTop: 16,
-    },
-    helper: {
-      marginTop: 7,
-      color: "#6B7280",
-      fontSize: 13,
-      lineHeight: 18,
-    },
-    chipGrid: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      gap: 10,
-    },
-    chip: {
-      paddingHorizontal: 16,
-      paddingVertical: 11,
-      borderRadius: 24,
-      backgroundColor: "#E5E7EB",
-    },
-    selectedChip: {
-      backgroundColor: "#4F6EF7",
-    },
-    chipText: {
-      color: "#374151",
-      fontWeight: "600",
-    },
-    selectedChipText: {
-      color: "#FFFFFF",
-    },
-  });
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#EEF2F8",
+  },
+  flex: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#EEF2F8",
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 80,
+  },
+  label: {
+    marginTop: 18,
+    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1F2937",
+  },
+  input: {
+    minHeight: 54,
+    paddingHorizontal: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    fontSize: 17,
+    color: "#111827",
+  },
+  notesInput: {
+    minHeight: 110,
+    paddingTop: 16,
+  },
+  helper: {
+    marginTop: 6,
+    color: "#6B7280",
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  chipGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+  },
+  selectedChip: {
+    backgroundColor: "#2563EB",
+    borderColor: "#2563EB",
+  },
+  chipText: {
+    color: "#374151",
+    fontWeight: "600",
+  },
+  selectedChipText: {
+    color: "#FFFFFF",
+  },
+  switchRow: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+  },
+  switchTitle: {
+    color: "#111827",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+});

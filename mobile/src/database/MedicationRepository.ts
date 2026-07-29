@@ -1,7 +1,9 @@
 import { db } from "./database";
 import { Medication } from "../models/Medication";
 export default class MedicationRepository {
-  async getAll(): Promise<Medication[]> {
+  async getAll(): Promise<
+    Medication[]
+  > {
     return db.getAllSync<Medication>(`
       SELECT
         id,
@@ -10,15 +12,31 @@ export default class MedicationRepository {
         unit,
         frequency,
         reminderTime,
+        reminderTimes,
+        startDate,
+        endDate,
+        COALESCE(
+          remindersEnabled,
+          0
+        ) AS remindersEnabled,
+        notificationIds,
         notes,
-        COALESCE(completed, 0) AS completed,
+        COALESCE(
+          completed,
+          0
+        ) AS completed,
         completedAt,
-        COALESCE(createdAt, '') AS createdAt
+        COALESCE(
+          createdAt,
+          ''
+        ) AS createdAt
       FROM medication
       ORDER BY
         completed ASC,
         CASE
-          WHEN reminderTime IS NULL OR reminderTime = ''
+          WHEN
+            reminderTime IS NULL
+            OR reminderTime = ''
           THEN 1
           ELSE 0
         END,
@@ -26,10 +44,51 @@ export default class MedicationRepository {
         id DESC
     `);
   }
+  async getById(
+    id: number
+  ): Promise<Medication | null> {
+    return (
+      db.getFirstSync<Medication>(
+        `
+        SELECT
+          id,
+          medicine,
+          dosage,
+          unit,
+          frequency,
+          reminderTime,
+          reminderTimes,
+          startDate,
+          endDate,
+          COALESCE(
+            remindersEnabled,
+            0
+          ) AS remindersEnabled,
+          notificationIds,
+          notes,
+          COALESCE(
+            completed,
+            0
+          ) AS completed,
+          completedAt,
+          COALESCE(
+            createdAt,
+            ''
+          ) AS createdAt
+        FROM medication
+        WHERE id = ?
+        `,
+        [id]
+      ) ?? null
+    );
+  }
   async insert(
-    medication: Medication
-  ): Promise<void> {
-    db.runSync(
+    medication: Omit<
+      Medication,
+      "id"
+    >
+  ): Promise<number> {
+    const result = db.runSync(
       `
       INSERT INTO medication (
         medicine,
@@ -37,12 +96,20 @@ export default class MedicationRepository {
         unit,
         frequency,
         reminderTime,
+        reminderTimes,
+        startDate,
+        endDate,
+        remindersEnabled,
+        notificationIds,
         notes,
         completed,
         completedAt,
         createdAt
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (
+        ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?
+      )
       `,
       [
         medication.medicine,
@@ -50,10 +117,39 @@ export default class MedicationRepository {
         medication.unit ?? "",
         medication.frequency ?? "",
         medication.reminderTime ?? "",
+        medication.reminderTimes ??
+          "[]",
+        medication.startDate ?? "",
+        medication.endDate ?? "",
+        medication.remindersEnabled ??
+          0,
+        medication.notificationIds ??
+          "[]",
         medication.notes ?? "",
         medication.completed,
         medication.completedAt ?? null,
         medication.createdAt,
+      ]
+    );
+    return Number(
+      result.lastInsertRowId
+    );
+  }
+  async updateNotificationIds(
+    id: number,
+    notificationIds: string[]
+  ): Promise<void> {
+    db.runSync(
+      `
+      UPDATE medication
+      SET notificationIds = ?
+      WHERE id = ?
+      `,
+      [
+        JSON.stringify(
+          notificationIds
+        ),
+        id,
       ]
     );
   }

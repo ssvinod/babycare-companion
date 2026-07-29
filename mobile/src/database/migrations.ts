@@ -105,4 +105,33 @@ export function runMigrations() {
     "createdAt",
     "TEXT"
   );
+    addColumnIfMissing(
+    "medication",
+    "reminderTimes",
+    "TEXT"
+  );
+
+  addColumnIfMissing(
+    "medication",
+    "startDate",
+    "TEXT"
+  );
+
+  addColumnIfMissing(
+    "medication",
+    "endDate",
+    "TEXT"
+  );
+
+  addColumnIfMissing(
+    "medication",
+    "remindersEnabled",
+    "INTEGER DEFAULT 0"
+  );
+
+  addColumnIfMissing(
+    "medication",
+    "notificationIds",
+    "TEXT"
+  );
 }

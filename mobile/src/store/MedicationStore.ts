@@ -1,10 +1,15 @@
 import { create } from "zustand";
 import { Medication } from "../models/Medication";
 import MedicationRepository from "../database/MedicationRepository";
+import {
+  cancelMedicationNotifications,
+  scheduleMedicationNotifications,
+} from "../services/MedicationNotificationService";
 interface MedicationState {
   medications: Medication[];
   loading: boolean;
-  loadMedications: () => Promise<void>;
+  loadMedications:
+    () => Promise<void>;
   addMedication: (
     medication: Omit<
       Medication,
@@ -52,9 +57,24 @@ export const useMedicationStore =
         },
       addMedication:
         async (medication) => {
-          await repository.insert(
-            medication
-          );
+          const id =
+            await repository.insert(
+              medication
+            );
+          const savedMedication =
+            await repository.getById(
+              id
+            );
+          if (savedMedication) {
+            const notificationIds =
+              await scheduleMedicationNotifications(
+                savedMedication
+              );
+            await repository.updateNotificationIds(
+              id,
+              notificationIds
+            );
+          }
           await get().loadMedications();
         },
       markCompleted:
@@ -73,6 +93,15 @@ export const useMedicationStore =
         },
       deleteMedication:
         async (id) => {
+          const medication =
+            await repository.getById(
+              id
+            );
+          if (medication) {
+            await cancelMedicationNotifications(
+              medication.notificationIds
+            );
+          }
           await repository.delete(id);
           await get().loadMedications();
         },
