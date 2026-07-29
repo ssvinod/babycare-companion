@@ -73,6 +73,31 @@ export default function MedicationScreen() {
       "Dose not specified"
     );
   }
+  function reminderText(
+    medication: Medication
+  ): string | null {
+    if (
+      medication.reminderTimes
+    ) {
+      try {
+        const parsed = JSON.parse(
+          medication.reminderTimes
+        );
+        if (
+          Array.isArray(parsed) &&
+          parsed.length > 0
+        ) {
+          return parsed.join(", ");
+        }
+      } catch {
+        // Fall back to reminderTime.
+      }
+    }
+    return (
+      medication.reminderTime ??
+      null
+    );
+  }
   return (
     <ScreenLayout>
       <ScreenTitle
@@ -88,13 +113,13 @@ export default function MedicationScreen() {
         }
       />
       {loading &&
-      medications.length === 0 ? (
+        medications.length === 0 ? (
         <Text style={styles.empty}>
           Loading medications...
         </Text>
       ) : null}
       {!loading &&
-      medications.length === 0 ? (
+        medications.length === 0 ? (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyIcon}>
             💊
@@ -111,6 +136,10 @@ export default function MedicationScreen() {
         (medication) => {
           const completed =
             medication.completed === 1;
+          const reminders =
+            reminderText(
+              medication
+            );
           return (
             <View
               key={String(
@@ -119,7 +148,7 @@ export default function MedicationScreen() {
               style={[
                 styles.card,
                 completed &&
-                  styles.completedCard,
+                styles.completedCard,
               ]}
             >
               <View
@@ -132,7 +161,7 @@ export default function MedicationScreen() {
                     style={[
                       styles.medicineName,
                       completed &&
-                        styles.completedName,
+                      styles.completedName,
                     ]}
                   >
                     {medication.medicine}
@@ -175,12 +204,11 @@ export default function MedicationScreen() {
                   {medication.frequency}
                 </Text>
               ) : null}
-              {medication.reminderTime ? (
+              {reminders ? (
                 <Text
                   style={styles.detail}
                 >
-                  ⏰{" "}
-                  {medication.reminderTime}
+                  ⏰ {reminders}
                 </Text>
               ) : null}
               {medication.notes ? (
@@ -191,7 +219,7 @@ export default function MedicationScreen() {
                 </Text>
               ) : null}
               {completed &&
-              medication.completedAt ? (
+                medication.completedAt ? (
                 <Text
                   style={
                     styles.completedAt
@@ -245,6 +273,24 @@ export default function MedicationScreen() {
                       : "Mark Given"}
                   </Text>
                 </Pressable>
+                <Pressable
+                  style={styles.editButton}
+                  onPress={() =>
+                    navigation.navigate(
+                      "EditMedication",
+                      {
+                        medication,
+                      }
+                    )
+                  }
+                >
+                  <Text
+                    style={styles.editText}
+                  >
+                    Edit
+                  </Text>
+                </Pressable>
+
                 <Pressable
                   style={
                     styles.deleteButton
@@ -377,6 +423,19 @@ const styles =
     },
     pendingButtonText: {
       color: "#92400E",
+    },
+    editButton: {
+      minWidth: 76,
+      minHeight: 45,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 13,
+      backgroundColor: "#DBEAFE",
+    },
+    editText: {
+      color: "#1D4ED8",
+      fontSize: 14,
+      fontWeight: "800",
     },
     deleteButton: {
       minWidth: 86,

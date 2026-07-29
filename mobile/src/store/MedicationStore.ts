@@ -9,12 +9,15 @@ interface MedicationState {
   medications: Medication[];
   loading: boolean;
   loadMedications:
-    () => Promise<void>;
+  () => Promise<void>;
   addMedication: (
     medication: Omit<
       Medication,
       "id"
     >
+  ) => Promise<void>;
+  updateMedication: (
+    medication: Medication
   ) => Promise<void>;
   markCompleted: (
     id: number
@@ -72,6 +75,42 @@ export const useMedicationStore =
               );
             await repository.updateNotificationIds(
               id,
+              notificationIds
+            );
+          }
+          await get().loadMedications();
+        },
+      updateMedication:
+        async (medication) => {
+          if (!medication.id) {
+            throw new Error(
+              "Medication ID is required."
+            );
+          }
+          const existingMedication =
+            await repository.getById(
+              medication.id
+            );
+          if (existingMedication) {
+            await cancelMedicationNotifications(
+              existingMedication.notificationIds
+            );
+          }
+          await repository.update({
+            ...medication,
+            notificationIds: "[]",
+          });
+          const updatedMedication =
+            await repository.getById(
+              medication.id
+            );
+          if (updatedMedication) {
+            const notificationIds =
+              await scheduleMedicationNotifications(
+                updatedMedication
+              );
+            await repository.updateNotificationIds(
+              medication.id,
               notificationIds
             );
           }

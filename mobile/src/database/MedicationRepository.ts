@@ -118,13 +118,13 @@ export default class MedicationRepository {
         medication.frequency ?? "",
         medication.reminderTime ?? "",
         medication.reminderTimes ??
-          "[]",
+        "[]",
         medication.startDate ?? "",
         medication.endDate ?? "",
         medication.remindersEnabled ??
-          0,
+        0,
         medication.notificationIds ??
-          "[]",
+        "[]",
         medication.notes ?? "",
         medication.completed,
         medication.completedAt ?? null,
@@ -133,6 +133,52 @@ export default class MedicationRepository {
     );
     return Number(
       result.lastInsertRowId
+    );
+  }
+  async update(
+    medication: Medication
+  ): Promise<void> {
+    if (!medication.id) {
+      throw new Error(
+        "Medication ID is required for update."
+      );
+    }
+
+    db.runSync(
+      `
+    UPDATE medication
+    SET
+      medicine = ?,
+      dosage = ?,
+      unit = ?,
+      frequency = ?,
+      reminderTime = ?,
+      reminderTimes = ?,
+      startDate = ?,
+      endDate = ?,
+      remindersEnabled = ?,
+      notificationIds = ?,
+      notes = ?,
+      completed = ?,
+      completedAt = ?
+    WHERE id = ?
+    `,
+      [
+        medication.medicine,
+        medication.dosage ?? "",
+        medication.unit ?? "",
+        medication.frequency ?? "",
+        medication.reminderTime ?? "",
+        medication.reminderTimes ?? "[]",
+        medication.startDate ?? "",
+        medication.endDate ?? "",
+        medication.remindersEnabled ?? 0,
+        medication.notificationIds ?? "[]",
+        medication.notes ?? "",
+        medication.completed,
+        medication.completedAt ?? null,
+        medication.id,
+      ]
     );
   }
   async updateNotificationIds(

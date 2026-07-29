@@ -20,6 +20,7 @@ import SleepScreen from "../screens/Sleep/SleepScreen";
 import MedicationScreen from "../screens/Medication/MedicationScreen";
 import ScanScreen from "../screens/Scan/ScanScreen";
 import { useBabyStore } from "../store/BabyStore";
+import EditMedicationScreen from "../screens/Medication/EditMedicationScreen";
 const Stack =
   createNativeStackNavigator();
 export default function AppNavigator() {
@@ -108,6 +109,12 @@ export default function AppNavigator() {
               name="AddMedication"
               component={
                 AddMedicationScreen
+              }
+            />
+            <Stack.Screen
+              name="EditMedication"
+              component={
+                EditMedicationScreen
               }
             />
             <Stack.Screen
