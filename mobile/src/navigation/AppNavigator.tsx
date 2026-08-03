@@ -1,12 +1,7 @@
-import React, {
-  useEffect,
-} from "react";
-import {
-  NavigationContainer,
-} from "@react-navigation/native";
-import {
-  createNativeStackNavigator,
-} from "@react-navigation/native-stack";
+import React, { useEffect, } from "react";
+import { NavigationContainer, } from "@react-navigation/native";
+import { createNativeStackNavigator, } from "@react-navigation/native-stack";
+import WelcomeScreen from "../screens/Onboarding/WelcomeScreen";
 import BottomTabs from "./BottomTabs";
 import SetupProfileScreen from "../screens/Profile/SetupProfileScreen";
 import EditBabyProfileScreen from "../screens/Profile/EditBabyProfileScreen";
@@ -25,17 +20,24 @@ import { useBabyStore } from "../store/BabyStore";
 const Stack =
   createNativeStackNavigator();
 export default function AppNavigator() {
-  const {
-    baby,
-    loading,
-    loadBaby,
-  } = useBabyStore();
-  useEffect(() => {
-    loadBaby();
-  }, [loadBaby]);
-  if (loading) {
-    return null;
-  }
+  const baby = useBabyStore(
+    state => state.baby
+  );
+  const loading = useBabyStore(
+    state => state.loading
+  );
+  const loadBaby = useBabyStore(
+    state => state.loadBaby
+  );
+  //useEffect(() => {
+  //  void loadBaby();
+  //  // Load only once when AppNavigator mounts.
+  //  // eslint-disable-next-line react-hooks/exhaustive-deps
+  //}, []);
+  //if (loading) {    // App.tsx already waits for initialization,
+  //  return null;    // so AppNavigator should never block rendering.
+  //}
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -46,10 +48,16 @@ export default function AppNavigator() {
         }}
       >
         {!baby ? (
-          <Stack.Screen
-            name="Setup"
-            component={SetupProfileScreen}
-          />
+          <>
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+            />
+            <Stack.Screen
+              name="Setup"
+              component={SetupProfileScreen}
+            />
+          </>
         ) : (
           <>
             <Stack.Screen

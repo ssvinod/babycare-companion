@@ -15,7 +15,8 @@ import {
 import DashboardScreen from "../screens/Dashboard/DashboardScreen";
 import TimelineScreen from "../screens/Timeline/TimelineScreen";
 import RecordsScreen from "../screens/Records/RecordsScreen";
-import SettingsScreen from "../screens/Settings/SettingsScreen";
+//import SettingsScreen from "../screens/Settings/SettingsScreen";
+import ProfileScreen from "../screens/Profile/ProfileScreen";
 const Tab = createBottomTabNavigator();
 type AddAction = {
   label: string;
@@ -179,7 +180,7 @@ export default function BottomTabs({
         />
         <Tab.Screen
           name="Profile"
-          component={SettingsScreen}
+          component={ProfileScreen}
         />
       </Tab.Navigator>
       <Modal

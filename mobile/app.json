@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "BabyCare Companion",
-    "slug": "babycare-companion",
+    "name": "Niva",
+    "slug": "niva",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "babycarecompanion",
+    "scheme": "niva",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "runtimeVersion": {
@@ -14,14 +14,15 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#EEF2F8"
+      "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ssvinod.babycarecompanion",
       "buildNumber": "1",
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "BabyCare Companion uses notifications for medication and vaccination reminders.",
+        "CFBundleDisplayName": "Niva",
+        "NSUserNotificationsUsageDescription": "Niva uses notifications for medication and vaccination reminders.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -30,7 +31,7 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#EEF2F8"
+        "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": true,

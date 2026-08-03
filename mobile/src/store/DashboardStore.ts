@@ -20,25 +20,30 @@ interface DashboardState {
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
+  reset: () => void;
 }
+const initialState = {
+  todayFeedings: 0,
+  todayQuantity: 0,
+  todaySleepMinutes: 0,
+  lastFeeding: null,
+  latestWeight: null,
+  nextVaccine: null,
+  nextVaccineDate: null,
+  nextSleep: null,
+  nextSleepTime: null,
+  pendingMedicationDoses: 0,
+  completedMedicationDoses: 0,
+  skippedMedicationDoses: 0,
+  todayMedications:
+    [] as DashboardMedication[],
+  loading: false,
+  error: null,
+};
 export const useDashboardStore =
   create<DashboardState>(
     set => ({
-      todayFeedings: 0,
-      todayQuantity: 0,
-      todaySleepMinutes: 0,
-      lastFeeding: null,
-      latestWeight: null,
-      nextVaccine: null,
-      nextVaccineDate: null,
-      nextSleep: null,
-      nextSleepTime: null,
-      pendingMedicationDoses: 0,
-      completedMedicationDoses: 0,
-      skippedMedicationDoses: 0,
-      todayMedications: [],
-      loading: false,
-      error: null,
+      ...initialState,
       refresh: async () => {
         set({
           loading: true,
@@ -67,6 +72,11 @@ export const useDashboardStore =
                 : "Unable to load dashboard",
           });
         }
+      },
+      reset: () => {
+        set({
+          ...initialState,
+        });
       },
     })
   );

@@ -78,7 +78,7 @@ export default function SettingsScreen({
       />
       <ProfileRow
         icon="ℹ️"
-        title="About BabyCare Companion"
+        title="About Niva"
         subtitle="Version 1.0.0"
         disabled
         showArrow={false}

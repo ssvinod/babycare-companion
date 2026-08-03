@@ -1,28 +1,46 @@
-import { initializeDatabase } from "./database";
-import { runMigrations } from "./migrations";
+import {
+  initializeDatabase,
+  logDatabaseState,
+} from "./database";
+import {
+  runMigrations,
+} from "./migrations";
 import BabyRepository from "./BabyRepository";
 import VaccinationRepository from "./VaccinationRepository";
-import { generateVaccinationSchedule } from "../utils/generateVaccinationSchedule";
+import {
+  generateVaccinationSchedule,
+} from "../utils/generateVaccinationSchedule";
 export async function initDatabase(): Promise<void> {
+  console.log(
+    "Initializing database..."
+  );
   initializeDatabase();
   runMigrations();
-  const babyRepo =
+  logDatabaseState();
+  const babyRepository =
     new BabyRepository();
   const baby =
-    await babyRepo.getBaby();
+    await babyRepository.getBaby();
   if (!baby) {
-    console.log("No Baby Profile Found");
+    console.log(
+      "No Baby Profile Found"
+    );
+    console.log(
+      "Database initialization completed"
+    );
     return;
   }
-  const vaccinationRepo =
+  const vaccinationRepository =
     new VaccinationRepository();
-  const count =
-    await vaccinationRepo.count();
+  const vaccinationCount =
+    await vaccinationRepository.count();
   console.log(
     "Vaccination Count:",
-    count
+    vaccinationCount
   );
-  if (count === 0) {
+  if (
+    vaccinationCount === 0
+  ) {
     const schedule =
       generateVaccinationSchedule(
         baby.birthDate
@@ -31,11 +49,14 @@ export async function initDatabase(): Promise<void> {
       "Generating Vaccines:",
       schedule.length
     );
-    await vaccinationRepo.insertMany(
+    await vaccinationRepository.insertMany(
       schedule
     );
     console.log(
       "Vaccination Schedule Created"
     );
   }
+  console.log(
+    "Database initialization completed"
+  );
 }
