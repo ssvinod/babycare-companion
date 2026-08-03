@@ -1,27 +1,16 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
-import {
-  ImageBackground,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import {
-  SafeAreaView,
-} from "react-native-safe-area-context";
+import React, { useEffect, useState, } from "react";
+import { ImageBackground, Pressable, StyleSheet, Text, View, } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
+import { SafeAreaView, } from "react-native-safe-area-context";
 import AppNavigator from "./src/navigation/AppNavigator";
-import {
-  initDatabase,
-} from "./src/database/initDatabase";
-import {
-  configureMedicationNotifications,
-} from "./src/services/MedicationNotificationService";
-import {
-  useBabyStore,
-} from "./src/store/BabyStore";
+import { initDatabase, } from "./src/database/initDatabase";
+import { configureMedicationNotifications, } from "./src/services/MedicationNotificationService";
+import { useBabyStore, } from "./src/store/BabyStore";
+void SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({
+  duration: 450,
+  fade: true,
+});
 type StartupState =
   | "loading"
   | "ready"
@@ -63,7 +52,7 @@ export default function App() {
         Math.max(
           0,
           MINIMUM_STARTUP_TIME_MS -
-            elapsed
+          elapsed
         );
       if (remaining > 0) {
         await new Promise<void>(
@@ -93,21 +82,30 @@ export default function App() {
       );
     }
   }
+  async function hideNativeSplash() {
+    try {
+      await SplashScreen.hideAsync();
+    } catch (error) {
+      console.warn(
+        "Unable to hide native splash:",
+        error
+      );
+    }
+  }
   useEffect(() => {
     void initialiseApp();
   }, []);
-  if (
-    startupState === "loading"
-  ) {
+  if (startupState === "loading") {
     return (
       <ImageBackground
         source={require(
           "./assets/niva-startup.png"
         )}
-        style={
-          styles.startupBackground
-        }
+        style={styles.startupBackground}
         resizeMode="cover"
+        onLoadEnd={() => {
+          void hideNativeSplash();
+        }}
       />
     );
   }
@@ -146,7 +144,7 @@ export default function App() {
             style={({ pressed }) => [
               styles.retryButton,
               pressed &&
-                styles.retryButtonPressed,
+              styles.retryButtonPressed,
             ]}
           >
             <Text

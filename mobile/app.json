@@ -11,11 +11,6 @@
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
-    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.ssvinod.babycarecompanion",
@@ -45,14 +40,22 @@
     "plugins": [
       "expo-sqlite",
       [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 210,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFFDF8"
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
           "color": "#4F46E5",
           "defaultChannel": "babycare-reminders"
         }
-      ],
-      "expo-font"
+      ]
     ],
     "extra": {
       "eas": {
