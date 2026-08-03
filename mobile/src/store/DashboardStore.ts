@@ -5,12 +5,16 @@ import DashboardRepository, {
 interface DashboardState {
   todayFeedings: number;
   todayQuantity: number;
+  todaySleepMinutes: number;
   lastFeeding: string | null;
   latestWeight: number | null;
   nextVaccine: string | null;
   nextVaccineDate: string | null;
   nextSleep: string | null;
   nextSleepTime: string | null;
+  pendingMedicationDoses: number;
+  completedMedicationDoses: number;
+  skippedMedicationDoses: number;
   todayMedications:
     DashboardMedication[];
   loading: boolean;
@@ -19,15 +23,19 @@ interface DashboardState {
 }
 export const useDashboardStore =
   create<DashboardState>(
-    (set) => ({
+    set => ({
       todayFeedings: 0,
       todayQuantity: 0,
+      todaySleepMinutes: 0,
       lastFeeding: null,
       latestWeight: null,
       nextVaccine: null,
       nextVaccineDate: null,
       nextSleep: null,
       nextSleepTime: null,
+      pendingMedicationDoses: 0,
+      completedMedicationDoses: 0,
+      skippedMedicationDoses: 0,
       todayMedications: [],
       loading: false,
       error: null,

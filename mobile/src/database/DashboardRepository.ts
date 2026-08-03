@@ -17,29 +17,24 @@ export interface DashboardMedication {
 export interface DashboardSummary {
   todayFeedings: number;
   todayQuantity: number;
+  todaySleepMinutes: number;
   lastFeeding: string | null;
   latestWeight: number | null;
   nextVaccine: string | null;
   nextVaccineDate: string | null;
   nextSleep: string | null;
   nextSleepTime: string | null;
-  todayMedications:
-    DashboardMedication[];
-}
-function localDateString(): string {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, "0");
-  const day = String(
-    date.getDate()
-  ).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  pendingMedicationDoses: number;
+  completedMedicationDoses: number;
+  skippedMedicationDoses: number;
+  todayMedications: DashboardMedication[];
 }
 interface FeedingSummaryRow {
   count: number;
   quantity: number;
+}
+interface SleepSummaryRow {
+  minutes: number;
 }
 interface LatestFeedingRow {
   time: string | null;
@@ -54,16 +49,25 @@ interface VaccineRow {
 interface LatestSleepRow {
   endTime: string | null;
 }
+function localDateString(
+  date = new Date()
+): string {
+  const year =
+    date.getFullYear();
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 export default class DashboardRepository {
   async getSummary(): Promise<
     DashboardSummary
   > {
     const today =
       localDateString();
-    /*
-     * Ensure today's medication-dose rows
-     * exist before loading the dashboard.
-     */
     await MedicationDoseService.ensureDosesForDate(
       today
     );
@@ -81,7 +85,23 @@ export default class DashboardRepository {
         `,
         [today]
       );
-    const latest =
+    const sleep =
+      db.getFirstSync<SleepSummaryRow>(
+        `
+        SELECT
+          COALESCE(
+            SUM(durationMinutes),
+            0
+          ) AS minutes
+        FROM sleep
+        WHERE
+          date(startTime) = ?
+          AND endTime IS NOT NULL
+          AND durationMinutes IS NOT NULL
+        `,
+        [today]
+      );
+    const latestFeeding =
       db.getFirstSync<LatestFeedingRow>(
         `
         SELECT time
@@ -90,7 +110,7 @@ export default class DashboardRepository {
         LIMIT 1
         `
       );
-    const growth =
+    const latestGrowth =
       db.getFirstSync<LatestGrowthRow>(
         `
         SELECT weight
@@ -99,7 +119,7 @@ export default class DashboardRepository {
         LIMIT 1
         `
       );
-    const vaccine =
+    const nextVaccination =
       db.getFirstSync<VaccineRow>(
         `
         SELECT
@@ -140,13 +160,6 @@ export default class DashboardRepository {
           nap.toISOString();
       }
     }
-    /*
-     * Read today's individual doses.
-     *
-     * medication.completed is intentionally
-     * not used here. Each dose has its own
-     * status in medication_dose.
-     */
     const todayMedications =
       db.getAllSync<DashboardMedication>(
         `
@@ -167,11 +180,9 @@ export default class DashboardRepository {
           dose.scheduledTime
             AS time,
           CASE
-            WHEN dose.status =
-              'taken'
+            WHEN dose.status = 'taken'
               THEN 'taken'
-            WHEN dose.status =
-              'skipped'
+            WHEN dose.status = 'skipped'
               THEN 'skipped'
             ELSE 'pending'
           END AS status,
@@ -190,22 +201,46 @@ export default class DashboardRepository {
         `,
         [today]
       );
+    const pendingMedicationDoses =
+      todayMedications.filter(
+        item =>
+          item.status === "pending"
+      ).length;
+    const completedMedicationDoses =
+      todayMedications.filter(
+        item =>
+          item.status === "taken"
+      ).length;
+    const skippedMedicationDoses =
+      todayMedications.filter(
+        item =>
+          item.status === "skipped"
+      ).length;
     return {
       todayFeedings:
         feedings?.count ?? 0,
       todayQuantity:
         feedings?.quantity ?? 0,
+      todaySleepMinutes:
+        sleep?.minutes ?? 0,
       lastFeeding:
-        latest?.time ?? null,
+        latestFeeding?.time ??
+        null,
       latestWeight:
-        growth?.weight ?? null,
+        latestGrowth?.weight ??
+        null,
       nextVaccine:
-        vaccine?.vaccine ?? null,
+        nextVaccination?.vaccine ??
+        null,
       nextVaccineDate:
-        vaccine?.dueDate ?? null,
+        nextVaccination?.dueDate ??
+        null,
       nextSleep: "Nap",
       nextSleepTime:
         predictedNap,
+      pendingMedicationDoses,
+      completedMedicationDoses,
+      skippedMedicationDoses,
       todayMedications,
     };
   }
