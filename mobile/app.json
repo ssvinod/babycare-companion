@@ -48,6 +48,21 @@
           "resizeMode": "contain",
           "backgroundColor": "#FFFDF8"
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Niva to choose a baby profile photo.",
+          "cameraPermission": "Allow Niva to take a baby profile photo."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#079669",
+          "defaultChannel": "babycare-reminders"
+        }
       ]
     ],
     "extra": {

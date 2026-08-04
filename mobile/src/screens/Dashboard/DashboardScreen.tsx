@@ -167,6 +167,8 @@ export default function DashboardScreen() {
         age={calculateAge(
           baby.birthDate
         )}
+        photo={baby.photo}
+        gender={baby.gender}
       />
       <QuickActionGrid />
       <ScreenTitle
@@ -238,8 +240,8 @@ export default function DashboardScreen() {
         value={
           nextVaccine
             ? `${nextVaccine}\n${formatDate(
-                nextVaccineDate
-              )}`
+              nextVaccineDate
+            )}`
             : "All vaccinations completed"
         }
         color="#16A34A"

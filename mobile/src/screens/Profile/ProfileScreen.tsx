@@ -1,5 +1,5 @@
 import React, { useState, } from "react";
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View, } from "react-native";
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View, } from "react-native";
 import { useNavigation, } from "@react-navigation/native";
 import ScreenLayout from "../../components/common/ScreenLayout";
 import ScreenTitle from "../../components/common/ScreenTitle";
@@ -178,19 +178,51 @@ export default function ProfileScreen() {
             styles.identityHeader
           }
         >
-          <View
-            style={
-              styles.avatar
+          <Pressable
+            onPress={() =>
+              navigation.navigate(
+                "EditBabyProfile"
+              )
             }
+            style={({ pressed }) => [
+              styles.avatar,
+              pressed && {
+                opacity: 0.8,
+              },
+            ]}
           >
-            <Text
+            {baby.photo ? (
+              <Image
+                source={{
+                  uri: baby.photo,
+                }}
+                style={
+                  styles.avatarPhoto
+                }
+              />
+            ) : (
+              <Text
+                style={
+                  styles.avatarText
+                }
+              >
+                {avatar}
+              </Text>
+            )}
+            <View
               style={
-                styles.avatarText
+                styles.smallCameraBadge
               }
             >
-              {avatar}
-            </Text>
-          </View>
+              <Text
+                style={
+                  styles.smallCameraIcon
+                }
+              >
+                📷
+              </Text>
+            </View>
+          </Pressable>
           <View
             style={
               styles.identityHeaderText
@@ -478,8 +510,28 @@ const styles =
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 23,
-      backgroundColor:
-        "#E0E7FF",
+      backgroundColor: "#E0E7FF",
+    },
+    avatarPhoto: {
+      width: 70,
+      height: 70,
+      borderRadius: 23,
+    },
+    smallCameraBadge: {
+      position: "absolute",
+      right: -3,
+      bottom: -3,
+      width: 24,
+      height: 24,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: "#FFFFFF",
+      backgroundColor: "#079669",
+    },
+    smallCameraIcon: {
+      fontSize: 10,
     },
     avatarText: {
       fontSize: 38,
