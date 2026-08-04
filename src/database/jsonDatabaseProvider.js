@@ -1,8 +1,8 @@
-import fs from "fs";
-import { DatabaseProvider } from "./databaseProvider.js";
+import fs from 'fs';
+import { DatabaseProvider } from './databaseProvider.js';
 
 export class JsonDatabaseProvider extends DatabaseProvider {
-    constructor(basePath = "./data") {
+    constructor(basePath = './data') {
         super();
         this.basePath = basePath;
     }
@@ -18,20 +18,13 @@ export class JsonDatabaseProvider extends DatabaseProvider {
         );
     }
     load(collection) {
-        const file =
-            `${this.basePath}/${collection}.json`;
-        if (!fs.existsSync(file))
-            return [];
-        return JSON.parse(
-            fs.readFileSync(file)
-        );
+        const file = `${this.basePath}/${collection}.json`;
+        if (!fs.existsSync(file)) return [];
+        return JSON.parse(fs.readFileSync(file));
     }
     remove(collection, id) {
         const items = this.load(collection);
-        const filtered =
-            items.filter(
-                item => item.id !== id
-            );
+        const filtered = items.filter((item) => item.id !== id);
         this.save(collection, filtered);
     }
 }

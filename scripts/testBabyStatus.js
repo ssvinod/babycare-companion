@@ -1,7 +1,6 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import { createApplicationContext } from "../src/services/applicationContext.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import { createApplicationContext } from '../src/services/applicationContext.js';
 
-const context =
-    createApplicationContext();
+const context = createApplicationContext();
 
 console.log(context.babyStatus);

@@ -1,48 +1,43 @@
-import { generateParentInsights }
-from "../src/services/parentInsightsService.js";
-const insights =
-generateParentInsights({
+import { generateParentInsights } from '../src/services/parentInsightsService.js';
+const insights = generateParentInsights({
     feedings: [
         {
-            type: "Formula",
-            quantity: 120
+            type: 'Formula',
+            quantity: 120,
         },
         {
-            type: "Breastfeeding"
-        }
+            type: 'Breastfeeding',
+        },
     ],
     sleep: [
         {
-            durationMinutes: 90
+            durationMinutes: 90,
         },
         {
-            durationMinutes: 360
-        }
+            durationMinutes: 360,
+        },
     ],
     medications: [
         {
-            completed: false
-        }
+            completed: false,
+        },
     ],
     vaccinations: [
         {
-            completed: true
+            completed: true,
         },
         {
-            completed: false
-        }
+            completed: false,
+        },
     ],
     growth: [
         {
             weight: 4.6,
             percentile: 42,
-            status: "Normal"
-        }
-    ]
+            status: 'Normal',
+        },
+    ],
 });
-console.dir(
-    insights,
-    {
-        depth: null
-    }
-);
+console.dir(insights, {
+    depth: null,
+});

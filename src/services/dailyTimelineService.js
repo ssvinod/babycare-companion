@@ -1,5 +1,4 @@
 export function buildDailyTimeline(context, date = new Date()) {
-
     const start = new Date(date);
     start.setHours(0, 0, 0, 0);
 
@@ -7,7 +6,7 @@ export function buildDailyTimeline(context, date = new Date()) {
     end.setHours(23, 59, 59, 999);
 
     return (context.timeline ?? [])
-        .filter(event => {
+        .filter((event) => {
             const d = new Date(event.date);
             return d >= start && d <= end;
         })

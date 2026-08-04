@@ -1,13 +1,13 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 export class SleepRecord {
     constructor({
         id = randomUUID(),
         childId,
         startTime,
         endTime,
-        type = "Nap",
-        quality = "",
-        notes = ""
+        type = 'Nap',
+        quality = '',
+        notes = '',
     }) {
         this.id = id;
         this.childId = childId;
@@ -18,11 +18,6 @@ export class SleepRecord {
         this.notes = notes;
     }
     get durationMinutes() {
-        return Math.round(
-            (
-                this.endTime -
-                this.startTime
-            ) / 60000
-        );
+        return Math.round((this.endTime - this.startTime) / 60000);
     }
 }

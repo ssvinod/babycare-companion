@@ -4,8 +4,8 @@ export class Child {
         this.name = data.name;
         this.birthDate = new Date(data.birthDate);
         this.gender = data.gender;
-        this.bloodGroup = data.bloodGroup ?? "";
-        this.notes = data.notes ?? "";
+        this.bloodGroup = data.bloodGroup ?? '';
+        this.notes = data.notes ?? '';
     }
 
     getAgeInDays() {
@@ -13,9 +13,6 @@ export class Child {
     }
 
     getAgeOnDate(date) {
-        return Math.floor(
-            (date - this.birthDate) /
-            (1000 * 60 * 60 * 24)
-        );
+        return Math.floor((date - this.birthDate) / (1000 * 60 * 60 * 24));
     }
 }

@@ -1,24 +1,23 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import fs from "fs";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import fs from 'fs';
 
-import { Child } from "../src/models/child.js";
-import { generateVaccinationPlan } from "../src/services/vaccinationService.js";
-import { generateICS } from "../src/services/icsGenerator.js";
+import { Child } from '../src/models/child.js';
+import { generateVaccinationPlan } from '../src/services/vaccinationService.js';
+import { generateICS } from '../src/services/icsGenerator.js';
 
 const child = new Child({
+    name: 'Viha',
 
-    name: "Viha",
-
-    birthDate: "2026-06-22"
+    birthDate: '2026-06-22',
 });
 
 const vaccinations = generateVaccinationPlan(child);
 const ics = generateICS(child, vaccinations);
 
-fs.mkdirSync("./output", { recursive: true });
+fs.mkdirSync('./output', { recursive: true });
 
-fs.writeFileSync("./output/vaccination_schedule.ics", ics);
+fs.writeFileSync('./output/vaccination_schedule.ics', ics);
 
-console.log("Calendar exported.");
+console.log('Calendar exported.');
 
-console.log("./output/vaccination_schedule.ics");
+console.log('./output/vaccination_schedule.ics');

@@ -1,33 +1,22 @@
-import { db } from "./database";
-function getColumns(
-  tableName: string
-): string[] {
-  const rows = db.getAllSync<{
-    name: string;
-  }>(
-    `PRAGMA table_info(${tableName});`
-  );
-  return rows.map(
-    (row) => row.name
-  );
+import { db } from './database';
+function getColumns(tableName: string): string[] {
+    const rows = db.getAllSync<{
+        name: string;
+    }>(`PRAGMA table_info(${tableName});`);
+    return rows.map((row) => row.name);
 }
-function addColumnIfMissing(
-  tableName: string,
-  columnName: string,
-  definition: string
-) {
-  const columns =
-    getColumns(tableName);
-  if (!columns.includes(columnName)) {
-    db.execSync(`
+function addColumnIfMissing(tableName: string, columnName: string, definition: string) {
+    const columns = getColumns(tableName);
+    if (!columns.includes(columnName)) {
+        db.execSync(`
       ALTER TABLE ${tableName}
       ADD COLUMN ${columnName}
       ${definition};
     `);
-  }
+    }
 }
 export function runMigrations() {
-  db.execSync(`
+    db.execSync(`
     CREATE TABLE IF NOT EXISTS profile (
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
@@ -120,59 +109,15 @@ export function runMigrations() {
       WHERE medicationId = OLD.id;
     END;
   `);
-  addColumnIfMissing(
-    "medication",
-    "unit",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "frequency",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "reminderTime",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "notes",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "completedAt",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "createdAt",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "reminderTimes",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "startDate",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "endDate",
-    "TEXT"
-  );
-  addColumnIfMissing(
-    "medication",
-    "remindersEnabled",
-    "INTEGER DEFAULT 0"
-  );
-  addColumnIfMissing(
-    "medication",
-    "notificationIds",
-    "TEXT"
-  );
+    addColumnIfMissing('medication', 'unit', 'TEXT');
+    addColumnIfMissing('medication', 'frequency', 'TEXT');
+    addColumnIfMissing('medication', 'reminderTime', 'TEXT');
+    addColumnIfMissing('medication', 'notes', 'TEXT');
+    addColumnIfMissing('medication', 'completedAt', 'TEXT');
+    addColumnIfMissing('medication', 'createdAt', 'TEXT');
+    addColumnIfMissing('medication', 'reminderTimes', 'TEXT');
+    addColumnIfMissing('medication', 'startDate', 'TEXT');
+    addColumnIfMissing('medication', 'endDate', 'TEXT');
+    addColumnIfMissing('medication', 'remindersEnabled', 'INTEGER DEFAULT 0');
+    addColumnIfMissing('medication', 'notificationIds', 'TEXT');
 }

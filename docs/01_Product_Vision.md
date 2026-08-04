@@ -12,10 +12,10 @@ BabyCare Companion should feel calm, dependable, and family-owned: a small syste
 
 ## Roadmap
 
-| Version | Focus |
-| --- | --- |
-| v0.1 | Repository and documentation foundation |
-| v0.2 | Configuration, logging, and storage core |
-| v0.3 | Scriptable and ICS adapters |
-| v0.4 | Clinician-confirmed vaccination reminder workflow |
-| v0.5+ | Optional growth, milestone, feeding, sleep, safety, health, and memory modules |
+| Version | Focus                                                                          |
+| ------- | ------------------------------------------------------------------------------ |
+| v0.1    | Repository and documentation foundation                                        |
+| v0.2    | Configuration, logging, and storage core                                       |
+| v0.3    | Scriptable and ICS adapters                                                    |
+| v0.4    | Clinician-confirmed vaccination reminder workflow                              |
+| v0.5+   | Optional growth, milestone, feeding, sleep, safety, health, and memory modules |

@@ -1,8 +1,4 @@
-import { SleepRepository } from "../src/repositories/sleepRepository.js";
+import { SleepRepository } from '../src/repositories/sleepRepository.js';
 const repo = new SleepRepository();
-console.log(
-    "Repository Loaded"
-);
-console.log(
-    repo.findAll().length >= 0
-);
+console.log('Repository Loaded');
+console.log(repo.findAll().length >= 0);

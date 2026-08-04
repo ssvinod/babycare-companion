@@ -1,17 +1,17 @@
 export interface Baby {
-  id: string;
+    id: string;
 
-  name: string;
+    name: string;
 
-  gender: "boy" | "girl";
+    gender: 'boy' | 'girl';
 
-  birthDate: string;
+    birthDate: string;
 
-  weight?: number;
+    weight?: number;
 
-  height?: number;
+    height?: number;
 
-  bloodGroup?: string;
+    bloodGroup?: string;
 
-  photo?: string;
+    photo?: string;
 }

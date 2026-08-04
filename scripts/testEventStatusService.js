@@ -1,18 +1,17 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
 import {
     isCompleted,
     isPending,
     isOverdue,
     isActive,
-    getStatus
-} from "../src/services/eventStatusService.js";
+    getStatus,
+} from '../src/services/eventStatusService.js';
 
-const completed = { status: "completed" };
-const pending = { status: "pending" };
-const overdue = { status: "overdue" };
+const completed = { status: 'completed' };
+const pending = { status: 'pending' };
+const overdue = { status: 'overdue' };
 
 console.table({
-
     completed: isCompleted(completed),
 
     pending: isPending(pending),
@@ -23,6 +22,5 @@ console.table({
 
     activeCompleted: isActive(completed),
 
-    status: getStatus(overdue)
-
+    status: getStatus(overdue),
 });

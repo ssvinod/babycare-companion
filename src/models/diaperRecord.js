@@ -1,14 +1,14 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 export class DiaperRecord {
     constructor({
         id = randomUUID(),
         childId,
         date = new Date(),
         type,
-        color = "",
-        consistency = "",
+        color = '',
+        consistency = '',
         rash = false,
-        notes = ""
+        notes = '',
     }) {
         this.id = id;
         this.childId = childId;

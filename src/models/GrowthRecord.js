@@ -1,12 +1,5 @@
 export class GrowthRecord {
-    constructor({
-        childId,
-        date,
-        weight,
-        length,
-        headCircumference,
-        notes = ""
-    }) {
+    constructor({ childId, date, weight, length, headCircumference, notes = '' }) {
         this.childId = childId;
         this.date = new Date(date);
         this.weight = weight;

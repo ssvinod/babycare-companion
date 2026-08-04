@@ -1,25 +1,15 @@
-import fs from "fs";
+import fs from 'fs';
 
-import { Appointment } from "../models/appointment.js";
+import { Appointment } from '../models/appointment.js';
 
 export function loadAppointments() {
-
     const data = JSON.parse(
-
         fs.readFileSync(
+            './data/appointments.json',
 
-            "./data/appointments.json",
-
-            "utf8"
-
+            'utf8'
         )
-
     );
 
-    return data.map(
-
-        item => new Appointment(item)
-
-    );
-
+    return data.map((item) => new Appointment(item));
 }

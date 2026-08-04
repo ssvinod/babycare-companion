@@ -6,25 +6,18 @@
  */
 
 export function createScriptableSchedule(child, visits) {
-
     return {
-
         child: {
-
             name: child.name,
             birthDate: child.birthDate,
             gender: child.gender,
-            bloodGroup: child.bloodGroup
-
+            bloodGroup: child.bloodGroup,
         },
 
-        schedule: visits.map(visit => ({
-
+        schedule: visits.map((visit) => ({
             id: visit.id,
 
-            title:
-                visit.title ??
-                `${visit.visit} Vaccination`,
+            title: visit.title ?? `${visit.visit} Vaccination`,
 
             dueDate: visit.dueDate,
 
@@ -32,10 +25,7 @@ export function createScriptableSchedule(child, visits) {
 
             vaccines: visit.vaccines,
 
-            milestones: visit.milestones
-
-        }))
-
+            milestones: visit.milestones,
+        })),
     };
-
 }

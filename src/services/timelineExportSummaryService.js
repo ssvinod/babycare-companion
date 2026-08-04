@@ -7,31 +7,31 @@ export function buildTimelineExportSummary(timeline) {
         appointments: 0,
         completed: 0,
         overdue: 0,
-        pending: 0
+        pending: 0,
     };
     for (const event of timeline) {
         switch (event.type) {
-            case "vaccination":
+            case 'vaccination':
                 summary.vaccinations++;
                 break;
-            case "milestone":
+            case 'milestone':
                 summary.milestones++;
                 break;
-            case "growth":
+            case 'growth':
                 summary.growth++;
                 break;
-            case "appointment":
+            case 'appointment':
                 summary.appointments++;
                 break;
         }
         switch (event.status) {
-            case "completed":
+            case 'completed':
                 summary.completed++;
                 break;
-            case "overdue":
+            case 'overdue':
                 summary.overdue++;
                 break;
-            case "pending":
+            case 'pending':
                 summary.pending++;
                 break;
         }

@@ -5,8 +5,8 @@ export class Event {
         title,
         dueDate,
         details = [],
-        status = "pending",
-        completedDate = null
+        status = 'pending',
+        completedDate = null,
     }) {
         this.id = id;
         this.type = type;
@@ -14,10 +14,7 @@ export class Event {
         this.dueDate = new Date(dueDate);
         this.details = details;
         this.status = status;
-        this.completedDate =
-            completedDate
-                ? new Date(completedDate)
-                : null;
+        this.completedDate = completedDate ? new Date(completedDate) : null;
     }
     isCompleted() {
         return this.completedDate !== null;

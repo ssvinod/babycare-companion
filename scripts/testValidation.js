@@ -1,13 +1,9 @@
-import { validateMedication }
-from "../src/validation/medicationValidator.js";
+import { validateMedication } from '../src/validation/medicationValidator.js';
 try {
     validateMedication({
-        childId: "",
-        name: ""
+        childId: '',
+        name: '',
     });
-}
-catch(e) {
-    console.log(
-        e.message
-    );
+} catch (e) {
+    console.log(e.message);
 }

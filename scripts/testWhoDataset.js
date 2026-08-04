@@ -1,10 +1,8 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import fs from "fs";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import fs from 'fs';
 
 const data = JSON.parse(
-    fs.readFileSync(
-        "./datasets/who/generated/wfa-girls-zscore-expanded-tables.json"
-    )
+    fs.readFileSync('./datasets/who/generated/wfa-girls-zscore-expanded-tables.json')
 );
 
 console.log(data[0]);

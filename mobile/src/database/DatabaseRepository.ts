@@ -1,28 +1,28 @@
-import { db } from "./database";
+import { db } from './database';
 export default class DatabaseRepository {
-  async clearFeeding(): Promise<void> {
-    db.execSync(`
+    async clearFeeding(): Promise<void> {
+        db.execSync(`
       DELETE FROM feeding;
       DELETE FROM sqlite_sequence
       WHERE name='feeding';
     `);
-  }
-  async clearSleep(): Promise<void> {
-    db.execSync(`
+    }
+    async clearSleep(): Promise<void> {
+        db.execSync(`
       DELETE FROM sleep;
       DELETE FROM sqlite_sequence
       WHERE name='sleep';
     `);
-  }
-  async clearGrowth(): Promise<void> {
-    db.execSync(`
+    }
+    async clearGrowth(): Promise<void> {
+        db.execSync(`
       DELETE FROM growth;
       DELETE FROM sqlite_sequence
       WHERE name='growth';
     `);
-  }
-  async clearMedication(): Promise<void> {
-    db.execSync(`
+    }
+    async clearMedication(): Promise<void> {
+        db.execSync(`
       DELETE FROM medication_dose;
       DELETE FROM medication;
       DELETE FROM sqlite_sequence
@@ -30,22 +30,22 @@ export default class DatabaseRepository {
       DELETE FROM sqlite_sequence
       WHERE name='medication_dose';
     `);
-  }
-  async clearVaccinations(): Promise<void> {
-    db.execSync(`
+    }
+    async clearVaccinations(): Promise<void> {
+        db.execSync(`
       DELETE FROM vaccination;
       DELETE FROM sqlite_sequence
       WHERE name='vaccination';
     `);
-  }
-  async clearProfile(): Promise<void> {
-    db.execSync(`
+    }
+    async clearProfile(): Promise<void> {
+        db.execSync(`
       DELETE FROM profile;
     `);
-  }
-  async resetEverything(): Promise<void> {
-    db.withTransactionSync(() => {
-      db.execSync(`
+    }
+    async resetEverything(): Promise<void> {
+        db.withTransactionSync(() => {
+            db.execSync(`
         DELETE FROM medication_dose;
         DELETE FROM medication;
         DELETE FROM feeding;
@@ -63,7 +63,7 @@ export default class DatabaseRepository {
           'vaccination'
         );
       `);
-    });
-    console.log("Database reset completed.");
-  }
+        });
+        console.log('Database reset completed.');
+    }
 }

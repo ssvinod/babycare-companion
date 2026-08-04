@@ -7,9 +7,7 @@
         "hospital": "Moon Maternity Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -21,9 +19,7 @@
         "hospital": "Moon Maternity Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -35,9 +31,7 @@
         "hospital": "Moon Maternity Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -49,9 +43,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -63,9 +55,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -77,9 +67,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -91,9 +79,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -105,9 +91,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -119,9 +103,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -133,9 +115,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -147,9 +127,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -161,9 +139,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -175,9 +151,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -189,9 +163,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -203,9 +175,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -217,9 +187,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -231,9 +199,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -245,9 +211,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -259,9 +223,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -273,9 +235,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -287,9 +247,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -301,9 +259,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -315,9 +271,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -329,9 +283,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -343,9 +295,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -357,9 +307,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -371,9 +319,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -385,9 +331,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -399,9 +343,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -413,9 +355,7 @@
         "hospital": "City Hospital",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Next visit after 3 months.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     },
@@ -427,9 +367,7 @@
         "hospital": "Apollo",
         "purpose": "Routine Checkup",
         "diagnosis": "Healthy",
-        "prescription": [
-            "Vitamin D"
-        ],
+        "prescription": ["Vitamin D"],
         "notes": "Everything normal.",
         "nextVisitDate": "2026-10-24T00:00:00.000Z"
     }

@@ -3,6 +3,7 @@
 ---
 
 # Sprint 1.1
+
 Date: 14 Jul 2026
 
 ## Objective
@@ -41,12 +42,15 @@ Set up the BabyCare Companion development environment and create the core projec
 ---
 
 # Sprint 1.2
+
 **Date:** 14-Jul-2026
 
 ### Objective
+
 Implement the first working vaccination scheduling engine.
 
 ### Completed
+
 - Added initial IAP vaccination schedule.
 - Implemented Vaccination Service.
 - Connected Child model with scheduling engine.
@@ -54,20 +58,25 @@ Implement the first working vaccination scheduling engine.
 - Generated first vaccination timeline successfully.
 
 ### Issues
-| ID | Description | Status |
-|----|-------------|--------|
+
+| ID      | Description                                                                                                              | Status              |
+| ------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------- |
 | BUG-001 | Calendar dates calculated using fixed day offsets instead of calendar offsets (24-month visit generated as 21-Jun-2028). | Fixed in Sprint 1.3 |
 
 ### Outcome
+
 Prototype validated successfully and identified the need for a calendar-aware scheduling engine.
 
 ### Next Sprint
+
 - Refactor scheduling engine to support week/month/year offsets.
 - Add reminder generation.
 - Improve schedule data model.
 
 ---
+
 # Sprint 1.3
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -100,6 +109,7 @@ Successfully migrated from fixed day calculations to calendar-aware scheduling. 
 ---
 
 # Sprint 1.4
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -132,6 +142,7 @@ Development milestones can now be generated and exported as RFC5545-compliant ca
 ---
 
 # Sprint 1.5
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -156,6 +167,7 @@ All exported events now have deterministic, reusable identifiers, providing a so
 ---
 
 # Sprint 1.6
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -178,6 +190,7 @@ The core can now identify duplicate event identifiers, enabling safer exports an
 ---
 
 # Sprint 1.7
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -201,6 +214,7 @@ The project now has a dedicated platform layer that separates reusable business 
 - Apple Reminders adapter
 
 # Sprint 1.8
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -224,6 +238,7 @@ The application can now transform vaccination schedules into Apple Calendar-comp
 - Apple Reminders adapter
 
 # Sprint 1.9
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -245,6 +260,7 @@ Core services can now share a single application context containing the child pr
 - Dashboard service
 
 # Sprint 1.10
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -270,6 +286,7 @@ The application can now transform vaccination schedules into Apple Reminders-com
 - Daily agenda generation
 
 # Sprint 1.11
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -293,6 +310,7 @@ The core now provides a unified chronological feed of vaccinations and developme
 - Platform orchestration
 
 # Sprint 2.0
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -318,6 +336,7 @@ Reminder schedules can now be transformed into Apple Reminders-compatible object
 - Notification prioritization
 
 # Sprint 2.1
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -342,6 +361,7 @@ The platform can now identify the next upcoming vaccinations and development mil
 - Widget data provider
 
 # Sprint 2.2
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -365,6 +385,7 @@ The platform now exposes a single normalized timeline containing vaccinations an
 - Widget provider
 
 # Sprint 2.3
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -387,6 +408,7 @@ The platform now supports pediatric health visit recommendations independent of 
 - User Appointment engine
 
 # Sprint 2.4
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -408,6 +430,7 @@ The timeline now combines vaccinations, development milestones, and health visit
 - Appointment Engine
 
 # Sprint 2.5
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -431,6 +454,7 @@ Parents can now associate real appointments with recommended health visits. This
 - Visit completion workflow
 
 # Sprint 2.6
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -452,6 +476,7 @@ All timeline-based services now share a consistent Event object, simplifying das
 - Appointment integration into unified timeline
 
 # Sprint 2.7
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -474,6 +499,7 @@ Vaccinations, milestones, health visits, and appointments are now merged into a 
 - Upcoming events dashboard
 
 # Sprint 2.8
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -496,6 +522,7 @@ Appointments are now derived directly from the health visit schedule, eliminatin
 - Appointment editing
 
 # Sprint 2.9
+
 **Date:** 16-Jul-2026
 
 ## Objective
@@ -520,6 +547,7 @@ The application can now generate filtered timelines for vaccinations, milestones
 - Dashboard widgets
 
 # Sprint 3.0
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -542,6 +570,7 @@ The application is now capable of evaluating a growth measurement using the chil
 - WHO dataset expansion
 
 # Sprint 3.1
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -565,6 +594,7 @@ The project can now calculate a child's weight percentile against the initial WH
 - Expand WHO reference datasets
 
 # Sprint 3.2
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -587,6 +617,7 @@ Growth records are now enriched with WHO weight percentile classifications, prov
 - Growth alerts
 
 # Sprint 3.3
+
 **Date:** 15-Jul-2026
 
 ## Objective
@@ -609,6 +640,7 @@ The application can automatically identify healthy weight gain, weight loss, min
 - Growth summary generation
 
 # Sprint 3.4
+
 **Date:** 15-Jul-2026
 
 ## Objective

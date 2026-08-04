@@ -1,217 +1,139 @@
-import React, { useEffect, useState, } from "react";
-import { ImageBackground, Pressable, StyleSheet, Text, View, } from "react-native";
-import * as SplashScreen from "expo-splash-screen";
-import { SafeAreaView, } from "react-native-safe-area-context";
-import AppNavigator from "./src/navigation/AppNavigator";
-import { initDatabase, } from "./src/database/initDatabase";
-import { configureMedicationNotifications, } from "./src/services/MedicationNotificationService";
-import { useBabyStore, } from "./src/store/BabyStore";
+import React, { useEffect, useState } from 'react';
+import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AppNavigator from './src/navigation/AppNavigator';
+import { initDatabase } from './src/database/initDatabase';
+import { configureMedicationNotifications } from './src/services/MedicationNotificationService';
+import { useBabyStore } from './src/store/BabyStore';
 void SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
-  duration: 450,
-  fade: true,
+    duration: 450,
+    fade: true,
 });
-type StartupState =
-  | "loading"
-  | "ready"
-  | "error";
-const MINIMUM_STARTUP_TIME_MS =
-  2500;
+type StartupState = 'loading' | 'ready' | 'error';
+const MINIMUM_STARTUP_TIME_MS = 2500;
 export default function App() {
-  const [
-    startupState,
-    setStartupState,
-  ] = useState<StartupState>(
-    "loading"
-  );
-  const [
-    startupError,
-    setStartupError,
-  ] = useState<string | null>(
-    null
-  );
-  async function initialiseApp() {
-    const startedAt =
-      Date.now();
-    try {
-      setStartupState(
-        "loading"
-      );
-      setStartupError(
-        null
-      );
-      await initDatabase();
-      await useBabyStore
-        .getState()
-        .loadBaby();
-      await configureMedicationNotifications();
-      const elapsed =
-        Date.now() -
-        startedAt;
-      const remaining =
-        Math.max(
-          0,
-          MINIMUM_STARTUP_TIME_MS -
-          elapsed
-        );
-      if (remaining > 0) {
-        await new Promise<void>(
-          resolve => {
-            setTimeout(
-              resolve,
-              remaining
-            );
-          }
-        );
-      }
-      setStartupState(
-        "ready"
-      );
-    } catch (error) {
-      console.error(
-        "App initialization failed:",
-        error
-      );
-      setStartupError(
-        error instanceof Error
-          ? error.message
-          : "Unknown startup error"
-      );
-      setStartupState(
-        "error"
-      );
-    }
-  }
-  async function hideNativeSplash() {
-    try {
-      await SplashScreen.hideAsync();
-    } catch (error) {
-      console.warn(
-        "Unable to hide native splash:",
-        error
-      );
-    }
-  }
-  useEffect(() => {
-    void initialiseApp();
-  }, []);
-  if (startupState === "loading") {
-    return (
-      <ImageBackground
-        source={require(
-          "./assets/niva-startup.png"
-        )}
-        style={styles.startupBackground}
-        resizeMode="cover"
-        onLoadEnd={() => {
-          void hideNativeSplash();
-        }}
-      />
-    );
-  }
-  if (
-    startupState === "error"
-  ) {
-    return (
-      <SafeAreaView
-        style={styles.errorSafe}
-      >
-        <View
-          style={styles.errorContent}
-        >
-          <Text
-            style={styles.errorIcon}
-          >
-            ⚠️
-          </Text>
-          <Text
-            style={styles.errorTitle}
-          >
-            Unable to start Niva
-          </Text>
-          <Text
-            style={
-              styles.errorMessage
+    const [startupState, setStartupState] = useState<StartupState>('loading');
+    const [startupError, setStartupError] = useState<string | null>(null);
+    async function initialiseApp() {
+        const startedAt = Date.now();
+        try {
+            setStartupState('loading');
+            setStartupError(null);
+            await initDatabase();
+            await useBabyStore.getState().loadBaby();
+            await configureMedicationNotifications();
+            const elapsed = Date.now() - startedAt;
+            const remaining = Math.max(0, MINIMUM_STARTUP_TIME_MS - elapsed);
+            if (remaining > 0) {
+                await new Promise<void>((resolve) => {
+                    setTimeout(resolve, remaining);
+                });
             }
-          >
-            {startupError ??
-              "The app could not be initialized."}
-          </Text>
-          <Pressable
-            onPress={() => {
-              void initialiseApp();
-            }}
-            style={({ pressed }) => [
-              styles.retryButton,
-              pressed &&
-              styles.retryButtonPressed,
-            ]}
-          >
-            <Text
-              style={
-                styles.retryButtonText
-              }
-            >
-              Try Again
-            </Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
-  return <AppNavigator />;
+            setStartupState('ready');
+        } catch (error) {
+            console.error('App initialization failed:', error);
+            setStartupError(
+                error instanceof Error ? error.message : 'Unknown startup error'
+            );
+            setStartupState('error');
+        }
+    }
+    async function hideNativeSplash() {
+        try {
+            await SplashScreen.hideAsync();
+        } catch (error) {
+            console.warn('Unable to hide native splash:', error);
+        }
+    }
+    useEffect(() => {
+        void initialiseApp();
+    }, []);
+    if (startupState === 'loading') {
+        return (
+            <ImageBackground
+                source={require('./assets/niva-startup.png')}
+                style={styles.startupBackground}
+                resizeMode="cover"
+                onLoadEnd={() => {
+                    void hideNativeSplash();
+                }}
+            />
+        );
+    }
+    if (startupState === 'error') {
+        return (
+            <SafeAreaView style={styles.errorSafe}>
+                <View style={styles.errorContent}>
+                    <Text style={styles.errorIcon}>⚠️</Text>
+                    <Text style={styles.errorTitle}>Unable to start Niva</Text>
+                    <Text style={styles.errorMessage}>
+                        {startupError ?? 'The app could not be initialized.'}
+                    </Text>
+                    <Pressable
+                        onPress={() => {
+                            void initialiseApp();
+                        }}
+                        style={({ pressed }) => [
+                            styles.retryButton,
+                            pressed && styles.retryButtonPressed,
+                        ]}
+                    >
+                        <Text style={styles.retryButtonText}>Try Again</Text>
+                    </Pressable>
+                </View>
+            </SafeAreaView>
+        );
+    }
+    return <AppNavigator />;
 }
-const styles =
-  StyleSheet.create({
+const styles = StyleSheet.create({
     startupBackground: {
-      flex: 1,
-      width: "100%",
-      height: "100%",
-      backgroundColor:
-        "#FFFDF8",
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#FFFDF8',
     },
     errorSafe: {
-      flex: 1,
-      backgroundColor:
-        "#FFFDF8",
+        flex: 1,
+        backgroundColor: '#FFFDF8',
     },
     errorContent: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent:
-        "center",
-      paddingHorizontal: 28,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 28,
     },
     errorIcon: {
-      fontSize: 48,
+        fontSize: 48,
     },
     errorTitle: {
-      marginTop: 16,
-      fontSize: 22,
-      fontWeight: "900",
-      color: "#111827",
+        marginTop: 16,
+        fontSize: 22,
+        fontWeight: '900',
+        color: '#111827',
     },
     errorMessage: {
-      marginTop: 10,
-      textAlign: "center",
-      fontSize: 14,
-      lineHeight: 21,
-      color: "#6B7280",
+        marginTop: 10,
+        textAlign: 'center',
+        fontSize: 14,
+        lineHeight: 21,
+        color: '#6B7280',
     },
     retryButton: {
-      marginTop: 22,
-      borderRadius: 14,
-      backgroundColor:
-        "#079669",
-      paddingHorizontal: 22,
-      paddingVertical: 12,
+        marginTop: 22,
+        borderRadius: 14,
+        backgroundColor: '#079669',
+        paddingHorizontal: 22,
+        paddingVertical: 12,
     },
     retryButtonPressed: {
-      opacity: 0.75,
+        opacity: 0.75,
     },
     retryButtonText: {
-      fontSize: 15,
-      fontWeight: "800",
-      color: "#FFFFFF",
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#FFFFFF',
     },
-  });
+});

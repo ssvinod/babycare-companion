@@ -1,7 +1,5 @@
 export class Appointment {
-
     constructor({
-
         id,
 
         visitId,
@@ -10,16 +8,14 @@ export class Appointment {
 
         date,
 
-        doctor = "",
+        doctor = '',
 
-        hospital = "",
+        hospital = '',
 
-        status = "scheduled",
+        status = 'scheduled',
 
-        notes = ""
-
+        notes = '',
     }) {
-
         this.id = id;
 
         this.visitId = visitId;
@@ -35,7 +31,5 @@ export class Appointment {
         this.status = status;
 
         this.notes = notes;
-
     }
-
 }

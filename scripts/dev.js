@@ -1,9 +1,9 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import { logger } from "../src/core/logger.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import { logger } from '../src/core/logger.js';
 //import { Child } from "../src/models/child.js";
-import { loadProfile } from "../src/services/profileService.js";
-import { generateVaccinationPlan } from "../src/services/vaccinationService.js";
-import { formatDate } from "../src/utils/dateUtils.js";
+import { loadProfile } from '../src/services/profileService.js';
+import { generateVaccinationPlan } from '../src/services/vaccinationService.js';
+import { formatDate } from '../src/utils/dateUtils.js';
 
 //const viha = new Child({
 //
@@ -21,8 +21,7 @@ logger.info(`Child : ${child.name}`);
 const plan = generateVaccinationPlan(child);
 
 for (const visit of plan) {
-
-    logger.info("--------------------------------");
+    logger.info('--------------------------------');
 
     logger.info(`Visit : ${visit.visit}`);
 
@@ -30,10 +29,5 @@ for (const visit of plan) {
 
     logger.info(`Vaccines :`);
 
-    visit.vaccines.forEach(v =>
-
-        logger.info(`   • ${v}`)
-
-    );
-
+    visit.vaccines.forEach((v) => logger.info(`   • ${v}`));
 }

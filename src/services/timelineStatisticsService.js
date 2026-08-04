@@ -1,7 +1,5 @@
 export function buildTimelineStatistics(timeline) {
-
     const stats = {
-
         total: timeline.length,
 
         completed: 0,
@@ -16,61 +14,47 @@ export function buildTimelineStatistics(timeline) {
 
         growth: 0,
 
-        appointment: 0
-
+        appointment: 0,
     };
 
-    timeline.forEach(event => {
-
+    timeline.forEach((event) => {
         switch (event.status) {
-
-            case "completed":
+            case 'completed':
                 stats.completed++;
                 break;
 
-            case "overdue":
+            case 'overdue':
                 stats.overdue++;
                 break;
 
             default:
                 stats.pending++;
                 break;
-
         }
 
         switch (event.type) {
-
-            case "vaccination":
+            case 'vaccination':
                 stats.vaccination++;
                 break;
 
-            case "milestone":
+            case 'milestone':
                 stats.milestone++;
                 break;
 
-            case "growth":
+            case 'growth':
                 stats.growth++;
                 break;
 
-            case "appointment":
+            case 'appointment':
                 stats.appointment++;
                 break;
-
         }
-
     });
 
     stats.completionPercent =
         stats.total === 0
             ? 0
-            : Number(
-                (
-                    stats.completed /
-                    stats.total *
-                    100
-                ).toFixed(1)
-            );
+            : Number(((stats.completed / stats.total) * 100).toFixed(1));
 
     return stats;
-
 }

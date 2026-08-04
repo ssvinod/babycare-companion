@@ -1,20 +1,20 @@
-import { db } from "./database";
-import { Sleep } from "../models/Sleep";
+import { db } from './database';
+import { Sleep } from '../models/Sleep';
 
 export default class SleepRepository {
-  async getAll(): Promise<Sleep[]> {
-    return db.getAllSync<Sleep>(`
+    async getAll(): Promise<Sleep[]> {
+        return db.getAllSync<Sleep>(`
       SELECT *
       FROM sleep
       ORDER BY startTime DESC
     `);
-  }
+    }
 
-  async startSleep(startTime: string): Promise<void> {
-    console.log("Repository startSleep()");
+    async startSleep(startTime: string): Promise<void> {
+        console.log('Repository startSleep()');
 
-    db.runSync(
-      `
+        db.runSync(
+            `
       INSERT INTO sleep (
         startTime,
         endTime,
@@ -22,74 +22,64 @@ export default class SleepRepository {
       )
       VALUES (?, NULL, NULL)
       `,
-      [startTime]
-    );
+            [startTime]
+        );
 
-    console.log("Sleep started successfully");
-  }
+        console.log('Sleep started successfully');
+    }
 
-  async finishSleep(
-    id: number,
-    endTime: string
-  ): Promise<void> {
-
-    const sleep = db.getFirstSync<{
-      startTime: string;
-    }>(
-      `
+    async finishSleep(id: number, endTime: string): Promise<void> {
+        const sleep = db.getFirstSync<{
+            startTime: string;
+        }>(
+            `
       SELECT startTime
       FROM sleep
       WHERE id = ?
       `,
-      [id]
-    );
+            [id]
+        );
 
-    if (!sleep) return;
+        if (!sleep) return;
 
-    const start = new Date(sleep.startTime).getTime();
-    const end = new Date(endTime).getTime();
+        const start = new Date(sleep.startTime).getTime();
+        const end = new Date(endTime).getTime();
 
-    const durationMinutes = Math.round(
-      (end - start) / 60000
-    );
+        const durationMinutes = Math.round((end - start) / 60000);
 
-    db.runSync(
-      `
+        db.runSync(
+            `
       UPDATE sleep
       SET
         endTime = ?,
         durationMinutes = ?
       WHERE id = ?
       `,
-      [
-        endTime,
-        durationMinutes,
-        id,
-      ]
-    );
-  }
+            [endTime, durationMinutes, id]
+        );
+    }
 
-  async getActiveSleep(): Promise<Sleep | null> {
-    return (
-      db.getFirstSync<Sleep>(
-        `
+    async getActiveSleep(): Promise<Sleep | null> {
+        return (
+            db.getFirstSync<Sleep>(
+                `
         SELECT *
         FROM sleep
         WHERE endTime IS NULL
         ORDER BY startTime DESC
         LIMIT 1
         `
-      ) ?? null
-    );
-  }
+            ) ?? null
+        );
+    }
 
-  async delete(id: number): Promise<void> {
-    db.runSync(
-      `
+    async delete(id: number): Promise<void> {
+        db.runSync(
+            `
       DELETE FROM sleep
       WHERE id = ?
       `,
-      [id]
-    );
-  }
+            [id]
+        );
+    }
 }

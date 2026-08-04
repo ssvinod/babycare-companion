@@ -1,58 +1,50 @@
-import { buildCompletionMap, getCompletionStatus } from "./completionService.js";
+import { buildCompletionMap, getCompletionStatus } from './completionService.js';
 
 export function aggregateTimeline(context) {
     const timeline = [];
     const completion = buildCompletionMap(context);
-    context.vaccinations?.forEach(v => {
+    context.vaccinations?.forEach((v) => {
         timeline.push({
             id: `vaccination-${v.id}`,
-            type: "vaccination",
+            type: 'vaccination',
             title: `${v.visit} Vaccination`,
             date: v.dueDate,
-            details: v.vaccines
+            details: v.vaccines,
         });
     });
-    context.milestones?.forEach(m => {
+    context.milestones?.forEach((m) => {
         timeline.push({
             id: `milestone-${m.id}`,
-            type: "milestone",
+            type: 'milestone',
             title: `${m.age} Milestone`,
             date: m.dueDate,
-            details: m.milestones
+            details: m.milestones,
         });
     });
-    context.growth?.forEach(g => {
+    context.growth?.forEach((g) => {
         timeline.push({
             id: `growth-${g.id}`,
-            type: "growth",
+            type: 'growth',
             title: `Growth Measurement (${g.age})`,
             date: g.dueDate,
             details: g.measurements,
-            status: g.status
+            status: g.status,
         });
     });
-    context.appointments?.forEach(a => {
+    context.appointments?.forEach((a) => {
         timeline.push({
             id: `appointment-${a.id}`,
-            type: "appointment",
+            type: 'appointment',
             title: a.title,
             date: a.date,
-            details: a.notes ?? []
+            details: a.notes ?? [],
         });
     });
-    timeline.forEach(event => {
-        event.status =
-            getCompletionStatus(
-                event,
-                completion
-            );
+    timeline.forEach((event) => {
+        event.status = getCompletionStatus(event, completion);
     });
-    
-    return timeline.sort(
-        (a, b) =>
-            new Date(a.date) -
-            new Date(b.date)
-    );
+
+    return timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 export function buildTimeline(context) {
     return aggregateTimeline(context);

@@ -1,2 +1,2 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import "../tools/whoImporter.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import '../tools/whoImporter.js';

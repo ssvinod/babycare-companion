@@ -1,4 +1,4 @@
-import { HistoryItem } from "../models/historyItem.js";
+import { HistoryItem } from '../models/historyItem.js';
 /*
  * Legacy exports
  */
@@ -15,7 +15,7 @@ export function loadHistory() {
     return {
         vaccinations: loadVaccinationHistory(),
         growth: loadGrowthHistory(),
-        appointments: loadAppointmentHistory()
+        appointments: loadAppointmentHistory(),
     };
 }
 /*
@@ -27,18 +27,11 @@ export function buildUnifiedHistory(context) {
         history.push(
             new HistoryItem({
                 id: vaccine.id,
-                type: "vaccination",
-                date:
-                    vaccine.completedDate ??
-                    vaccine.dueDate,
-                title:
-                    vaccine.title ??
-                    vaccine.visit,
-                subtitle:
-                    vaccine.completed
-                        ? "Completed"
-                        : "Scheduled",
-                details: vaccine
+                type: 'vaccination',
+                date: vaccine.completedDate ?? vaccine.dueDate,
+                title: vaccine.title ?? vaccine.visit,
+                subtitle: vaccine.completed ? 'Completed' : 'Scheduled',
+                details: vaccine,
             })
         );
     }
@@ -46,16 +39,11 @@ export function buildUnifiedHistory(context) {
         history.push(
             new HistoryItem({
                 id: medication.id,
-                type: "medication",
-                date:
-                    medication.completedDate ??
-                    medication.startDate,
+                type: 'medication',
+                date: medication.completedDate ?? medication.startDate,
                 title: medication.name,
-                subtitle:
-                    medication.completed
-                        ? "Completed"
-                        : "Medication",
-                details: medication
+                subtitle: medication.completed ? 'Completed' : 'Medication',
+                details: medication,
             })
         );
     }
@@ -63,12 +51,11 @@ export function buildUnifiedHistory(context) {
         history.push(
             new HistoryItem({
                 id: feeding.id,
-                type: "feeding",
+                type: 'feeding',
                 date: feeding.date,
                 title: feeding.type,
-                subtitle:
-                    `${feeding.quantity ?? ""} ${feeding.unit ?? ""}`.trim(),
-                details: feeding
+                subtitle: `${feeding.quantity ?? ''} ${feeding.unit ?? ''}`.trim(),
+                details: feeding,
             })
         );
     }
@@ -76,17 +63,15 @@ export function buildUnifiedHistory(context) {
         history.push(
             new HistoryItem({
                 id: sleep.id,
-                type: "sleep",
+                type: 'sleep',
                 date: sleep.startTime,
                 title: sleep.type,
-                subtitle: "Sleep",
-                details: sleep
+                subtitle: 'Sleep',
+                details: sleep,
             })
         );
     }
-    history.sort(
-        (a, b) => b.date - a.date
-    );
+    history.sort((a, b) => b.date - a.date);
     return history;
 }
 /*

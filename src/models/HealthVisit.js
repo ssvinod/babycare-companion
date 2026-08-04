@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 export class HealthVisit {
     constructor({
         id = crypto.randomUUID(),
@@ -6,10 +6,10 @@ export class HealthVisit {
         visitDate,
         doctor,
         hospital,
-        diagnosis = "",
+        diagnosis = '',
         prescription = [],
-        notes = "",
-        followUpDate = null
+        notes = '',
+        followUpDate = null,
     }) {
         this.id = id;
         this.childId = childId;
@@ -19,9 +19,6 @@ export class HealthVisit {
         this.diagnosis = diagnosis;
         this.prescription = prescription;
         this.notes = notes;
-        this.followUpDate =
-            followUpDate
-                ? new Date(followUpDate)
-                : null;
+        this.followUpDate = followUpDate ? new Date(followUpDate) : null;
     }
 }

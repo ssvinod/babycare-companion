@@ -1,45 +1,35 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import { buildHomeDashboard }
-from "../src/services/homeDashboardService.js";
-const dashboard =
-buildHomeDashboard({
+import { shortDate } from '../src/utils/dateFormatter.js';
+import { buildHomeDashboard } from '../src/services/homeDashboardService.js';
+const dashboard = buildHomeDashboard({
     profile: {
-        name: "Viha"
+        name: 'Viha',
     },
     dashboard: {
         vaccinations: {
             next: {
-                visit: "10 Weeks",
-                dueDate:
-                    new Date()
-            }
-        }
+                visit: '10 Weeks',
+                dueDate: new Date(),
+            },
+        },
     },
-    nextMeasurementDate:
-        new Date(),
+    nextMeasurementDate: new Date(),
     reminders: [
         {
-            title:
-                "Vitamin D"
-        }
+            title: 'Vitamin D',
+        },
     ],
     vaccinations: [
         {
-            visit: "10 Weeks",
+            visit: '10 Weeks',
             completed: false,
-            dueDate:
-                new Date()
-        }
+            dueDate: new Date(),
+        },
     ],
     growthSummary: {
         weight: 4.4,
-        weightStatus:
-            "Normal"
+        weightStatus: 'Normal',
     },
     alerts: [],
-    timeline: []
+    timeline: [],
 });
-console.dir(
-    dashboard,
-    { depth:null }
-);
+console.dir(dashboard, { depth: null });

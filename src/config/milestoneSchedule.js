@@ -1,63 +1,43 @@
 export const MILESTONE_SCHEDULE = [
-
     {
-        id: "birth",
-        age: "Birth",
+        id: 'birth',
+        age: 'Birth',
         offset: {},
-        milestones: [
-            "Responds to sound",
-            "Looks at faces"
-        ]
+        milestones: ['Responds to sound', 'Looks at faces'],
     },
 
     {
-        id: "6weeks",
-        age: "6 Weeks",
+        id: '6weeks',
+        age: '6 Weeks',
         offset: { weeks: 6 },
-        milestones: [
-            "Social smile",
-            "Tracks moving objects"
-        ]
+        milestones: ['Social smile', 'Tracks moving objects'],
     },
 
     {
-        id: "3months",
-        age: "3 Months",
+        id: '3months',
+        age: '3 Months',
         offset: { months: 3 },
-        milestones: [
-            "Holds head steady",
-            "Recognizes parents"
-        ]
+        milestones: ['Holds head steady', 'Recognizes parents'],
     },
 
     {
-        id: "6months",
-        age: "6 Months",
+        id: '6months',
+        age: '6 Months',
         offset: { months: 6 },
-        milestones: [
-            "Rolls over",
-            "Sits with support"
-        ]
+        milestones: ['Rolls over', 'Sits with support'],
     },
 
     {
-        id: "9months",
-        age: "9 Months",
+        id: '9months',
+        age: '9 Months',
         offset: { months: 9 },
-        milestones: [
-            "Crawls",
-            "Responds to own name"
-        ]
+        milestones: ['Crawls', 'Responds to own name'],
     },
 
     {
-        id: "12months",
-        age: "12 Months",
+        id: '12months',
+        age: '12 Months',
         offset: { months: 12 },
-        milestones: [
-            "Walks with support",
-            "Says first words"
-        ]
-    }
-
+        milestones: ['Walks with support', 'Says first words'],
+    },
 ];

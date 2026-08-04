@@ -1,16 +1,10 @@
-import { BaseRepository } from "./baseRepository.js";
-import { Medication } from "../models/medication.js";
+import { BaseRepository } from './baseRepository.js';
+import { Medication } from '../models/medication.js';
 export class MedicationRepository extends BaseRepository {
     constructor() {
-        super(
-            "medication",
-            Medication
-        );
+        super('medication', Medication);
     }
     findByChild(childId) {
-        return this.findAll()
-            .filter(
-                medication => medication.childId === childId
-            );
+        return this.findAll().filter((medication) => medication.childId === childId);
     }
 }

@@ -1,21 +1,17 @@
-import { generateICS } from "./icsGenerator.js";
+import { generateICS } from './icsGenerator.js';
 
 export function exportMilestoneCalendar(child, milestones) {
+    const events = milestones.map((item) => ({
+        id: item.id,
 
-    const events = milestones.map(item => ({
+        title: `${item.age} Development Milestone`,
 
-    id: item.id,
+        descriptionLabel: 'Milestones',
 
-    title: `${item.age} Development Milestone`,
+        milestones: item.milestones,
 
-    descriptionLabel: "Milestones",
-
-    milestones: item.milestones,
-
-    dueDate: item.dueDate
-
+        dueDate: item.dueDate,
     }));
 
     return generateICS(child, events);
-
 }

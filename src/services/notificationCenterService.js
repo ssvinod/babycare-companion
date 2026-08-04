@@ -1,41 +1,40 @@
-import { isPending, isOverdue } from "./eventStatusService.js";
+import { isPending, isOverdue } from './eventStatusService.js';
 
 export function buildNotificationCenter(context) {
     const notifications = [];
-    context.timeline.forEach(event => {
+    context.timeline.forEach((event) => {
         if (isOverdue(event)) {
             notifications.push({
-                severity: "high",
+                severity: 'high',
                 type: event.type,
                 title: event.title,
                 message: `${event.title} is overdue.`,
-                dueDate: event.date
+                dueDate: event.date,
             });
-        }
-        else if (isPending(event)) {
+        } else if (isPending(event)) {
             notifications.push({
-                severity: "info",
+                severity: 'info',
                 type: event.type,
                 title: event.title,
                 message: `${event.title} is upcoming.`,
-                dueDate: event.date
+                dueDate: event.date,
             });
         }
     });
-    context.insights?.forEach(insight => {
+    context.insights?.forEach((insight) => {
         notifications.push({
             severity: insight.severity,
-            type: "insight",
+            type: 'insight',
             title: insight.title,
-            message: insight.message
+            message: insight.message,
         });
     });
-    context.recommendations?.forEach(rec => {
+    context.recommendations?.forEach((rec) => {
         notifications.push({
             severity: rec.priority,
-            type: "recommendation",
+            type: 'recommendation',
             title: rec.category,
-            message: rec.action
+            message: rec.action,
         });
     });
     return notifications;

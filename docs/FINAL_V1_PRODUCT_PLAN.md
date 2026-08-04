@@ -53,15 +53,11 @@ A lightweight shared UI model will be used for v1.0 instead of a new universal e
 
 ```ts
 interface TimelineItem {
-  id: string;
-  type:
-    | "feeding"
-    | "sleep"
-    | "growth"
-    | "medication"
-    | "vaccination";
-  title: string;
-  subtitle?: string;
-  timestamp: string;
-  status?: string;
+    id: string;
+    type: 'feeding' | 'sleep' | 'growth' | 'medication' | 'vaccination';
+    title: string;
+    subtitle?: string;
+    timestamp: string;
+    status?: string;
 }
+```

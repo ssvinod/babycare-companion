@@ -1,75 +1,73 @@
 {
-  "expo": {
-    "name": "Niva",
-    "slug": "niva",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "niva",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.ssvinod.babycarecompanion",
-      "buildNumber": "1",
-      "icon": "./assets/icon.png",
-      "infoPlist": {
-        "CFBundleDisplayName": "Niva",
-        "NSUserNotificationsUsageDescription": "Niva uses notifications for medication and vaccination reminders.",
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "package": "com.ssvinod.babycarecompanion",
-      "versionCode": 1,
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFDF8"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": true,
-      "permissions": [
-        "POST_NOTIFICATIONS"
-      ]
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-sqlite",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash-icon.png",
-          "imageWidth": 190,
-          "resizeMode": "contain",
-          "backgroundColor": "#FFFDF8"
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Allow Niva to choose a baby profile photo.",
-          "cameraPermission": "Allow Niva to take a baby profile photo."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#079669",
-          "defaultChannel": "babycare-reminders"
-        }
-      ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "597caee2-b398-4aba-8238-c1dd68b67984"
-      }
-    },
-    "owner": "ssvinod36"
-  }
+    "expo": {
+        "name": "Niva",
+        "slug": "niva",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "scheme": "niva",
+        "userInterfaceStyle": "light",
+        "newArchEnabled": true,
+        "runtimeVersion": {
+            "policy": "appVersion"
+        },
+        "ios": {
+            "supportsTablet": false,
+            "bundleIdentifier": "com.ssvinod.babycarecompanion",
+            "buildNumber": "1",
+            "icon": "./assets/icon.png",
+            "infoPlist": {
+                "CFBundleDisplayName": "Niva",
+                "NSUserNotificationsUsageDescription": "Niva uses notifications for medication and vaccination reminders.",
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "package": "com.ssvinod.babycarecompanion",
+            "versionCode": 1,
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#FFFDF8"
+            },
+            "edgeToEdgeEnabled": true,
+            "predictiveBackGestureEnabled": true,
+            "permissions": ["POST_NOTIFICATIONS"]
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            "expo-sqlite",
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/splash-icon.png",
+                    "imageWidth": 190,
+                    "resizeMode": "contain",
+                    "backgroundColor": "#FFFDF8"
+                }
+            ],
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "Allow Niva to choose a baby profile photo.",
+                    "cameraPermission": "Allow Niva to take a baby profile photo."
+                }
+            ],
+            [
+                "expo-notifications",
+                {
+                    "icon": "./assets/notification-icon.png",
+                    "color": "#079669",
+                    "defaultChannel": "babycare-reminders"
+                }
+            ]
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "597caee2-b398-4aba-8238-c1dd68b67984"
+            }
+        },
+        "owner": "ssvinod36"
+    }
 }

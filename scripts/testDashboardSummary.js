@@ -1,10 +1,4 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import {
-    createApplicationContext
-}
-from "../src/services/applicationContext.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import { createApplicationContext } from '../src/services/applicationContext.js';
 
-console.table(
-    createApplicationContext()
-        .dashboard
-);
+console.table(createApplicationContext().dashboard);

@@ -1,15 +1,8 @@
-import { shortDate } from "../src/utils/dateFormatter.js";
-import { createApplicationContext }
-from "../src/services/applicationContext.js";
+import { shortDate } from '../src/utils/dateFormatter.js';
+import { createApplicationContext } from '../src/services/applicationContext.js';
 
-import { toAppleReminders }
-from "../src/platforms/apple/appleReminderAdapter.js";
+import { toAppleReminders } from '../src/platforms/apple/appleReminderAdapter.js';
 
-const context =
-    createApplicationContext();
+const context = createApplicationContext();
 
-console.table(
-    toAppleReminders(
-        context.reminders
-    ).slice(0,5)
-);
+console.table(toAppleReminders(context.reminders).slice(0, 5));

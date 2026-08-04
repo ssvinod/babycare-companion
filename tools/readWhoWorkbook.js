@@ -1,17 +1,11 @@
-import xlsx from "xlsx";
+import xlsx from 'xlsx';
 
 export function readWorkbook(filePath) {
-
     const workbook = xlsx.readFile(filePath);
 
-    const sheet = workbook.Sheets[
-        workbook.SheetNames[0]
-    ];
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-    return xlsx.utils.sheet_to_json(
-        sheet,
-        {
-            defval: null
-        }
-    );
+    return xlsx.utils.sheet_to_json(sheet, {
+        defval: null,
+    });
 }
