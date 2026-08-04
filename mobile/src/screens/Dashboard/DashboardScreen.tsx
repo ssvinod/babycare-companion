@@ -11,8 +11,6 @@ import ReminderWidget from '../../components/widgets/ReminderWidget';
 import { calculateAge } from '../../utils/calculateAge';
 import { useBabyStore } from '../../store/BabyStore';
 import { useDashboardStore } from '../../store/DashboardStore';
-import UpcomingReminderCard from '../../components/cards/UpcomingReminderCard';
-import formatTime12Hour from '../../utils/formatTime12Hour';
 function formatDateTime(value: string | null): string {
     if (!value) {
         return 'No feeding recorded';
@@ -84,7 +82,6 @@ export default function DashboardScreen() {
         pendingMedicationDoses,
         completedMedicationDoses,
         skippedMedicationDoses,
-        nextMedication,
         refresh,
         loading,
         error,
@@ -105,16 +102,6 @@ export default function DashboardScreen() {
                 photo={baby.photo}
                 gender={baby.gender}
                 onPress={() => navigation.getParent()?.navigate('ProfileDetails')}
-            />
-            <Text style={styles.sectionTitle}>Today's Schedule</Text>
-            <UpcomingReminderCard
-                icon="💊"
-                title={nextMedication?.medicine ?? 'No medication'}
-                subtitle="Medication"
-                time={
-                    nextMedication ? formatTime12Hour(nextMedication.reminderTime) : '--'
-                }
-                onPress={() => navigation.navigate('Medication')}
             />
             <QuickActionGrid />
             <ScreenTitle title="Today's Summary" icon="📋" />
