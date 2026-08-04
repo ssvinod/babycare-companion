@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import DashboardRepository, {
     DashboardMedication,
+    NextMedicationReminder,
 } from '../database/DashboardRepository';
 interface DashboardState {
     todayFeedings: number;
@@ -16,6 +17,7 @@ interface DashboardState {
     completedMedicationDoses: number;
     skippedMedicationDoses: number;
     todayMedications: DashboardMedication[];
+    nextMedication: NextMedicationReminder | null;
     loading: boolean;
     error: string | null;
     refresh: () => Promise<void>;
@@ -35,6 +37,7 @@ const initialState = {
     completedMedicationDoses: 0,
     skippedMedicationDoses: 0,
     todayMedications: [] as DashboardMedication[],
+    nextMedication: null,
     loading: false,
     error: null,
 };
@@ -48,8 +51,10 @@ export const useDashboardStore = create<DashboardState>((set) => ({
         try {
             const repository = new DashboardRepository();
             const summary = await repository.getSummary();
+            const nextMedication = await repository.getNextMedicationReminder();
             set({
                 ...summary,
+                nextMedication,
                 loading: false,
                 error: null,
             });

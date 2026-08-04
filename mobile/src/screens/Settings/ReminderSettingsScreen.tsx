@@ -17,6 +17,12 @@ import {
     rescheduleActiveMedicationNotifications,
 } from '../../services/MedicationNotificationService';
 type PermissionState = 'granted' | 'denied' | 'undetermined';
+interface MedicationReminderSummary {
+    medicationId: number;
+    medicine: string;
+    count: number;
+    nextReminder: Date | null;
+}
 function permissionLabel(status: PermissionState): string {
     if (status === 'granted') {
         return 'Allowed';
@@ -35,10 +41,107 @@ function permissionIcon(status: PermissionState): string {
     }
     return '🔔';
 }
+function getTriggerDate(notification: Notifications.NotificationRequest): Date | null {
+    const scheduledFor = notification.content.data?.scheduledFor;
+    if (typeof scheduledFor === 'string') {
+        const storedDate = new Date(scheduledFor);
+        if (!Number.isNaN(storedDate.getTime())) {
+            return storedDate;
+        }
+    }
+    const trigger = notification.trigger as {
+        value?: unknown;
+        date?: unknown;
+    } | null;
+    const rawValue = trigger?.value ?? trigger?.date;
+    if (rawValue instanceof Date) {
+        return Number.isNaN(rawValue.getTime()) ? null : rawValue;
+    }
+    if (typeof rawValue === 'number' || typeof rawValue === 'string') {
+        const fallbackDate = new Date(rawValue);
+        if (!Number.isNaN(fallbackDate.getTime())) {
+            return fallbackDate;
+        }
+    }
+    return null;
+}
+function getMedicineName(notification: Notifications.NotificationRequest): string {
+    const storedMedicine = notification.content.data?.medicine;
+    if (typeof storedMedicine === 'string' && storedMedicine.trim()) {
+        return storedMedicine.trim();
+    }
+    const body = notification.content.body ?? '';
+    const giveMatch = /^Give (.+?) —/.exec(body);
+    if (giveMatch?.[1]) {
+        return giveMatch[1];
+    }
+    const timeMatch = /^Time to give (.+)$/.exec(body);
+    if (timeMatch?.[1]) {
+        return timeMatch[1];
+    }
+    return 'Medication';
+}
+function buildMedicationSummaries(
+    notifications: Notifications.NotificationRequest[]
+): MedicationReminderSummary[] {
+    const grouped = new Map<number, MedicationReminderSummary>();
+    for (const notification of notifications) {
+        const rawMedicationId = notification.content.data?.medicationId;
+        const medicationId = Number(rawMedicationId);
+        if (!Number.isFinite(medicationId)) {
+            continue;
+        }
+        const triggerDate = getTriggerDate(notification);
+        const existing = grouped.get(medicationId);
+        if (existing) {
+            existing.count += 1;
+            if (
+                triggerDate &&
+                (!existing.nextReminder || triggerDate < existing.nextReminder)
+            ) {
+                existing.nextReminder = triggerDate;
+            }
+            continue;
+        }
+        grouped.set(medicationId, {
+            medicationId,
+            medicine: getMedicineName(notification),
+            count: 1,
+            nextReminder: triggerDate,
+        });
+    }
+    return Array.from(grouped.values()).sort((first, second) => {
+        if (!first.nextReminder && !second.nextReminder) {
+            return first.medicine.localeCompare(second.medicine);
+        }
+        if (!first.nextReminder) {
+            return 1;
+        }
+        if (!second.nextReminder) {
+            return -1;
+        }
+        return first.nextReminder.getTime() - second.nextReminder.getTime();
+    });
+}
+function formatReminderDate(date: Date | null): string {
+    if (!date) {
+        return 'Upcoming time unavailable';
+    }
+    return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+    });
+}
 export default function ReminderSettingsScreen() {
     const [permissionStatus, setPermissionStatus] =
         useState<PermissionState>('undetermined');
     const [scheduledCount, setScheduledCount] = useState(0);
+    const [medicationSummaries, setMedicationSummaries] = useState<
+        MedicationReminderSummary[]
+    >([]);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const loadStatus = useCallback(async () => {
@@ -54,6 +157,7 @@ export default function ReminderSettingsScreen() {
                       : 'undetermined'
             );
             setScheduledCount(scheduled.length);
+            setMedicationSummaries(buildMedicationSummaries(scheduled));
         } catch (error) {
             console.error('Unable to load notification settings:', error);
             Alert.alert(
@@ -171,6 +275,7 @@ export default function ReminderSettingsScreen() {
                             setUpdating(true);
                             await pauseAllMedicationNotifications();
                             setScheduledCount(0);
+                            setMedicationSummaries([]);
                             Alert.alert(
                                 'Notifications paused',
                                 'Medication records remain saved. No reminders will fire until they are rescheduled.'
@@ -236,6 +341,48 @@ export default function ReminderSettingsScreen() {
                                 : 'notifications scheduled'}
                         </Text>
                     </View>
+                    {medicationSummaries.length > 0 ? (
+                        <View style={styles.reminderList}>
+                            {medicationSummaries.map((summary, index) => (
+                                <View
+                                    key={summary.medicationId}
+                                    style={[
+                                        styles.reminderItem,
+                                        index === medicationSummaries.length - 1 &&
+                                            styles.reminderItemLast,
+                                    ]}
+                                >
+                                    <View style={styles.reminderIcon}>
+                                        <Text style={styles.reminderIconText}>💊</Text>
+                                    </View>
+                                    <View style={styles.reminderContent}>
+                                        <Text style={styles.reminderMedicine}>
+                                            {summary.medicine}
+                                        </Text>
+                                        <Text style={styles.reminderNext}>
+                                            Next:{' '}
+                                            {formatReminderDate(summary.nextReminder)}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.reminderCountBadge}>
+                                        <Text style={styles.reminderCountText}>
+                                            {summary.count}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    ) : (
+                        <View style={styles.emptyReminderCard}>
+                            <Text style={styles.emptyReminderTitle}>
+                                No active notifications
+                            </Text>
+                            <Text style={styles.emptyReminderText}>
+                                Medication records may still exist. Use Reschedule Active
+                                Medications to recreate notifications.
+                            </Text>
+                        </View>
+                    )}
                     <Text style={styles.sectionTitle}>Actions</Text>
                     {permissionStatus !== 'granted' ? (
                         <Pressable
@@ -326,17 +473,14 @@ export default function ReminderSettingsScreen() {
                         <View style={styles.actionIcon}>
                             <Text style={styles.actionIconText}>⏰</Text>
                         </View>
-
                         <View style={styles.actionContent}>
                             <Text style={styles.actionTitle}>
                                 Reschedule Active Medications
                             </Text>
-
                             <Text style={styles.actionSubtitle}>
                                 Recreate upcoming notifications for enabled medications
                             </Text>
                         </View>
-
                         {updating ? (
                             <ActivityIndicator size="small" color="#079669" />
                         ) : (
@@ -360,16 +504,17 @@ export default function ReminderSettingsScreen() {
                                 Pause All Notifications
                             </Text>
                             <Text style={styles.cancelSubtitle}>
-                                Remove every currently scheduled notification
+                                Stop notifications without deleting medication records
                             </Text>
                         </View>
                     </Pressable>
                     <View style={styles.noteCard}>
                         <Text style={styles.noteTitle}>Important</Text>
                         <Text style={styles.noteText}>
-                            Cancelling scheduled notifications does not delete medication
-                            records. Editing or saving a medication may schedule reminders
-                            again.
+                            Niva schedules a rolling window of upcoming medication
+                            notifications. Pausing them does not delete medication
+                            records. Use Reschedule Active Medications to restore
+                            notifications.
                         </Text>
                     </View>
                 </>
@@ -572,5 +717,80 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 19,
         color: '#4F46E5',
+    },
+    reminderList: {
+        marginBottom: 20,
+        borderRadius: 18,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 14,
+    },
+    reminderItem: {
+        minHeight: 72,
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+        paddingVertical: 11,
+    },
+    reminderItemLast: {
+        borderBottomWidth: 0,
+    },
+    reminderIcon: {
+        width: 42,
+        height: 42,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+        borderRadius: 13,
+        backgroundColor: '#FCE7F3',
+    },
+    reminderIconText: {
+        fontSize: 20,
+    },
+    reminderContent: {
+        flex: 1,
+        marginRight: 10,
+    },
+    reminderMedicine: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#111827',
+    },
+    reminderNext: {
+        marginTop: 4,
+        fontSize: 12,
+        lineHeight: 17,
+        color: '#6B7280',
+    },
+    reminderCountBadge: {
+        minWidth: 34,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 15,
+        backgroundColor: '#ECFDF5',
+        paddingHorizontal: 9,
+    },
+    reminderCountText: {
+        fontSize: 13,
+        fontWeight: '900',
+        color: '#047857',
+    },
+    emptyReminderCard: {
+        marginBottom: 20,
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        padding: 16,
+    },
+    emptyReminderTitle: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#374151',
+    },
+    emptyReminderText: {
+        marginTop: 5,
+        fontSize: 12,
+        lineHeight: 18,
+        color: '#6B7280',
     },
 });

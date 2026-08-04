@@ -26,6 +26,10 @@ export interface DashboardSummary {
     skippedMedicationDoses: number;
     todayMedications: DashboardMedication[];
 }
+export interface NextMedicationReminder {
+    medicine: string;
+    reminderTime: string;
+}
 interface FeedingSummaryRow {
     count: number;
     quantity: number;
@@ -193,4 +197,45 @@ export default class DashboardRepository {
             todayMedications,
         };
     }
+    async getNextMedicationReminder():
+Promise<NextMedicationReminder | null> {
+    const rows =
+        db.getAllSync<{
+            medicine: string;
+            reminderTime: string;
+        }>(`
+        SELECT
+            medicine,
+            reminderTime
+        FROM medication
+        WHERE
+            completed = 0
+            AND remindersEnabled = 1
+        ORDER BY reminderTime ASC
+    `);
+    if (rows.length === 0) {
+        return null;
+    }
+    const now =
+        new Date();
+    const currentMinutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+    for (const row of rows) {
+        const match =
+            /^(\d{2}):(\d{2})$/.exec(
+                row.reminderTime
+            );
+        if (!match) {
+            continue;
+        }
+        const minutes =
+            Number(match[1]) * 60 +
+            Number(match[2]);
+        if (minutes >= currentMinutes) {
+            return row;
+        }
+    }
+    return rows[0];
+}
 }

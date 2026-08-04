@@ -187,6 +187,8 @@ export async function scheduleMedicationNotifications(
                     data: {
                         type: 'medication',
                         medicationId: medication.id,
+                        medicine: medication.medicine,
+                        scheduledFor: triggerDate.toISOString(),
                     },
                 },
                 trigger: {
