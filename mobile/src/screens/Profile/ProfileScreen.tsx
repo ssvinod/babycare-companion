@@ -199,18 +199,17 @@ export default function ProfileScreen() {
             <Text style={styles.sectionTitle}>Data</Text>
             <View style={styles.rowGroup}>
                 <ProfileRow
-                    icon="📤"
-                    title="Export Data"
-                    subtitle="Coming soon"
-                    disabled
-                    showArrow={false}
-                />
-                <ProfileRow
                     icon="💾"
-                    title="Backup & Restore"
-                    subtitle="Coming soon"
-                    disabled
-                    showArrow={false}
+                    title="Data & Backup"
+                    subtitle="Export a safe copy of all local records"
+                    onPress={() => {
+                        const parent = navigation.getParent();
+                        if (parent) {
+                            parent.navigate('DataBackup');
+                            return;
+                        }
+                        navigation.navigate('DataBackup');
+                    }}
                 />
             </View>
             <Text style={styles.sectionTitle}>About</Text>

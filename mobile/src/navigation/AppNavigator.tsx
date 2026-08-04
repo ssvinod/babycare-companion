@@ -21,6 +21,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import HelpScreen from '../screens/Help/HelpScreen';
 import AboutScreen from '../screens/About/AboutScreen';
 import ReminderSettingsScreen from '../screens/Settings/ReminderSettingsScreen';
+import DataBackupScreen from '../screens/Settings/DataBackupScreen';
 const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
     const baby = useBabyStore((state) => state.baby);
@@ -64,6 +65,7 @@ export default function AppNavigator() {
                             name="ReminderSettings"
                             component={ReminderSettingsScreen}
                         />
+                        <Stack.Screen name="DataBackup" component={DataBackupScreen} />
                         <Stack.Screen
                             name="EditBabyProfile"
                             component={EditBabyProfileScreen}
