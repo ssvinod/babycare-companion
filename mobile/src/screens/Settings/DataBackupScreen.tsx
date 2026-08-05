@@ -9,9 +9,21 @@ import {
 } from 'react-native';
 import ScreenLayout from '../../components/common/ScreenLayout';
 import ScreenTitle from '../../components/common/ScreenTitle';
-import { exportNivaBackup } from '../../services/BackupService';
+import {
+    exportNivaBackup,
+    pickBackupFile,
+    readBackup,
+    restoreNivaBackup,
+    NivaBackup,
+} from '../../services/BackupService';
+import { useBabyStore } from '../../store/BabyStore';
+import { useDashboardStore } from '../../store/DashboardStore';
+import { rescheduleActiveMedicationNotifications } from '../../services/MedicationNotificationService';
 export default function DataBackupScreen() {
     const [exporting, setExporting] = useState(false);
+    const [restoring, setRestoring] = useState(false);
+    const loadBaby = useBabyStore((state) => state.loadBaby);
+    const refreshDashboard = useDashboardStore((state) => state.refresh);
     async function exportBackup() {
         try {
             setExporting(true);
@@ -49,6 +61,110 @@ export default function DataBackupScreen() {
             );
         } finally {
             setExporting(false);
+        }
+    }
+    async function chooseBackup() {
+        try {
+            setRestoring(true);
+            const asset = await pickBackupFile();
+            if (!asset) {
+                return;
+            }
+            const backup = await readBackup(asset.uri);
+            confirmRestore(backup);
+        } catch (error) {
+            console.error('Unable to read backup:', error);
+            const message = error instanceof Error ? error.message : '';
+            if (message === 'INVALID_JSON' || message === 'INVALID_BACKUP') {
+                Alert.alert(
+                    'Invalid Backup',
+                    'The selected file is not a valid Niva backup.'
+                );
+                return;
+            }
+            Alert.alert(
+                'Unable to Read Backup',
+                'Niva could not open the selected backup file.'
+            );
+        } finally {
+            setRestoring(false);
+        }
+    }
+    function confirmRestore(backup: NivaBackup) {
+        const exportedDate = new Date(backup.exportedAt);
+        const displayDate = Number.isNaN(exportedDate.getTime())
+            ? backup.exportedAt
+            : exportedDate.toLocaleString('en-IN', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+              });
+        Alert.alert(
+            'Replace Current Data?',
+            [
+                `Backup created: ${displayDate}`,
+                '',
+                'Restoring will permanently replace the current baby profile and every locally stored care record.',
+                '',
+                'This action cannot be undone unless you export the current data first.',
+            ].join('\n'),
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Restore Backup',
+                    style: 'destructive',
+                    onPress: () => {
+                        void performRestore(backup);
+                    },
+                },
+            ]
+        );
+    }
+    async function performRestore(backup: NivaBackup) {
+        try {
+            setRestoring(true);
+            const result = await restoreNivaBackup(backup);
+            await loadBaby();
+            await refreshDashboard();
+            let scheduledCount = 0;
+            try {
+                const notificationResult =
+                    await rescheduleActiveMedicationNotifications();
+                scheduledCount = notificationResult.notificationCount;
+            } catch (error) {
+                console.warn(
+                    'Backup restored, but medication reminders could not be rescheduled:',
+                    error
+                );
+            }
+            Alert.alert(
+                'Restore Complete',
+                [
+                    `${result.total} records restored.`,
+                    '',
+                    `Profile: ${result.profile}`,
+                    `Feeds: ${result.feeding}`,
+                    `Sleep: ${result.sleep}`,
+                    `Growth: ${result.growth}`,
+                    `Vaccinations: ${result.vaccination}`,
+                    `Medications: ${result.medication}`,
+                    `Dose history: ${result.medicationDose}`,
+                    '',
+                    `${scheduledCount} medication notifications scheduled.`,
+                    '',
+                    'The profile photo was not included in backup version 1.',
+                ].join('\n')
+            );
+        } catch (error) {
+            console.error('Unable to restore backup:', error);
+            Alert.alert(
+                'Restore Failed',
+                'No partial restore was kept. Your previous database contents remain unchanged.'
+            );
+        } finally {
+            setRestoring(false);
         }
     }
     return (
@@ -116,9 +232,26 @@ export default function DataBackupScreen() {
             <View style={styles.restoreCard}>
                 <Text style={styles.restoreTitle}>Restore from Backup</Text>
                 <Text style={styles.restoreText}>
-                    Restore will be added next with file validation, transaction safety
-                    and rollback protection.
+                    Select a Niva backup file. After confirmation, the current profile and
+                    all care records will be replaced.
                 </Text>
+                <Pressable
+                    disabled={restoring}
+                    onPress={() => {
+                        void chooseBackup();
+                    }}
+                    style={({ pressed }) => [
+                        styles.exportButton,
+                        pressed && styles.exportButtonPressed,
+                        restoring && styles.exportButtonDisabled,
+                    ]}
+                >
+                    {restoring ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                    ) : (
+                        <Text style={styles.exportButtonText}>Choose Backup File</Text>
+                    )}
+                </Pressable>
             </View>
         </ScreenLayout>
     );

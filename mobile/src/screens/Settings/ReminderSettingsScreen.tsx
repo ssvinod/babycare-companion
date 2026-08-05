@@ -149,6 +149,15 @@ export default function ReminderSettingsScreen() {
             setLoading(true);
             const permission = await Notifications.getPermissionsAsync();
             const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+            console.log('DEVICE NOW:', new Date().toString());
+            console.log(
+                'SCHEDULED NOTIFICATIONS:',
+                scheduled.map((item) => ({
+                    medicine: item.content.data?.medicine,
+                    scheduledFor: item.content.data?.scheduledFor,
+                    trigger: item.trigger,
+                }))
+            );
             setPermissionStatus(
                 permission.granted
                     ? 'granted'
