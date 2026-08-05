@@ -18,6 +18,7 @@ import {
 } from '../../services/MedicationNotificationService';
 type PermissionState = 'granted' | 'denied' | 'undetermined';
 interface MedicationReminderSummary {
+    key: string;
     medicationId: number;
     medicine: string;
     count: number;
@@ -84,28 +85,39 @@ function getMedicineName(notification: Notifications.NotificationRequest): strin
 function buildMedicationSummaries(
     notifications: Notifications.NotificationRequest[]
 ): MedicationReminderSummary[] {
-    const grouped = new Map<number, MedicationReminderSummary>();
+    const grouped = new Map<string, MedicationReminderSummary>();
     for (const notification of notifications) {
         const rawMedicationId = notification.content.data?.medicationId;
         const medicationId = Number(rawMedicationId);
         if (!Number.isFinite(medicationId)) {
             continue;
         }
+        const medicine = getMedicineName(notification);
+        /*
+         * Include the medicine name in the
+         * grouping key. This prevents restored
+         * or stale notification IDs from mixing
+         * reminders belonging to different
+         * medications.
+         */
+        const key = `${medicationId}:${medicine}`;
         const triggerDate = getTriggerDate(notification);
-        const existing = grouped.get(medicationId);
+        const existing = grouped.get(key);
         if (existing) {
             existing.count += 1;
             if (
                 triggerDate &&
-                (!existing.nextReminder || triggerDate < existing.nextReminder)
+                (!existing.nextReminder ||
+                    triggerDate.getTime() < existing.nextReminder.getTime())
             ) {
                 existing.nextReminder = triggerDate;
             }
             continue;
         }
-        grouped.set(medicationId, {
+        grouped.set(key, {
+            key,
             medicationId,
-            medicine: getMedicineName(notification),
+            medicine,
             count: 1,
             nextReminder: triggerDate,
         });
@@ -149,15 +161,6 @@ export default function ReminderSettingsScreen() {
             setLoading(true);
             const permission = await Notifications.getPermissionsAsync();
             const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-            console.log('DEVICE NOW:', new Date().toString());
-            console.log(
-                'SCHEDULED NOTIFICATIONS:',
-                scheduled.map((item) => ({
-                    medicine: item.content.data?.medicine,
-                    scheduledFor: item.content.data?.scheduledFor,
-                    trigger: item.trigger,
-                }))
-            );
             setPermissionStatus(
                 permission.granted
                     ? 'granted'
@@ -354,7 +357,7 @@ export default function ReminderSettingsScreen() {
                         <View style={styles.reminderList}>
                             {medicationSummaries.map((summary, index) => (
                                 <View
-                                    key={summary.medicationId}
+                                    key={summary.key}
                                     style={[
                                         styles.reminderItem,
                                         index === medicationSummaries.length - 1 &&
