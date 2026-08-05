@@ -24,8 +24,10 @@ export default function DataBackupScreen() {
     const [exporting, setExporting] = useState(false);
     const [restoring, setRestoring] = useState(false);
     const [generatingReport, setGeneratingReport] = useState(false);
+    const baby = useBabyStore((state) => state.baby);
     const loadBaby = useBabyStore((state) => state.loadBaby);
     const refreshDashboard = useDashboardStore((state) => state.refresh);
+    const hasProfile = Boolean(baby);
     async function exportBackup() {
         try {
             setExporting(true);
@@ -202,6 +204,16 @@ export default function DataBackupScreen() {
                     care records.
                 </Text>
             </View>
+            {!hasProfile ? (
+                <View style={styles.emptyProfileCard}>
+                    <Text style={styles.emptyProfileTitle}>No baby profile yet</Text>
+
+                    <Text style={styles.emptyProfileText}>
+                        Create a baby profile before exporting backups or generating
+                        health reports.
+                    </Text>
+                </View>
+            ) : null}
             <Text style={styles.sectionTitle}>Export</Text>
             <View style={styles.exportCard}>
                 <View style={styles.exportHeader}>
@@ -217,20 +229,24 @@ export default function DataBackupScreen() {
                     </View>
                 </View>
                 <Pressable
-                    disabled={exporting}
+                    disabled={exporting || !hasProfile}
                     onPress={() => {
                         void exportBackup();
                     }}
                     style={({ pressed }) => [
                         styles.exportButton,
                         pressed && styles.exportButtonPressed,
-                        exporting && styles.exportButtonDisabled,
+                        (exporting || !hasProfile) && styles.exportButtonDisabled,
                     ]}
                 >
                     {exporting ? (
                         <ActivityIndicator color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.exportButtonText}>Create & Share Backup</Text>
+                        <Text style={styles.exportButtonText}>
+                            {hasProfile
+                                ? 'Create & Share Backup'
+                                : 'Create a Baby Profile First'}
+                        </Text>
                     )}
                 </Pressable>
             </View>
@@ -249,20 +265,24 @@ export default function DataBackupScreen() {
                     </View>
                 </View>
                 <Pressable
-                    disabled={generatingReport}
+                    disabled={generatingReport || !hasProfile}
                     onPress={() => {
                         void createHealthReport();
                     }}
                     style={({ pressed }) => [
                         styles.reportButton,
                         pressed && styles.exportButtonPressed,
-                        generatingReport && styles.exportButtonDisabled,
+                        (generatingReport || !hasProfile) && styles.exportButtonDisabled,
                     ]}
                 >
                     {generatingReport ? (
                         <ActivityIndicator color="#FFFFFF" />
                     ) : (
-                        <Text style={styles.exportButtonText}>Create & Share PDF</Text>
+                        <Text style={styles.exportButtonText}>
+                            {hasProfile
+                                ? 'Create & Share PDF'
+                                : 'Create a Baby Profile First'}
+                        </Text>
                     )}
                 </Pressable>
             </View>
@@ -463,5 +483,22 @@ const styles = StyleSheet.create({
         marginTop: 16,
         borderRadius: 14,
         backgroundColor: '#4F46E5',
+    },
+    emptyProfileCard: {
+        marginBottom: 18,
+        borderRadius: 16,
+        backgroundColor: '#FEF3C7',
+        padding: 16,
+    },
+    emptyProfileTitle: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#92400E',
+    },
+    emptyProfileText: {
+        marginTop: 6,
+        fontSize: 13,
+        lineHeight: 19,
+        color: '#B45309',
     },
 });
