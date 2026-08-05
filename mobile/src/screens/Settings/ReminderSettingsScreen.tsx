@@ -349,8 +349,8 @@ export default function ReminderSettingsScreen() {
                         <Text style={styles.countValue}>{scheduledCount}</Text>
                         <Text style={styles.countLabel}>
                             {scheduledCount === 1
-                                ? 'notification scheduled'
-                                : 'notifications scheduled'}
+                                ? 'active reminder schedule'
+                                : 'active reminder schedules'}
                         </Text>
                     </View>
                     {medicationSummaries.length > 0 ? (

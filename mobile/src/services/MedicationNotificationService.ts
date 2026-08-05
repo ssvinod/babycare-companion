@@ -65,6 +65,9 @@ function getReminderTimes(medication: Medication): string[] {
     }
     return medication.reminderTime ? [medication.reminderTime] : [];
 }
+function usesDailyCadence(frequency?: string): boolean {
+    return frequency !== 'Once' && frequency !== 'Weekly' && frequency !== 'As Needed';
+}
 function shouldScheduleDate(date: Date, startDate: Date, frequency: string): boolean {
     const differenceMs = date.getTime() - startDate.getTime();
     const differenceDays = Math.round(differenceMs / (24 * 60 * 60 * 1000));
@@ -130,10 +133,7 @@ export async function cancelMedicationNotifications(
 export async function scheduleMedicationNotifications(
     medication: Medication
 ): Promise<string[]> {
-    if (medication.remindersEnabled !== 1) {
-        return [];
-    }
-    if (medication.frequency === 'As Needed') {
+    if (medication.remindersEnabled !== 1 || medication.frequency === 'As Needed') {
         return [];
     }
     const reminderTimes = getReminderTimes(medication);
@@ -148,14 +148,108 @@ export async function scheduleMedicationNotifications(
     const configuredStart = medication.startDate
         ? parseDateOnly(medication.startDate)
         : null;
+    const configuredEnd = medication.endDate ? parseDateOnly(medication.endDate) : null;
+    const originalStart = configuredStart ?? today;
+    const doseText = [medication.dosage, medication.unit].filter(Boolean).join(' ');
+    const content = (scheduledFor?: Date): Notifications.NotificationContentInput => ({
+        title: '💊 Medication reminder',
+        body: doseText
+            ? `Give ${medication.medicine} — ${doseText}`
+            : `Time to give ${medication.medicine}`,
+        sound: 'default',
+        data: {
+            type: 'medication',
+            medicationId: medication.id,
+            medicine: medication.medicine,
+            frequency: medication.frequency,
+            reminderTimes: medication.reminderTimes,
+            startDate: medication.startDate,
+            endDate: medication.endDate,
+            scheduledFor: scheduledFor?.toISOString(),
+        },
+    });
+    const ids: string[] = [];
+    /*
+     * Long-running daily medication:
+     * use one native repeating request
+     * per configured reminder time.
+     */
+    if (
+        usesDailyCadence(medication.frequency) &&
+        !configuredEnd &&
+        (!configuredStart || configuredStart <= today)
+    ) {
+        for (const time of reminderTimes) {
+            const parsedTime = parseTime(time);
+            if (!parsedTime) {
+                continue;
+            }
+            const nextDate = new Date();
+            nextDate.setHours(parsedTime.hour, parsedTime.minute, 0, 0);
+            if (nextDate.getTime() <= Date.now()) {
+                nextDate.setDate(nextDate.getDate() + 1);
+            }
+            const identifier = await Notifications.scheduleNotificationAsync({
+                content: content(nextDate),
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DAILY,
+                    hour: parsedTime.hour,
+                    minute: parsedTime.minute,
+                    channelId: CHANNEL_ID,
+                },
+            });
+            ids.push(identifier);
+        }
+        return ids;
+    }
+    /*
+     * Long-running weekly medication:
+     * one native weekly request per time.
+     */
+    if (
+        medication.frequency === 'Weekly' &&
+        !configuredEnd &&
+        (!configuredStart || configuredStart <= today)
+    ) {
+        // Expo weekdays:
+        // Sunday = 1 ... Saturday = 7
+        const weekday = originalStart.getDay() + 1;
+        for (const time of reminderTimes) {
+            const parsedTime = parseTime(time);
+            if (!parsedTime) {
+                continue;
+            }
+            const nextDate = new Date(today);
+            const daysUntil = (weekday - (nextDate.getDay() + 1) + 7) % 7;
+            nextDate.setDate(nextDate.getDate() + daysUntil);
+            nextDate.setHours(parsedTime.hour, parsedTime.minute, 0, 0);
+            if (nextDate.getTime() <= Date.now()) {
+                nextDate.setDate(nextDate.getDate() + 7);
+            }
+            const identifier = await Notifications.scheduleNotificationAsync({
+                content: content(nextDate),
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+                    weekday,
+                    hour: parsedTime.hour,
+                    minute: parsedTime.minute,
+                    channelId: CHANNEL_ID,
+                },
+            });
+            ids.push(identifier);
+        }
+        return ids;
+    }
+    /*
+     * One-time, finite-duration or
+     * future-start medications still use
+     * concrete dated notifications.
+     */
     const scheduleStart =
         configuredStart && configuredStart > today ? configuredStart : today;
-    const configuredEnd = medication.endDate ? parseDateOnly(medication.endDate) : null;
     const maximumEnd = addDays(today, MAX_SCHEDULE_DAYS);
     const scheduleEnd =
         configuredEnd && configuredEnd < maximumEnd ? configuredEnd : maximumEnd;
-    const originalStart = configuredStart ?? today;
-    const ids: string[] = [];
     for (
         let date = new Date(scheduleStart);
         date <= scheduleEnd;
@@ -174,23 +268,8 @@ export async function scheduleMedicationNotifications(
             if (triggerDate.getTime() <= Date.now()) {
                 continue;
             }
-            const doseText = [medication.dosage, medication.unit]
-                .filter(Boolean)
-                .join(' ');
             const identifier = await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '💊 Medication reminder',
-                    body: doseText
-                        ? `Give ${medication.medicine} — ${doseText}`
-                        : `Time to give ${medication.medicine}`,
-                    sound: 'default',
-                    data: {
-                        type: 'medication',
-                        medicationId: medication.id,
-                        medicine: medication.medicine,
-                        scheduledFor: triggerDate.toISOString(),
-                    },
-                },
+                content: content(triggerDate),
                 trigger: {
                     type: Notifications.SchedulableTriggerInputTypes.DATE,
                     date: triggerDate,
@@ -203,7 +282,14 @@ export async function scheduleMedicationNotifications(
     return ids;
 }
 export async function pauseAllMedicationNotifications(): Promise<void> {
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(
+        scheduled
+            .filter((request) => request.content.data?.type === 'medication')
+            .map((request) =>
+                Notifications.cancelScheduledNotificationAsync(request.identifier)
+            )
+    );
     const repository = new MedicationRepository();
     await repository.clearAllNotificationIds();
 }
@@ -213,7 +299,14 @@ export interface RescheduleResult {
 }
 export async function rescheduleActiveMedicationNotifications(): Promise<RescheduleResult> {
     const repository = new MedicationRepository();
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    await Promise.all(
+        scheduled
+            .filter((request) => request.content.data?.type === 'medication')
+            .map((request) =>
+                Notifications.cancelScheduledNotificationAsync(request.identifier)
+            )
+    );
     await repository.clearAllNotificationIds();
     const medications = await repository.getReminderEnabled();
     let notificationCount = 0;

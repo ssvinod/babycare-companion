@@ -19,9 +19,11 @@ import {
 import { useBabyStore } from '../../store/BabyStore';
 import { useDashboardStore } from '../../store/DashboardStore';
 import { rescheduleActiveMedicationNotifications } from '../../services/MedicationNotificationService';
+import { exportHealthReport } from '../../services/HealthReportService';
 export default function DataBackupScreen() {
     const [exporting, setExporting] = useState(false);
     const [restoring, setRestoring] = useState(false);
+    const [generatingReport, setGeneratingReport] = useState(false);
     const loadBaby = useBabyStore((state) => state.loadBaby);
     const refreshDashboard = useDashboardStore((state) => state.refresh);
     async function exportBackup() {
@@ -61,6 +63,29 @@ export default function DataBackupScreen() {
             );
         } finally {
             setExporting(false);
+        }
+    }
+    async function createHealthReport() {
+        try {
+            setGeneratingReport(true);
+            await exportHealthReport();
+            Alert.alert(
+                'Health Report Ready',
+                'The PDF was created successfully. Save or share it from the share sheet.'
+            );
+        } catch (error) {
+            console.error('Unable to create health report:', error);
+            const message = error instanceof Error ? error.message : '';
+            if (message === 'NO_PROFILE') {
+                Alert.alert(
+                    'Nothing to report',
+                    'Create a baby profile before generating a health report.'
+                );
+                return;
+            }
+            Alert.alert('Report Failed', 'Niva could not create the PDF health report.');
+        } finally {
+            setGeneratingReport(false);
         }
     }
     async function chooseBackup() {
@@ -206,6 +231,38 @@ export default function DataBackupScreen() {
                         <ActivityIndicator color="#FFFFFF" />
                     ) : (
                         <Text style={styles.exportButtonText}>Create & Share Backup</Text>
+                    )}
+                </Pressable>
+            </View>
+            <Text style={styles.sectionTitle}>Health Report</Text>
+            <View style={styles.exportCard}>
+                <View style={styles.exportHeader}>
+                    <View style={styles.reportIcon}>
+                        <Text style={styles.exportIconText}>📄</Text>
+                    </View>
+                    <View style={styles.exportText}>
+                        <Text style={styles.exportTitle}>Pediatric Health Report</Text>
+                        <Text style={styles.exportSubtitle}>
+                            Create a shareable PDF with growth, vaccinations, medications,
+                            feeding and sleep records
+                        </Text>
+                    </View>
+                </View>
+                <Pressable
+                    disabled={generatingReport}
+                    onPress={() => {
+                        void createHealthReport();
+                    }}
+                    style={({ pressed }) => [
+                        styles.reportButton,
+                        pressed && styles.exportButtonPressed,
+                        generatingReport && styles.exportButtonDisabled,
+                    ]}
+                >
+                    {generatingReport ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                    ) : (
+                        <Text style={styles.exportButtonText}>Create & Share PDF</Text>
                     )}
                 </Pressable>
             </View>
@@ -389,5 +446,22 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 19,
         color: '#9CA3AF',
+    },
+    reportIcon: {
+        width: 48,
+        height: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 13,
+        borderRadius: 15,
+        backgroundColor: '#E0E7FF',
+    },
+    reportButton: {
+        minHeight: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 16,
+        borderRadius: 14,
+        backgroundColor: '#4F46E5',
     },
 });
