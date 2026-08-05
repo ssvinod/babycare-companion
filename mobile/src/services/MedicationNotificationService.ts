@@ -50,6 +50,13 @@ function startOfToday(): Date {
     today.setHours(0, 0, 0, 0);
     return today;
 }
+function normalizeToStartOfDay(date: Date): Date {
+    const normalized = new Date(date);
+
+    normalized.setHours(0, 0, 0, 0);
+
+    return normalized;
+}
 function getReminderTimes(medication: Medication): string[] {
     if (medication.reminderTimes) {
         try {
@@ -145,10 +152,14 @@ export async function scheduleMedicationNotifications(
         return [];
     }
     const today = startOfToday();
-    const configuredStart = medication.startDate
-        ? parseDateOnly(medication.startDate)
-        : null;
-    const configuredEnd = medication.endDate ? parseDateOnly(medication.endDate) : null;
+    const parsedStart = medication.startDate ? parseDateOnly(medication.startDate) : null;
+
+    const parsedEnd = medication.endDate ? parseDateOnly(medication.endDate) : null;
+
+    const configuredStart = parsedStart ? normalizeToStartOfDay(parsedStart) : null;
+
+    const configuredEnd = parsedEnd ? normalizeToStartOfDay(parsedEnd) : null;
+
     const originalStart = configuredStart ?? today;
     const doseText = [medication.dosage, medication.unit].filter(Boolean).join(' ');
     const content = (scheduledFor?: Date): Notifications.NotificationContentInput => ({
@@ -176,8 +187,8 @@ export async function scheduleMedicationNotifications(
      */
     if (
         usesDailyCadence(medication.frequency) &&
-        !configuredEnd &&
-        (!configuredStart || configuredStart <= today)
+        (!configuredStart || configuredStart <= today) &&
+        (!configuredEnd || configuredEnd >= today)
     ) {
         for (const time of reminderTimes) {
             const parsedTime = parseTime(time);
@@ -292,6 +303,22 @@ export async function pauseAllMedicationNotifications(): Promise<void> {
     );
     const repository = new MedicationRepository();
     await repository.clearAllNotificationIds();
+}
+export async function removeExpiredMedicationNotifications(): Promise<void> {
+    const repository = new MedicationRepository();
+    const medications = await repository.getReminderEnabled();
+    const today = startOfToday();
+    for (const medication of medications) {
+        if (!medication.id || !medication.endDate) {
+            continue;
+        }
+        const endDate = parseDateOnly(medication.endDate);
+        if (!endDate || endDate >= today) {
+            continue;
+        }
+        await cancelMedicationNotifications(medication.notificationIds);
+        await repository.updateNotificationIds(medication.id, []);
+    }
 }
 export interface RescheduleResult {
     medicationCount: number;

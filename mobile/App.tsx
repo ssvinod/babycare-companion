@@ -4,7 +4,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppNavigator from './src/navigation/AppNavigator';
 import { initDatabase } from './src/database/initDatabase';
-import { configureMedicationNotifications } from './src/services/MedicationNotificationService';
+import {
+    configureMedicationNotifications,
+    removeExpiredMedicationNotifications,
+} from './src/services/MedicationNotificationService';
 import { useBabyStore } from './src/store/BabyStore';
 void SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -24,6 +27,7 @@ export default function App() {
             await initDatabase();
             await useBabyStore.getState().loadBaby();
             await configureMedicationNotifications();
+            await removeExpiredMedicationNotifications();
             const elapsed = Date.now() - startedAt;
             const remaining = Math.max(0, MINIMUM_STARTUP_TIME_MS - elapsed);
             if (remaining > 0) {
