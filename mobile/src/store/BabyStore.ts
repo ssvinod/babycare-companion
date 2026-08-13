@@ -20,10 +20,8 @@ export const useBabyStore = create<BabyStore>((set) => ({
     loading: false,
     loadBaby: async () => {
         try {
-            console.log('Loading Baby...');
             const repository = new BabyRepository();
             const baby = await repository.getBaby();
-            console.log('Loaded Baby:', baby);
             set({
                 baby,
                 loading: false,
@@ -41,7 +39,6 @@ export const useBabyStore = create<BabyStore>((set) => ({
         }
     },
     setBaby: async (baby) => {
-        console.log('Saving Baby...');
         const babyRepository = new BabyRepository();
         await babyRepository.saveBaby(baby);
         const hasValidWeight =
@@ -78,10 +75,8 @@ export const useBabyStore = create<BabyStore>((set) => ({
             loading: false,
         });
         await useDashboardStore.getState().refresh();
-        console.log('Baby Saved');
     },
     deleteBabyProfile: async () => {
-        console.log('Deleting baby profile...');
         const existingPhoto = useBabyStore.getState().baby?.photo;
         try {
             await Notifications.cancelAllScheduledNotificationsAsync();
@@ -98,6 +93,5 @@ export const useBabyStore = create<BabyStore>((set) => ({
             baby: null,
             loading: false,
         });
-        console.log('Baby profile deleted successfully.');
     },
 }));

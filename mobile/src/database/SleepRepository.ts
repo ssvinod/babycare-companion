@@ -1,6 +1,5 @@
 import { db } from './database';
 import { Sleep } from '../models/Sleep';
-
 export default class SleepRepository {
     async getAll(): Promise<Sleep[]> {
         return db.getAllSync<Sleep>(`
@@ -9,10 +8,7 @@ export default class SleepRepository {
       ORDER BY startTime DESC
     `);
     }
-
     async startSleep(startTime: string): Promise<void> {
-        console.log('Repository startSleep()');
-
         db.runSync(
             `
       INSERT INTO sleep (
@@ -24,10 +20,7 @@ export default class SleepRepository {
       `,
             [startTime]
         );
-
-        console.log('Sleep started successfully');
     }
-
     async finishSleep(id: number, endTime: string): Promise<void> {
         const sleep = db.getFirstSync<{
             startTime: string;
@@ -39,14 +32,10 @@ export default class SleepRepository {
       `,
             [id]
         );
-
         if (!sleep) return;
-
         const start = new Date(sleep.startTime).getTime();
         const end = new Date(endTime).getTime();
-
         const durationMinutes = Math.round((end - start) / 60000);
-
         db.runSync(
             `
       UPDATE sleep
@@ -58,7 +47,6 @@ export default class SleepRepository {
             [endTime, durationMinutes, id]
         );
     }
-
     async getActiveSleep(): Promise<Sleep | null> {
         return (
             db.getFirstSync<Sleep>(
@@ -72,7 +60,6 @@ export default class SleepRepository {
             ) ?? null
         );
     }
-
     async delete(id: number): Promise<void> {
         db.runSync(
             `

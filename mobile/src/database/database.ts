@@ -5,7 +5,6 @@ export function initializeDatabase(): void {
     PRAGMA journal_mode = WAL;
     PRAGMA foreign_keys = ON;
   `);
-    console.log('DATABASE CONNECTION READY');
 }
 export function logDatabaseState(): void {
     const tables = db.getAllSync<{
@@ -16,7 +15,6 @@ export function logDatabaseState(): void {
       WHERE type = 'table'
       ORDER BY name;
     `);
-    console.log('TABLES:', tables);
     const growthSchema = db.getAllSync<{
         cid: number;
         name: string;
@@ -27,5 +25,4 @@ export function logDatabaseState(): void {
     }>(`
       PRAGMA table_info(growth);
     `);
-    console.log('GROWTH SCHEMA:', growthSchema);
 }

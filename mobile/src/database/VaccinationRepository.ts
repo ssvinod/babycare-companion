@@ -36,13 +36,6 @@ export default class VaccinationRepository {
                 ]
             );
         }
-        console.log(
-            'Vaccinations:',
-            db.getAllSync(`
-        SELECT *
-        FROM vaccination
-      `)
-        );
     }
     async getUpcoming(): Promise<Vaccination[]> {
         return db.getAllSync<Vaccination>(`

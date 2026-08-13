@@ -22,17 +22,9 @@ export const useSleepStore = create<SleepStore>((set, get) => ({
         });
     },
     startSleep: async () => {
-        console.log('SleepStore.startSleep()');
-
         const repo = new SleepRepository();
-
         await repo.startSleep(new Date().toISOString());
-
-        console.log('Loading sleeps...');
-
         await get().loadSleeps();
-
-        console.log('Active Sleep:', get().activeSleep);
     },
     finishSleep: async (id, endTime) => {
         const repo = new SleepRepository();

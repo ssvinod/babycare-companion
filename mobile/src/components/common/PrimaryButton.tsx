@@ -11,7 +11,6 @@ export default function PrimaryButton({ title, onPress }: Props) {
         <Pressable
             style={styles.button}
             onPress={() => {
-                console.log('PRIMARY BUTTON PRESSED');
                 onPress();
             }}
         >

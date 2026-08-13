@@ -64,6 +64,5 @@ export default class DatabaseRepository {
         );
       `);
         });
-        console.log('Database reset completed.');
     }
 }
