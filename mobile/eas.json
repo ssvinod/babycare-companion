@@ -28,7 +28,7 @@
     "submit": {
         "production": {
             "ios": {
-                "appName": "BabyCare Companion",
+                "appName": "Niva",
                 "language": "en-US"
             },
             "android": {
