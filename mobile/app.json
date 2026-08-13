@@ -51,7 +51,8 @@
                 "expo-image-picker",
                 {
                     "photosPermission": "Allow Niva to choose a baby profile photo.",
-                    "cameraPermission": "Allow Niva to take a baby profile photo."
+                    "cameraPermission": "Allow Niva to take a baby profile photo.",
+                    "microphonePermission": false
                 }
             ],
             [
