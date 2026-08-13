@@ -59,7 +59,7 @@
                 {
                     "icon": "./assets/notification-icon.png",
                     "color": "#079669",
-                    "defaultChannel": "babycare-reminders"
+                    "defaultChannel": "medication-reminders"
                 }
             ]
         ],
