@@ -9,7 +9,7 @@ export default function QuickActionGrid() {
             <QuickActionCard
                 icon="🍼"
                 title="Feed"
-                onPress={() => navigation.navigate('AddFeeding')}
+                onPress={() => navigation.navigate('FeedingRecords')}
             />
             <QuickActionCard
                 icon="😴"
