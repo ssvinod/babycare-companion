@@ -24,6 +24,7 @@ import {
 } from '../../services/DocumentStorageService';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as IntentLauncher from 'expo-intent-launcher';
+import { WebView } from 'react-native-webview';
 const repository = new DocumentRepository();
 function displayDate(value: string): string {
     const date = new Date(value);
@@ -134,20 +135,36 @@ export default function ScanScreen() {
     }
     async function openDocument(document: DocumentRecord) {
         try {
-            if (
-                document.mimeType?.startsWith('image/') ||
-                document.mimeType === 'application/pdf'
-            ) {
+            if (document.mimeType?.startsWith('image/')) {
                 setPreviewDocument(document);
+                return;
+            }
+            if (document.mimeType === 'application/pdf') {
+                if (Platform.OS === 'ios') {
+                    /*
+                     * iOS WKWebView can render
+                     * local multi-page PDFs.
+                     */
+                    setPreviewDocument(document);
+                    return;
+                }
+                /*
+                 * Android WebView does not have
+                 * a reliable built-in PDF viewer,
+                 * so open with the system viewer.
+                 */
+                const contentUri = await FileSystem.getContentUriAsync(document.uri);
+                await IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+                    data: contentUri,
+                    flags: 1,
+                    type: 'application/pdf',
+                });
                 return;
             }
             await shareDocument(document);
         } catch (error) {
             console.error('Unable to open document:', error);
-            Alert.alert(
-                'Unable to open document',
-                'This file type cannot be previewed inside Niva.'
-            );
+            Alert.alert('Unable to open document', 'This document could not be opened.');
         }
     }
     async function shareDocument(document: DocumentRecord) {
@@ -296,13 +313,36 @@ export default function ScanScreen() {
             >
                 <View style={styles.previewScreen}>
                     {previewDocument ? (
-                        <Image
-                            source={{
-                                uri: previewDocument.uri,
-                            }}
-                            resizeMode="contain"
-                            style={styles.previewImage}
-                        />
+                        previewDocument.mimeType === 'application/pdf' &&
+                        Platform.OS === 'ios' ? (
+                            <WebView
+                                source={{
+                                    uri: previewDocument.uri,
+                                }}
+                                originWhitelist={['*']}
+                                allowingReadAccessToURL={previewDocument.uri}
+                                allowFileAccess
+                                javaScriptEnabled
+                                startInLoadingState
+                                renderLoading={() => (
+                                    <View style={styles.pdfLoading}>
+                                        <ActivityIndicator size="large" color="#FFFFFF" />
+                                        <Text style={styles.pdfLoadingText}>
+                                            Opening PDF...
+                                        </Text>
+                                    </View>
+                                )}
+                                style={styles.previewPdf}
+                            />
+                        ) : (
+                            <Image
+                                source={{
+                                    uri: previewDocument.uri,
+                                }}
+                                resizeMode="contain"
+                                style={styles.previewImage}
+                            />
+                        )
                     ) : null}
                     <View style={styles.previewTopTitle}>
                         <Text numberOfLines={1} style={styles.previewTitle}>
@@ -562,6 +602,27 @@ const styles = StyleSheet.create({
     previewControlText: {
         fontSize: 14,
         fontWeight: '900',
+        color: '#FFFFFF',
+    },
+    previewPdf: {
+        flex: 1,
+        width: '100%',
+        backgroundColor: '#E5E7EB',
+    },
+    pdfLoading: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#111827',
+    },
+    pdfLoadingText: {
+        marginTop: 12,
+        fontSize: 13,
+        fontWeight: '700',
         color: '#FFFFFF',
     },
 });
