@@ -108,6 +108,20 @@ export function runMigrations() {
       DELETE FROM medication_dose
       WHERE medicationId = OLD.id;
     END;
+    CREATE TABLE IF NOT EXISTS document (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      uri TEXT NOT NULL,
+      mimeType TEXT,
+      category TEXT NOT NULL,
+      createdAt TEXT NOT NULL
+    );
+        
+    CREATE INDEX IF NOT EXISTS
+      idx_document_created
+    ON document (
+      createdAt
+    );
   `);
     addColumnIfMissing('medication', 'unit', 'TEXT');
     addColumnIfMissing('medication', 'frequency', 'TEXT');

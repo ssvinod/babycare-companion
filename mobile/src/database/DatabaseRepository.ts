@@ -52,6 +52,7 @@ export default class DatabaseRepository {
         DELETE FROM sleep;
         DELETE FROM growth;
         DELETE FROM vaccination;
+        DELETE FROM document;
         DELETE FROM profile;
         DELETE FROM sqlite_sequence
         WHERE name IN (
@@ -60,7 +61,8 @@ export default class DatabaseRepository {
           'growth',
           'medication',
           'medication_dose',
-          'vaccination'
+          'vaccination',
+          'document'
         );
       `);
         });
