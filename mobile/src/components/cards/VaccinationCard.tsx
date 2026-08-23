@@ -110,10 +110,14 @@ export default function VaccinationCard({
             </View>
             <Pressable
                 onPress={() => setExpanded((current) => !current)}
-                style={styles.detailsToggle}
+                hitSlop={8}
+                style={({ pressed }) => [
+                    styles.detailsToggle,
+                    pressed && styles.detailsTogglePressed,
+                ]}
             >
                 <Text style={styles.detailsToggleText}>
-                    {expanded ? 'Hide details ▲' : 'Protection details ▼'}
+                    {expanded ? 'Hide protection details ▲' : 'View protection details ▼'}
                 </Text>
             </Pressable>
             {expanded ? (
@@ -229,14 +233,21 @@ const styles = StyleSheet.create({
         color: '#111827',
     },
     detailsToggle: {
-        alignSelf: 'flex-start',
-        marginTop: 7,
-        paddingVertical: 3,
+        minHeight: 42,
+        marginTop: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 11,
+        backgroundColor: '#f6f6f3',
+        paddingHorizontal: 10,
     },
     detailsToggleText: {
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: '800',
-        color: '#6B7280',
+        color: '#4B5563',
+    },
+    detailsTogglePressed: {
+        backgroundColor: '#E5E7EB',
     },
     details: {
         marginTop: 5,
@@ -283,7 +294,7 @@ const styles = StyleSheet.create({
         minHeight: 38,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 8,
+        marginTop: 10,
         borderRadius: 12,
     },
     completeButton: {
