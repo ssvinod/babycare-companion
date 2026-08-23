@@ -33,14 +33,14 @@ export default function QuickActionCard({
 const styles = StyleSheet.create({
     card: {
         width: '30%',
-        minHeight: 105,
+        minHeight: 90,
         backgroundColor: '#FFFFFF',
         borderRadius: 18,
-        paddingVertical: 16,
+        paddingVertical: 12,
         paddingHorizontal: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 14,
+        marginBottom: 10,
         shadowColor: '#000000',
         shadowOpacity: 0.05,
         shadowRadius: 6,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         fontSize: 29,
-        marginBottom: 7,
+        marginBottom: 5,
     },
     title: {
         fontSize: 14,

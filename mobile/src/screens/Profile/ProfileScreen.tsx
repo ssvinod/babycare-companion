@@ -175,12 +175,12 @@ export default function ProfileScreen() {
                     title="Edit Baby Profile"
                     subtitle="Update name, birth date, gender and health details"
                     onPress={() => navigation.navigate('EditBabyProfile')}
-                />
-                <ProfileRow
-                    icon="📈"
-                    title="Growth History"
-                    subtitle="View measurements, charts and check-up history"
-                    onPress={() => navigation.navigate('GrowthHistory')}
+                    ///>
+                    //<ProfileRow
+                    //    icon="📈"
+                    //    title="Growth History"
+                    //    subtitle="View measurements, charts and check-up history"
+                    //    onPress={() => navigation.navigate('GrowthHistory')}
                 />
                 <ProfileRow
                     icon="🔔"
@@ -248,7 +248,7 @@ export default function ProfileScreen() {
                 />
             </View>
             <Text style={[styles.sectionTitle, styles.dangerSectionTitle]}>
-                Danger Zone
+                Profile & Data
             </Text>
             <Pressable
                 disabled={deleting}
@@ -382,36 +382,39 @@ const styles = StyleSheet.create({
         color: '#111827',
     },
     missionCard: {
-        marginBottom: 20,
+        marginBottom: 12,
         borderRadius: 18,
         backgroundColor: '#EEF2FF',
-        padding: 17,
+        padding: 15,
     },
     missionLabel: {
-        fontSize: 11,
+        fontSize: 13,
+        fontStyle: 'italic',
+        fontFamily: 'arial',
         fontWeight: '900',
         letterSpacing: 1,
         color: '#4F46E5',
     },
     missionText: {
-        marginTop: 7,
-        fontSize: 14,
-        lineHeight: 21,
+        marginTop: 5,
+        fontSize: 12,
+        fontStyle: 'italic',
+        lineHeight: 18,
         color: '#374151',
     },
     sectionTitle: {
-        marginTop: 6,
-        marginBottom: 10,
+        marginTop: 2,
+        marginBottom: 6,
         marginLeft: 3,
-        fontSize: 15,
+        fontSize: 14,
         fontWeight: '900',
         color: '#374151',
     },
     rowGroup: {
-        marginBottom: 18,
+        marginBottom: 6,
     },
     dangerSectionTitle: {
-        color: '#991B1B',
+        color: '#6B7280',
     },
     deleteRow: {
         minHeight: 58,

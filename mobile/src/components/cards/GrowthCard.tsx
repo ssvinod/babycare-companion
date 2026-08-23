@@ -22,70 +22,112 @@ function formatCheckupDate(dateValue: string): string {
 export default function GrowthCard({ growth, onEdit, onDelete }: Props) {
     return (
         <View style={styles.card}>
-            <Text style={styles.dateLabel}>Check-up Date</Text>
-            <Text style={styles.date}>{formatCheckupDate(growth.date)}</Text>
-            <Text style={styles.value}>⚖️ {growth.weight} kg</Text>
-            <Text style={styles.value}>📏 {growth.height} cm</Text>
-            {(growth.headCircumference ?? 0) > 0 && (
-                <Text style={styles.value}>🧠 {growth.headCircumference} cm</Text>
-            )}
-            {!!growth.notes?.trim() && <Text style={styles.notes}>{growth.notes}</Text>}
-            <View style={styles.actions}>
-                <Pressable style={styles.action} onPress={onEdit}>
-                    <Text style={styles.editText}>Edit</Text>
-                </Pressable>
-                <Pressable style={styles.action} onPress={onDelete}>
-                    <Text style={styles.deleteText}>Delete</Text>
-                </Pressable>
+            <View style={styles.topRow}>
+                <Text style={styles.date}>{formatCheckupDate(growth.date)}</Text>
+                <View style={styles.actions}>
+                    <Pressable hitSlop={8} onPress={onEdit}>
+                        <Text style={styles.editText}>Edit</Text>
+                    </Pressable>
+                    <Pressable hitSlop={8} onPress={onDelete}>
+                        <Text style={styles.deleteText}>Delete</Text>
+                    </Pressable>
+                </View>
             </View>
+            <View style={styles.metricsRow}>
+                <View style={styles.metric}>
+                    <Text style={styles.metricIcon}>⚖️</Text>
+                    <Text style={styles.metricValue}>{growth.weight}</Text>
+                    <Text style={styles.metricUnit}>kg</Text>
+                </View>
+                <View style={styles.metric}>
+                    <Text style={styles.metricIcon}>📏</Text>
+                    <Text style={styles.metricValue}>{growth.height}</Text>
+                    <Text style={styles.metricUnit}>cm</Text>
+                </View>
+                {(growth.headCircumference ?? 0) > 0 ? (
+                    <View style={styles.metric}>
+                        <Text style={styles.metricIcon}>🧠</Text>
+                        <Text style={styles.metricValue}>{growth.headCircumference}</Text>
+                        <Text style={styles.metricUnit}>cm</Text>
+                    </View>
+                ) : null}
+            </View>
+            {!!growth.notes?.trim() ? (
+                <Text numberOfLines={2} style={styles.notes}>
+                    {growth.notes}
+                </Text>
+            ) : null}
         </View>
     );
 }
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
-        borderRadius: 18,
-        padding: 18,
-        marginBottom: 16,
+        marginBottom: 10,
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 14,
+        paddingVertical: 12,
     },
-    dateLabel: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#6B7280',
-        marginBottom: 3,
+    topRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
     },
     date: {
-        fontWeight: '700',
-        fontSize: 17,
-        marginBottom: 10,
+        fontSize: 14,
+        fontWeight: '800',
         color: '#111827',
-    },
-    value: {
-        fontSize: 16,
-        marginTop: 4,
-    },
-    notes: {
-        marginTop: 12,
-        fontSize: 15,
-        lineHeight: 21,
-        color: '#6B7280',
     },
     actions: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginTop: 14,
-    },
-    action: {
-        paddingVertical: 6,
-        paddingHorizontal: 10,
-        marginLeft: 8,
+        alignItems: 'center',
+        gap: 14,
     },
     editText: {
+        fontSize: 12,
+        fontWeight: '800',
         color: '#2563EB',
-        fontWeight: '700',
     },
     deleteText: {
-        color: '#EF4444',
+        fontSize: 12,
+        fontWeight: '800',
+        color: '#DC2626',
+    },
+    metricsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    metric: {
+        flex: 1,
+        minHeight: 48,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        backgroundColor: '#F9FAFB',
+        paddingHorizontal: 6,
+    },
+    metricIcon: {
+        marginRight: 4,
+        fontSize: 14,
+    },
+    metricValue: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#111827',
+    },
+    metricUnit: {
+        marginLeft: 3,
+        fontSize: 10,
         fontWeight: '700',
+        color: '#6B7280',
+    },
+    notes: {
+        marginTop: 8,
+        fontSize: 12,
+        lineHeight: 17,
+        color: '#6B7280',
     },
 });

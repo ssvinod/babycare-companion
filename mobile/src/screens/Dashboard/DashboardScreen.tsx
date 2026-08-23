@@ -75,8 +75,8 @@ export default function DashboardScreen() {
         todayFeedings,
         todayQuantity,
         todaySleepMinutes,
-        lastFeeding,
-        latestWeight,
+        //lastFeeding,
+        //latestWeight,
         nextVaccine,
         nextVaccineDate,
         pendingMedicationDoses,
@@ -149,18 +149,18 @@ export default function DashboardScreen() {
                         : 'All vaccinations completed'
                 }
                 color="#16A34A"
-            />
-            <SummaryCard
-                icon="📈"
-                title="Latest Weight"
-                value={latestWeight !== null ? `${latestWeight} kg` : 'No growth record'}
-                color="#F59E0B"
-            />
-            <SummaryCard
-                icon="🕒"
-                title="Last Feeding"
-                value={formatDateTime(lastFeeding)}
-                color="#0F766E"
+                ///>
+                //<SummaryCard
+                //    icon="📈"
+                //    title="Latest Weight"
+                //    value={latestWeight !== null ? `${latestWeight} kg` : 'No growth record'}
+                //    color="#F59E0B"
+                ///>
+                //<SummaryCard
+                //    icon="🕒"
+                //    title="Last Feeding"
+                //    value={formatDateTime(lastFeeding)}
+                //    color="#0F766E"
             />
             <TimelineWidget />
             <ReminderWidget />
