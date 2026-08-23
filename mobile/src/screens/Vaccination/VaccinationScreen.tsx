@@ -88,13 +88,17 @@ export default function VaccinationScreen() {
                 vaccines.map((vaccine) => {
                     const info = vaccineInfo[vaccine.vaccine] ?? {
                         title: vaccine.vaccine,
+                        vaccines: [vaccine.vaccine],
                         diseases: [],
                     };
                     return (
                         <VaccinationCard
                             key={vaccine.id}
                             vaccine={vaccine}
+                            title={info.title}
+                            vaccineNames={info.vaccines}
                             description={info.diseases}
+                            note={info.note}
                             status={getVaccineStatus(vaccine)}
                             onComplete={async () => {
                                 await markCompleted(vaccine.id!);
@@ -112,26 +116,28 @@ export default function VaccinationScreen() {
 const styles = StyleSheet.create({
     summaryGrid: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 8,
+        marginBottom: 4,
     },
     summaryItem: {
         flex: 1,
     },
     todayCard: {
-        marginBottom: 14,
-        borderRadius: 18,
+        marginBottom: 8,
+        borderRadius: 15,
         backgroundColor: '#EFF6FF',
-        padding: 16,
+        paddingHorizontal: 13,
+        paddingVertical: 10,
     },
     todayTitle: {
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: '900',
         color: '#1D4ED8',
     },
     todayText: {
-        marginTop: 5,
-        fontSize: 13,
-        lineHeight: 19,
+        marginTop: 3,
+        fontSize: 11,
+        lineHeight: 16,
         color: '#2563EB',
     },
     overdueTitle: {
@@ -173,11 +179,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginBottom: 12,
-        borderRadius: 18,
+        marginBottom: 8,
+        borderRadius: 15,
         backgroundColor: '#FFF7ED',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
+        paddingHorizontal: 13,
+        paddingVertical: 10,
     },
     statusSummaryLabel: {
         fontSize: 11,
@@ -185,12 +191,12 @@ const styles = StyleSheet.create({
         color: '#C2410C',
     },
     statusSummaryTitle: {
-        marginTop: 3,
-        fontSize: 15,
+        marginTop: 2,
+        fontSize: 13,
         fontWeight: '900',
         color: '#9A3412',
     },
     statusSummaryIcon: {
-        fontSize: 24,
+        fontSize: 20,
     },
 });

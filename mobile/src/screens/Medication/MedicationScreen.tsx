@@ -124,10 +124,12 @@ export default function MedicationScreen() {
     return (
         <ScreenLayout>
             <ScreenTitle title="Medication" icon="💊" />
-            <PrimaryButton
-                title="+ Add Medication"
-                onPress={() => navigation.navigate('AddMedication')}
-            />
+            <View style={styles.addWrapper}>
+                <PrimaryButton
+                    title="+ Add Medication"
+                    onPress={() => navigation.navigate('AddMedication')}
+                />
+            </View>
             {loading || loadingDoses ? (
                 <Text style={styles.loading}>Loading today's medication...</Text>
             ) : null}
@@ -317,8 +319,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     card: {
-        marginTop: 14,
-        padding: 18,
+        marginTop: 10,
+        padding: 14,
         borderRadius: 18,
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
@@ -339,13 +341,13 @@ const styles = StyleSheet.create({
     },
     medicineName: {
         color: '#111827',
-        fontSize: 19,
+        fontSize: 17,
         fontWeight: '800',
     },
     doseText: {
-        marginTop: 5,
+        marginTop: 3,
         color: '#4B5563',
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: '600',
     },
     progressBadge: {
@@ -370,13 +372,13 @@ const styles = StyleSheet.create({
         color: '#166534',
     },
     detail: {
-        marginTop: 12,
+        marginTop: 7,
         color: '#374151',
-        fontSize: 15,
+        fontSize: 13,
     },
     todayHeading: {
-        marginTop: 18,
-        marginBottom: 8,
+        marginTop: 10,
+        marginBottom: 5,
         color: '#111827',
         fontSize: 15,
         fontWeight: '800',
@@ -386,7 +388,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 12,
-        paddingVertical: 12,
+        paddingVertical: 8,
         borderTopWidth: 1,
         borderTopColor: '#E5E7EB',
     },
@@ -421,7 +423,7 @@ const styles = StyleSheet.create({
     },
     givenButton: {
         minWidth: 68,
-        minHeight: 40,
+        minHeight: 36,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 11,
@@ -434,7 +436,7 @@ const styles = StyleSheet.create({
     },
     skipButton: {
         minWidth: 56,
-        minHeight: 40,
+        minHeight: 36,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 11,
@@ -447,7 +449,7 @@ const styles = StyleSheet.create({
     },
     undoButton: {
         minWidth: 62,
-        minHeight: 40,
+        minHeight: 36,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 11,
@@ -489,7 +491,7 @@ const styles = StyleSheet.create({
     },
     editButton: {
         flex: 1,
-        minHeight: 44,
+        minHeight: 40,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 12,
@@ -502,7 +504,7 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         flex: 1,
-        minHeight: 44,
+        minHeight: 40,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 12,
@@ -535,5 +537,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 20,
         textAlign: 'center',
+    },
+    addWrapper: {
+        marginTop: -8,
+        marginBottom: 2,
     },
 });
