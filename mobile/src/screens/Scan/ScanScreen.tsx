@@ -9,6 +9,8 @@ import {
     StyleSheet,
     Text,
     View,
+    TextInput,
+    ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -25,6 +27,7 @@ import {
 import * as FileSystem from 'expo-file-system/legacy';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { WebView } from 'react-native-webview';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 const repository = new DocumentRepository();
 function displayDate(value: string): string {
     const date = new Date(value);
@@ -49,10 +52,31 @@ export default function ScanScreen() {
     const [documents, setDocuments] = useState<DocumentRecord[]>([]);
     const [busy, setBusy] = useState(false);
     const [previewDocument, setPreviewDocument] = useState<DocumentRecord | null>(null);
+    const [editingDocument, setEditingDocument] = useState<DocumentRecord | null>(null);
+    const [searchText, setSearchText] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const loadDocuments = useCallback(async () => {
         const records = await repository.getAll();
         setDocuments(records);
     }, []);
+    const categories = [
+        'All',
+        'Prescription',
+        'Lab Report',
+        'Vaccination Record',
+        'Insurance',
+        'Medical Report',
+        'Other',
+    ];
+    const categoryLabels: Record<string, string> = {
+        All: 'All',
+        Prescription: 'Prescription',
+        'Lab Report': 'Lab',
+        'Vaccination Record': 'Vaccines',
+        Insurance: 'Insurance',
+        'Medical Report': 'Reports',
+        Other: 'Other',
+    };
     useFocusEffect(
         useCallback(() => {
             void loadDocuments();
@@ -65,12 +89,18 @@ export default function ScanScreen() {
         category: string
     ) {
         const savedUri = await saveDocumentFile(sourceUri, name);
+        const now = new Date().toISOString();
         await repository.insert({
             name,
             uri: savedUri,
             mimeType: mimeType ?? null,
             category,
-            createdAt: new Date().toISOString(),
+            tags: null,
+            notes: null,
+            documentDate: now,
+            pinned: 0,
+            favorite: 0,
+            createdAt: now,
         });
         await loadDocuments();
     }
@@ -206,16 +236,43 @@ export default function ScanScreen() {
             },
         ]);
     }
+    const visibleDocuments = documents.filter((document) => {
+        const query = searchText.trim().toLowerCase();
+        const matchesCategory =
+            selectedCategory === 'All' || document.category === selectedCategory;
+        const searchableText = [
+            document.name,
+            document.category,
+            document.tags,
+            document.notes,
+        ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+        const matchesSearch = query.length === 0 || searchableText.includes(query);
+        return matchesCategory && matchesSearch;
+    });
     return (
         <ScreenLayout>
-            <ScreenTitle title="Documents" icon="📷" />
+            <View style={styles.documentsHeader}>
+                <MaterialCommunityIcons
+                    name="file-document-outline"
+                    size={24}
+                    color="#059669"
+                />
+                <Text style={styles.documentsHeaderTitle}>Documents</Text>
+            </View>
             <View style={styles.heroCard}>
-                <Text style={styles.heroIcon}>📄</Text>
+                <MaterialCommunityIcons
+                    name="file-document-outline"
+                    size={24}
+                    color="#059669"
+                    style={styles.heroIcon}
+                />
                 <View style={styles.heroText}>
                     <Text style={styles.heroTitle}>Medical Documents</Text>
-                    <Text style={styles.heroDescription}>
-                        Keep prescriptions, vaccination cards and medical reports together
-                        with the baby's records.
+                    <Text numberOfLines={1} style={styles.heroDescription}>
+                        Prescriptions, reports and vaccination records
                     </Text>
                 </View>
             </View>
@@ -227,13 +284,18 @@ export default function ScanScreen() {
                     }}
                     style={({ pressed }) => [
                         styles.actionButton,
+                        styles.scanButton,
                         pressed && styles.pressed,
                         busy && styles.disabled,
                     ]}
                 >
-                    <Text style={styles.actionIcon}>📷</Text>
+                    <MaterialCommunityIcons
+                        name="camera-outline"
+                        size={24}
+                        color="#FFFFFF"
+                        style={styles.actionIcon}
+                    />
                     <Text style={styles.actionTitle}>Scan</Text>
-                    <Text style={styles.actionSubtitle}>Camera</Text>
                 </Pressable>
                 <Pressable
                     disabled={busy}
@@ -242,13 +304,18 @@ export default function ScanScreen() {
                     }}
                     style={({ pressed }) => [
                         styles.actionButton,
+                        styles.importButton,
                         pressed && styles.pressed,
                         busy && styles.disabled,
                     ]}
                 >
-                    <Text style={styles.actionIcon}>📁</Text>
+                    <MaterialCommunityIcons
+                        name="file-import-outline"
+                        size={24}
+                        color="#FFFFFF"
+                        style={styles.actionIcon}
+                    />
                     <Text style={styles.actionTitle}>Import</Text>
-                    <Text style={styles.actionSubtitle}>PDF / Image</Text>
                 </Pressable>
             </View>
             {busy ? (
@@ -257,11 +324,49 @@ export default function ScanScreen() {
                     <Text style={styles.busyText}>Saving document...</Text>
                 </View>
             ) : null}
+            <View style={styles.searchCard}>
+                <TextInput
+                    value={searchText}
+                    onChangeText={setSearchText}
+                    placeholder="Search documents, tags or notes"
+                    placeholderTextColor="#9CA3AF"
+                    style={styles.searchInput}
+                    returnKeyType="search"
+                />
+            </View>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoryRow}
+            >
+                {categories.map((category) => {
+                    const active = selectedCategory === category;
+                    return (
+                        <Pressable
+                            key={category}
+                            onPress={() => setSelectedCategory(category)}
+                            style={[
+                                styles.categoryChip,
+                                active && styles.categoryChipActive,
+                            ]}
+                        >
+                            <Text
+                                style={[
+                                    styles.categoryChipText,
+                                    active && styles.categoryChipTextActive,
+                                ]}
+                            >
+                                {categoryLabels[category] ?? category}
+                            </Text>
+                        </Pressable>
+                    );
+                })}
+            </ScrollView>
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Saved Documents</Text>
-                <Text style={styles.sectionCount}>{documents.length}</Text>
+                <Text style={styles.sectionCount}>{visibleDocuments.length}</Text>
             </View>
-            {documents.length === 0 ? (
+            {visibleDocuments.length === 0 ? (
                 <View style={styles.emptyCard}>
                     <Text style={styles.emptyIcon}>📂</Text>
                     <Text style={styles.emptyTitle}>No documents yet</Text>
@@ -271,13 +376,13 @@ export default function ScanScreen() {
                     </Text>
                 </View>
             ) : (
-                documents.map((document) => (
+                visibleDocuments.map((document) => (
                     <Pressable
                         key={document.id ?? document.uri}
                         onPress={() => {
                             void openDocument(document);
                         }}
-                        onLongPress={() => confirmDelete(document)}
+                        onLongPress={() => setEditingDocument(document)}
                         style={({ pressed }) => [
                             styles.documentCard,
                             pressed && styles.pressed,
@@ -297,14 +402,178 @@ export default function ScanScreen() {
                                 {' • '}
                                 {displayDate(document.createdAt)}
                             </Text>
-                            <Text style={styles.documentHint}>
-                                Tap to view • Hold to delete
-                            </Text>
+                            {document.tags ? (
+                                <Text numberOfLines={1} style={styles.documentTags}>
+                                    🏷️ {document.tags}
+                                </Text>
+                            ) : null}
+                            {document.notes ? (
+                                <Text numberOfLines={1} style={styles.documentNotes}>
+                                    {document.notes}
+                                </Text>
+                            ) : null}
+                        </View>
+                        <View style={styles.documentActions}>
+                            <Pressable
+                                hitSlop={10}
+                                onPress={async (event) => {
+                                    event.stopPropagation();
+                                    if (document.id === undefined) {
+                                        return;
+                                    }
+                                    await repository.togglePinned(
+                                        document.id,
+                                        document.pinned !== 1
+                                    );
+                                    await loadDocuments();
+                                }}
+                            >
+                                <Text style={styles.documentActionIcon}>
+                                    {document.pinned === 1 ? '📌' : '📍'}
+                                </Text>
+                            </Pressable>
+                            <Pressable
+                                hitSlop={10}
+                                onPress={async (event) => {
+                                    event.stopPropagation();
+                                    if (document.id === undefined) {
+                                        return;
+                                    }
+                                    await repository.toggleFavorite(
+                                        document.id,
+                                        document.favorite !== 1
+                                    );
+                                    await loadDocuments();
+                                }}
+                            >
+                                <Text style={styles.documentActionIcon}>
+                                    {document.favorite === 1 ? '❤️' : '♡'}
+                                </Text>
+                            </Pressable>
                         </View>
                         <Text style={styles.chevron}>›</Text>
                     </Pressable>
                 ))
             )}
+            <Modal
+                visible={editingDocument !== null}
+                animationType="slide"
+                presentationStyle="pageSheet"
+                onRequestClose={() => setEditingDocument(null)}
+            >
+                <View style={styles.editScreen}>
+                    <View style={styles.editHeader}>
+                        <Pressable onPress={() => setEditingDocument(null)}>
+                            <Text style={styles.editCancel}>Cancel</Text>
+                        </Pressable>
+                        <Text style={styles.editTitle}>Document Details</Text>
+                        <Pressable
+                            onPress={async () => {
+                                if (!editingDocument) {
+                                    return;
+                                }
+                                await repository.update(editingDocument);
+                                await loadDocuments();
+                                setEditingDocument(null);
+                            }}
+                        >
+                            <Text style={styles.editSave}>Save</Text>
+                        </Pressable>
+                    </View>
+                    {editingDocument ? (
+                        <ScrollView contentContainerStyle={styles.editContent}>
+                            <Text style={styles.fieldLabel}>Name</Text>
+                            <TextInput
+                                value={editingDocument.name}
+                                onChangeText={(name) =>
+                                    setEditingDocument({
+                                        ...editingDocument,
+                                        name,
+                                    })
+                                }
+                                style={styles.fieldInput}
+                            />
+                            <Text style={styles.fieldLabel}>Category</Text>
+                            <View style={styles.categoryWrap}>
+                                {[
+                                    'Prescription',
+                                    'Lab Report',
+                                    'Vaccination Record',
+                                    'Insurance',
+                                    'Medical Report',
+                                    'Other',
+                                ].map((category) => {
+                                    const active = editingDocument.category === category;
+                                    return (
+                                        <Pressable
+                                            key={category}
+                                            onPress={() =>
+                                                setEditingDocument({
+                                                    ...editingDocument,
+                                                    category,
+                                                })
+                                            }
+                                            style={[
+                                                styles.editCategoryChip,
+                                                active && styles.editCategoryChipActive,
+                                            ]}
+                                        >
+                                            <Text
+                                                style={[
+                                                    styles.editCategoryText,
+                                                    active &&
+                                                        styles.editCategoryTextActive,
+                                                ]}
+                                            >
+                                                {category}
+                                            </Text>
+                                        </Pressable>
+                                    );
+                                })}
+                            </View>
+                            <Text style={styles.fieldLabel}>Tags</Text>
+                            <TextInput
+                                value={editingDocument.tags ?? ''}
+                                onChangeText={(tags) =>
+                                    setEditingDocument({
+                                        ...editingDocument,
+                                        tags,
+                                    })
+                                }
+                                placeholder="e.g. fever, 2 month visit"
+                                style={styles.fieldInput}
+                            />
+                            <Text style={styles.fieldLabel}>Notes</Text>
+                            <TextInput
+                                value={editingDocument.notes ?? ''}
+                                onChangeText={(notes) =>
+                                    setEditingDocument({
+                                        ...editingDocument,
+                                        notes,
+                                    })
+                                }
+                                placeholder="Optional notes"
+                                multiline
+                                style={[styles.fieldInput, styles.notesInput]}
+                            />
+                            <Pressable
+                                onPress={() => {
+                                    const current = editingDocument;
+                                    setEditingDocument(null);
+                                    setTimeout(() => {
+                                        confirmDelete(current);
+                                    }, 250);
+                                }}
+                                style={styles.deleteButton}
+                            >
+                                <Text style={styles.deleteButtonText}>
+                                    Delete Document
+                                </Text>
+                            </Pressable>
+                        </ScrollView>
+                    ) : null}
+                </View>
+            </Modal>
             <Modal
                 visible={previewDocument !== null}
                 animationType="fade"
@@ -384,56 +653,62 @@ const styles = StyleSheet.create({
     heroCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 18,
-        borderRadius: 22,
+        minHeight: 64,
+        marginBottom: 12,
+        borderRadius: 16,
         backgroundColor: '#ECFDF5',
-        padding: 18,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
     },
     heroIcon: {
-        marginRight: 14,
-        fontSize: 34,
-    },
-    heroText: {
-        flex: 1,
+        marginRight: 10,
     },
     heroTitle: {
-        fontSize: 18,
+        fontSize: 16,
+        lineHeight: 20,
         fontWeight: '900',
         color: '#065F46',
     },
     heroDescription: {
-        marginTop: 5,
-        fontSize: 13,
-        lineHeight: 19,
+        marginTop: 2,
+        fontSize: 12,
+        lineHeight: 16,
         color: '#047857',
+    },
+    heroText: {
+        flex: 1,
+        justifyContent: 'center',
     },
     actionRow: {
         flexDirection: 'row',
-        gap: 12,
-        marginBottom: 18,
+        gap: 10,
+        marginBottom: 12,
     },
     actionButton: {
         flex: 1,
-        minHeight: 118,
+        height: 64,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 20,
-        backgroundColor: '#FFFFFF',
-        padding: 14,
+        borderRadius: 16,
+        paddingHorizontal: 12,
+    },
+    scanButton: {
+        height: 50,
+        backgroundColor: '#059669',
+    },
+    importButton: {
+        height: 50,
+        backgroundColor: '#2563EB',
     },
     actionIcon: {
-        fontSize: 30,
+        marginRight: 8,
     },
     actionTitle: {
-        marginTop: 8,
         fontSize: 15,
+        lineHeight: 19,
         fontWeight: '900',
-        color: '#111827',
-    },
-    actionSubtitle: {
-        marginTop: 2,
-        fontSize: 11,
-        color: '#9CA3AF',
+        color: '#FFFFFF',
     },
     pressed: {
         opacity: 0.76,
@@ -536,11 +811,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: '#6B7280',
     },
-    documentHint: {
-        marginTop: 4,
-        fontSize: 10,
-        color: '#9CA3AF',
-    },
     chevron: {
         marginLeft: 8,
         fontSize: 28,
@@ -624,5 +894,154 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '700',
         color: '#FFFFFF',
+    },
+    searchCard: {
+        marginBottom: 8,
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 14,
+    },
+    searchInput: {
+        minHeight: 48,
+        fontSize: 14,
+        color: '#111827',
+    },
+    categoryRow: {
+        gap: 7,
+        paddingBottom: 10,
+    },
+    categoryChip: {
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 12,
+        paddingVertical: 7,
+    },
+    categoryChipActive: {
+        backgroundColor: '#059669',
+    },
+    categoryChipText: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#6B7280',
+    },
+    categoryChipTextActive: {
+        color: '#FFFFFF',
+    },
+    documentActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginLeft: 8,
+    },
+    documentActionIcon: {
+        fontSize: 17,
+    },
+    documentTags: {
+        marginTop: 4,
+        fontSize: 10,
+        color: '#7C3AED',
+    },
+    documentNotes: {
+        marginTop: 3,
+        fontSize: 10,
+        color: '#6B7280',
+    },
+    editScreen: {
+        flex: 1,
+        backgroundColor: '#F3F4F6',
+    },
+    editHeader: {
+        minHeight: 78,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        paddingHorizontal: 18,
+        paddingBottom: 14,
+        backgroundColor: '#FFFFFF',
+    },
+    editCancel: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#6B7280',
+    },
+    editTitle: {
+        fontSize: 16,
+        fontWeight: '900',
+        color: '#111827',
+    },
+    editSave: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#059669',
+    },
+    editContent: {
+        padding: 20,
+        paddingBottom: 50,
+    },
+    fieldLabel: {
+        marginTop: 16,
+        marginBottom: 7,
+        fontSize: 12,
+        fontWeight: '800',
+        color: '#374151',
+    },
+    fieldInput: {
+        minHeight: 48,
+        borderRadius: 14,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 14,
+        fontSize: 14,
+        color: '#111827',
+    },
+    notesInput: {
+        minHeight: 110,
+        paddingTop: 12,
+        textAlignVertical: 'top',
+    },
+    categoryWrap: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+    },
+    editCategoryChip: {
+        borderRadius: 18,
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 13,
+        paddingVertical: 9,
+    },
+    editCategoryChipActive: {
+        backgroundColor: '#059669',
+    },
+    editCategoryText: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: '#6B7280',
+    },
+    editCategoryTextActive: {
+        color: '#FFFFFF',
+    },
+    deleteButton: {
+        marginTop: 30,
+        minHeight: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 14,
+        backgroundColor: '#FEE2E2',
+    },
+    deleteButtonText: {
+        fontSize: 14,
+        fontWeight: '900',
+        color: '#B91C1C',
+    },
+    documentsHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    documentsHeaderTitle: {
+        marginLeft: 10,
+        fontSize: 28,
+        fontWeight: '900',
+        color: '#111827',
     },
 });

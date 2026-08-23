@@ -116,7 +116,6 @@ export function runMigrations() {
       category TEXT NOT NULL,
       createdAt TEXT NOT NULL
     );
-        
     CREATE INDEX IF NOT EXISTS
       idx_document_created
     ON document (
@@ -134,4 +133,9 @@ export function runMigrations() {
     addColumnIfMissing('medication', 'endDate', 'TEXT');
     addColumnIfMissing('medication', 'remindersEnabled', 'INTEGER DEFAULT 0');
     addColumnIfMissing('medication', 'notificationIds', 'TEXT');
+    addColumnIfMissing('document', 'tags', 'TEXT');
+    addColumnIfMissing('document', 'notes', 'TEXT');
+    addColumnIfMissing('document', 'documentDate', 'TEXT');
+    addColumnIfMissing('document', 'pinned', 'INTEGER DEFAULT 0');
+    addColumnIfMissing('document', 'favorite', 'INTEGER DEFAULT 0');
 }
