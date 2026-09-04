@@ -1,33 +1,11 @@
-Project Status
+# Historical core toolkit status
 
-Version:
-0.9
+This document previously tracked the platform-independent toolkit in the repository root. It is retained as historical context and does **not** represent the current Niva mobile release.
 
-Completed
+For the active Expo application, use [Current product status](../CURRENT_PRODUCT_STATUS.md), [Mobile architecture](../MOBILE_ARCHITECTURE.md), and [Development and release](../DEVELOPMENT_AND_RELEASE.md).
 
-✓ WHO Growth Engine
-✓ Vaccination Engine
-✓ Timeline
-✓ Dashboard
-✓ Regression Framework
-✓ Documentation
-✓ Application Context
-✓ Growth Analysis
+## Historical snapshot
 
-Pending
+The legacy core includes WHO growth and vaccination engines, timeline/dashboard services, an application context, and JavaScript utility scripts. It also contains calendar/reminder adapters and export helpers that are distinct from Niva’s current Expo mobile implementation.
 
-- SVG Growth Charts
-- PDF Report
-- Backup / Restore
-- Calendar Integration
-- Reminder Integration
-- Packaging
-- GitHub Release
-
-Architecture Rules
-
-- No duplicate services
-- Extend existing modules
-- WHO handled by whoGrowthService.js
-- Regression must remain green
-- Prefer SVG over native canvas
+The current mobile app has independently delivered growth assessment, PDF reporting, backup/restore, medication notifications, and Android packaging. Future work in the legacy core should be explicitly scoped; it is not automatically part of the mobile app roadmap.

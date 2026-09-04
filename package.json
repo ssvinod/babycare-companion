@@ -2,7 +2,7 @@
     "name": "babycare-companion",
     "version": "0.1.0",
     "private": true,
-    "description": "Family-owned planning tools for appointments, reminders, and childhood records.",
+    "description": "Retained platform-independent planning and record-management toolkit for the Niva baby-care project.",
     "type": "module",
     "scripts": {
         "dev": "tsx src/index.ts",
